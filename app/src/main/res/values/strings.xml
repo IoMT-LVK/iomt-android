@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">IOMT Health Center</string>
+    <string name="action_settings">Settings</string>
+    <string name="title_activity_device">DeviceActivity</string>
+    <string name="logo_asvk">logo_asvk</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="register">Регистрация</string>
+    <string name="scan">Сканировать</string>
+    <string name="title_activity_panel">panel</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_desc">Navigation header</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_list">Список устройств</string>
+    <string name="menu_info">Информация</string>
+    <string name="menu_settings">Настройки</string>
+    <string name="menu_account">Аккаунт</string>
+
+    <string name="height_head">Рост: %d</string>
+    <string name="weight_head">Вес: %d</string>
+    <string name="ACC_DATA"> ACC_DATA</string>
+    <string name="jwt"> jwt</string>
+    <string name="confirm_e_mail">Письмо с подтверждением регистрации было отправлено вам на почту!</string>
+
+
+    <string name="personal">Персональные данные</string>
+    <string name="Contact">Контактные данные</string>
+    <string name="edit">Изменить</string>
+    <string name="save">Сохранить</string>
+    <string name="weight_txt">%d кг</string>
+    <string name="height_txt">%d см</string>
+    <string name="add_device">Добавить устройство</string>
+    <string name="create_account">Создать аккаунт</string>
+    <string name="error_bluetooth_not_supported">Bluetooth не поддерживается на вашем устройстве</string>
+    <string name="base_url">https://iomt.lvk.cs.msu.su</string>
+
+</resources>
