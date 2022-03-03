@@ -36,5 +36,6 @@
     <string name="create_account">Создать аккаунт</string>
     <string name="error_bluetooth_not_supported">Bluetooth не поддерживается на вашем устройстве</string>
     <string name="base_url">https://iomt.lvk.cs.msu.su</string>
+    <string name="login_text">Войти</string>
 
 </resources>
