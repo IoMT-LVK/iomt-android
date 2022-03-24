@@ -1,0 +1,10 @@
+[general]
+    name = "Virtual Device"
+    nameRegex = "Google Pixel 5.*"
+    type = "Virtual"
+    characteristicNames = ["heartRate"]
+[heartRate]
+    name = "Heart Rate"
+    serviceUUID = "0x180D"
+    characteristicUUID = "0x2A37"
+#   formula = ""
