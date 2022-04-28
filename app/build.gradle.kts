@@ -40,7 +40,6 @@ tasks.withType<Test> {
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
-    implementation("com.android.volley:volley:1.2.1")
     implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
     implementation("androidx.legacy:legacy-support-v4:1.0.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.3")
@@ -63,6 +62,8 @@ dependencies {
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.6.20-M1")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
 //    testImplementation("junit:junit:5.7.1")
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

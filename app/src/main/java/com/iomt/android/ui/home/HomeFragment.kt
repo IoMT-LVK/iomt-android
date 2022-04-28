@@ -137,7 +137,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         setHasOptionsMenu(true)
-        //val toolbar = view.findViewById(R.id.toolbar_list) as Toolbar?
+//        val toolbar = view.findViewById(R.id.toolbar_list) as Toolbar?
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "Устройства"
         val recyclerView: RecyclerView = view.findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -149,11 +149,13 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         val noDev = view.findViewById<TextView>(R.id.text_no_dev)
         noDev.visibility = View.GONE
         val actionCells = Action { args: Array<String?>? ->
-            val listOfDevices = object: TypeToken<ArrayList<DeviceInfo?>?>() {}.type
-            deviceInfos = gson.fromJson(args!![0], listOfDevices)
-            noDev.visibility = View.GONE
-            if (deviceInfos.isEmpty()) {
-                noDev.visibility = View.VISIBLE
+            uiHandler?.post {
+                val listOfDevices = object: TypeToken<ArrayList<DeviceInfo?>?>() {}.type
+                deviceInfos = gson.fromJson(args!![0], listOfDevices)
+                noDev.visibility = View.GONE
+                if (deviceInfos.isEmpty()) {
+                    noDev.visibility = View.VISIBLE
+                }
             }
         }
 //        checkPermissions()

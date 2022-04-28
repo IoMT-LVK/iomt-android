@@ -97,19 +97,21 @@ class SignupActivity : AppCompatActivity() {
         val login = loginText.text.toString()
         val password = passwordText.text.toString()
         val successAction = Action { args: Array<String?>? ->
-            Handler(Looper.getMainLooper()).postDelayed(
-                {
-                    assert(args!![0] != null)
-                    if (args[0]!!.isNotEmpty()) {
-                        onSignupFailed(args[0])
-                    } else {
-                        onSignupSuccess()
-                    }
-                    progressBar.visibility = ProgressBar.INVISIBLE
-                }, 1000
-            )
+            runOnUiThread {
+                Handler(Looper.getMainLooper()).postDelayed(
+                    {
+                        assert(args!![0] != null)
+                        if (args[0]!!.isNotEmpty()) {
+                            onSignupFailed(args[0])
+                        } else {
+                            onSignupSuccess()
+                        }
+                        progressBar.visibility = ProgressBar.INVISIBLE
+                    }, 1000
+                )
+            }
         }
-        val errorAction = ErrorAction { onSignupFailed("") }
+        val errorAction = ErrorAction { runOnUiThread {  onSignupFailed("") } }
         val httpRequests = HTTPRequests(this)
         httpRequests.sendReg(
             name,
