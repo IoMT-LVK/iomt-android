@@ -12,15 +12,11 @@ import java.io.File
 import java.net.URL
 
 
-class ConfigParser(pathToToml: String) {
+class ConfigParser {
     private val tomlConfig = TomlConfig(
         ignoreUnknownNames = true,
     )
-    private var tomlLines: List<String> = readFromConfig(pathToToml)
-
-    private fun readFromConfig(path: String): List<String> = File(path).bufferedReader().use { it.readLines() }
-
-//    private fun readFromUrl(url: String): List<String> = URL(url).readText().split("\n")
+    private var tomlLines: List<String> = emptyList()
 
     fun parseGeneralConfig(): GeneralConfig =
         Toml(tomlConfig).partiallyDecodeFromString(serializer(), tomlLines, "general")
@@ -29,11 +25,16 @@ class ConfigParser(pathToToml: String) {
         Toml(tomlConfig).partiallyDecodeFromString(serializer(), tomlLines, characteristicName)
 
     fun parseAllCharacteristicConfigs(characteristicNames: List<String>): Map<String, CharacteristicConfig> =
-        characteristicNames.map { it to parseCharacteristicConfig(it) }.toMap()
+        characteristicNames.associateWith { parseCharacteristicConfig(it) }
 
     override fun toString(): String =
         tomlLines.joinToString(separator = "\n")
 
+    fun parseFromString(tomlString: String) {
+        tomlLines = tomlString.split("\n")
+    }
+
     fun parse(): DeviceConfig =
         parseGeneralConfig().let { DeviceConfig(it, parseAllCharacteristicConfigs(it.characteristicNames)) }
+
 }

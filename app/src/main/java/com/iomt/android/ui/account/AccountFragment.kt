@@ -4,6 +4,8 @@ import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +23,7 @@ import com.iomt.android.*
 import java.util.*
 
 class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
+    private var uiHandler: Handler? = null
     var personalinfo: LinearLayout? = null
     var experience: LinearLayout? = null
     var review: LinearLayout? = null
@@ -63,6 +66,7 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
     private var httpRequests: HTTPRequests? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        uiHandler = Handler(Looper.getMainLooper())
     }
 
     override fun onCreateView(
@@ -102,31 +106,33 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
         JWT = prefs.getString("JWT", "")
         UserId = prefs.getString("UserId", "")
         action = Action { args: Array<String?>? ->
-            val editor = requireActivity().getSharedPreferences(
-                requireActivity().applicationContext.getString(R.string.ACC_DATA),
-                Context.MODE_PRIVATE
-            ).edit()
-            weight = args!![0]!!.toInt()
-            height = args[1]!!.toInt()
-            birthdate = args[2]
-            phone = args[3]
-            email = args[4]
-            name = args[5]
-            surname = args[6]
-            patr = args[7]
-            editor.putInt("height", height)
-            editor.putInt("weight", weight)
-            editor.putString("phone", phone)
-            editor.putString("email", email)
-            editor.putString("birthdate", birthdate)
-            editor.apply()
-            val name_lbl = "$name $surname"
-            text_name?.text = name_lbl
-            text_weight?.text = weight.toString()
-            text_height?.text = height.toString()
-            text_phone?.text = phone
-            text_email?.text = email
-            text_birthday?.text = birthdate
+            uiHandler?.post {
+                val editor = requireActivity().getSharedPreferences(
+                    requireActivity().applicationContext.getString(R.string.ACC_DATA),
+                    Context.MODE_PRIVATE
+                ).edit()
+                weight = args!![0]!!.toInt()
+                height = args[1]!!.toInt()
+                birthdate = args[2]
+                phone = args[3]
+                email = args[4]
+                name = args[5]
+                surname = args[6]
+                patr = args[7]
+                editor.putInt("height", height)
+                editor.putInt("weight", weight)
+                editor.putString("phone", phone)
+                editor.putString("email", email)
+                editor.putString("birthdate", birthdate)
+                editor.apply()
+                val name_lbl = "$name $surname"
+                text_name?.text = name_lbl
+                text_weight?.text = weight.toString()
+                text_height?.text = height.toString()
+                text_phone?.text = phone
+                text_email?.text = email
+                text_birthday?.text = birthdate
+            }
         }
         httpRequests = HTTPRequests(requireContext(), JWT, UserId)
         httpRequests!!.getData(action!!)
@@ -145,8 +151,8 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
         edit_birthday?.visibility = View.GONE
         edit_phone?.visibility = View.GONE
         edit_email?.visibility = View.GONE
-        edit_birthday?.setOnClickListener(View.OnClickListener { v: View? -> callDatePicker() })
-        edit_personal?.setOnClickListener(View.OnClickListener { v: View? ->
+        edit_birthday?.setOnClickListener { v: View? -> callDatePicker() }
+        edit_personal?.setOnClickListener { v: View? ->
             if (isEditing_personal) {
                 val ws = edit_weight?.text.toString()
                 weight = try {
@@ -201,8 +207,8 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
                 edit_birthday?.setText(text_birthday?.text)
                 isEditing_personal = true
             }
-        })
-        edit_contact?.setOnClickListener(View.OnClickListener { v: View? ->
+        }
+        edit_contact?.setOnClickListener { v: View? ->
             if (isEditing_contact) {
                 val ps = edit_phone?.text.toString()
                 text_phone?.text = ps
@@ -240,30 +246,30 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
                 edit_email?.setText(text_email?.text)
                 isEditing_contact = true
             }
-        })
-        personalinfobtn?.setOnClickListener(View.OnClickListener {
+        }
+        personalinfobtn?.setOnClickListener {
             personalinfo?.visibility = View.VISIBLE
             experience?.visibility = View.GONE
             review?.visibility = View.GONE
             personalinfobtn?.setTextColor(resources.getColor(R.color.colorPrimaryDark))
             experiencebtn?.setTextColor(resources.getColor(R.color.grey))
             update()
-        })
-        btn_add?.setOnClickListener(View.OnClickListener { v: View? ->
+        }
+        btn_add?.setOnClickListener { v: View? ->
             val intent = Intent(context, BLESearcher::class.java)
             intent.putExtra("JWT", JWT)
             intent.putExtra("UserId", UserId)
             startActivity(intent)
             update()
-        })
-        experiencebtn?.setOnClickListener(View.OnClickListener { v: View? ->
+        }
+        experiencebtn?.setOnClickListener { v: View? ->
             personalinfo?.visibility = View.GONE
             experience?.visibility = View.VISIBLE
             review?.visibility = View.GONE
             personalinfobtn?.setTextColor(resources.getColor(R.color.grey))
             experiencebtn?.setTextColor(resources.getColor(R.color.colorPrimaryDark))
             update()
-        })
+        }
         return view
     }
 
@@ -299,19 +305,21 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
         datePickerDialog.show()
     }
 
-    fun update() {
+    private fun update() {
         httpRequests!!.getData(action!!)
-        val action_cells = Action { args: Array<String?>? ->
-            val listOfDevices = object : TypeToken<ArrayList<DeviceInfo?>?>() {}.type
-            val devs = gson.fromJson<List<DeviceInfo>>(
-                args!![0], listOfDevices
-            )
-            deviceInfoCells.clear()
-            for (dev in devs) {
-                deviceInfoCells.add(DeviceInfoCell(dev))
+        val actionCells = Action { args: Array<String?>? ->
+            uiHandler?.post {
+                val listOfDevices = object : TypeToken<ArrayList<DeviceInfo?>?>() {}.type
+                val devs = gson.fromJson<List<DeviceInfo>>(
+                    args!![0], listOfDevices
+                )
+                deviceInfoCells.clear()
+                for (dev in devs) {
+                    deviceInfoCells.add(DeviceInfoCell(dev))
+                }
+                deviceInfoAdapter!!.notifyDataSetChanged()
             }
-            deviceInfoAdapter!!.notifyDataSetChanged()
         }
-        httpRequests!!.getDevices(action_cells)
+        httpRequests!!.getDevices(actionCells)
     }
 }

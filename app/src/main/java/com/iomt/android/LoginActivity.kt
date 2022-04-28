@@ -54,8 +54,8 @@ class LoginActivity : AppCompatActivity() {
                 val intent = Intent(applicationContext, EmailConf::class.java)
                 startActivity(intent)
             } else {
-                jwt = args!![0]
-                userId = args[1]
+                jwt = args!![0].also { Log.w(TAG, "jwt=$it") }
+                userId = args[1].also { Log.w(TAG, "userId=$userId") }
                 Log.d(TAG, "$jwt $userId")
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
@@ -65,7 +65,7 @@ class LoginActivity : AppCompatActivity() {
                 )
             }
         }
-        httpRequests.sendLogin(login, password, success, { onLoginFailed() })
+        httpRequests.sendLogin(login, password, success) { runOnUiThread { onLoginFailed() } }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

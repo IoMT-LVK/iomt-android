@@ -1,132 +1,139 @@
 package com.iomt.android
 
 import android.content.Context
+import android.os.AsyncTask
 import android.util.Log
-import com.android.volley.Request
-import com.android.volley.VolleyError
-import com.android.volley.toolbox.JsonObjectRequest
-import com.android.volley.toolbox.Volley
-import com.google.gson.GsonBuilder
-import org.json.JSONException
+import com.iomt.android.config.configs.DeviceConfig
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.logging.HttpLoggingInterceptor
 import org.json.JSONObject
-import java.util.*
+import java.io.IOException
 
-class HTTPRequests(private val context: Context, private val jwt: String? = null, private val userId: String? = null) {
-    private val builder = GsonBuilder()
-    private val gson = builder.create()
+@Serializable
+data class AuthInfo(
+        val jwt: String,
+        // snake case due to the format of data
+        val user_id: String,
+        val confirmed: Boolean,
+)
+
+class HTTPRequests(
+        private val context: Context,
+        private var jwt: String? = null,
+        private var userId: String? = null,
+){
+    private val loggingInterceptor = HttpLoggingInterceptor {
+        Log.d(TAG, it)
+    }.apply {
+        setLevel(HttpLoggingInterceptor.Level.BASIC)
+    }
+    private val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+
+    private val coroutineForRequests = CoroutineScope(Job())
 
     fun sendDevice(dev: DeviceInfo) {
-        val postUrl =
-            context.getString(R.string.base_url) + "/devices/register/?token=" + jwt + "&user_id=" + userId
-        val requestQueue = Volley.newRequestQueue(context)
-        val postData = JSONObject()
-        try {
-            postData.put("device_id", dev.address)
-            postData.put("device_name", dev.name)
-            postData.put("device_type", dev.device_type)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        val postUrl = "${context.getString(R.string.base_url)}/devices/register/?token=$jwt&user_id=$userId"
+        val json = JSONObject().apply {
+            put("device_id", dev.address)
+            put("device_name", dev.name)
+            put("device_type", dev.device_type)
+        }.toString().toRequestBody(JSON)
+        val request = Request.Builder().url(postUrl).post(json).build()
+        coroutineForRequests.launch {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d(TAG, "Request <$postUrl> was successfully sent.")
+            } else {
+                Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
+            }
         }
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.POST,
-            postUrl,
-            postData,
-            { response: JSONObject? -> }) { error: VolleyError ->
-            Log.d(TAG, "HTTP Error: $error")
-            error.printStackTrace()
-        }
-        Log.d(TAG, "Sent")
-        requestQueue.add(jsonObjectRequest)
     }
 
     fun deleteDevice(dev: DeviceInfo) {
-        val getUrl =
-            context.getString(R.string.base_url) + "/devices/delete/?token=" + jwt + "&user_id=" + userId + "&id=" + dev.address
-        val requestQueue = Volley.newRequestQueue(context)
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.GET,
-            getUrl,
-            null,
-            { response: JSONObject? -> }) { error: VolleyError ->
-            Log.d(TAG, "HTTP Error: $error")
-            error.printStackTrace()
+        val getUrl = "${context.getString(R.string.base_url)}/devices/delete/?token=$jwt&user_id=$userId&id=${dev.address}"
+        val request = Request.Builder().url(getUrl).get().build()
+        coroutineForRequests.launch {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d(TAG, "Request <$getUrl> was successfully sent.")
+            } else {
+                Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
+            }
         }
-        requestQueue.add(jsonObjectRequest)
     }
 
     fun getDevices(action: Action) {
-        val getUrl =
-            context.getString(R.string.base_url) + "/devices/get/?token=" + jwt + "&user_id=" + userId
-        val requestQueue = Volley.newRequestQueue(context)
-        val jsonObjectRequest =
-            JsonObjectRequest(Request.Method.GET, getUrl, null, { response: JSONObject ->
-                try {
-                    val args = arrayOfNulls<String>(1)
-                    args[0] = response.getString("devices")
-                    Log.d(TAG, args[0]?: "Something went wrong")
-                    action.run(args)
-                } catch (e: JSONException) {
-                    Log.d(TAG, "JSON Error: " + Objects.requireNonNull(e.message))
-                    e.printStackTrace()
+        Log.w(TAG, "JWT: $jwt, userID: $userId")
+        val getUrl = "${context.getString(R.string.base_url)}/devices/get/?token=$jwt&user_id=$userId"
+        val request = Request.Builder().url(getUrl).get().build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Request <$getUrl> was successfully sent.")
+                    action.run(arrayOf(JSONObject(response.body!!.string()).getString("devices")))
+                } else {
+                    Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
                 }
-            }) { error: VolleyError ->
-                Log.d(TAG, "HTTP Error: $error")
-                error.printStackTrace()
             }
-        requestQueue.add(jsonObjectRequest)
+            override fun onFailure(call: Call, e: IOException) {
+                    Log.e(TAG, "Got [${e.localizedMessage}] from server with <$getUrl>.")
+            }
+        })
     }
 
     fun getDeviceTypes(action: Action) {
-        val getUrl =
-            context.getString(R.string.base_url) + "/devices/types/?token=" + jwt + "&user_id=" + userId
-        val requestQueue = Volley.newRequestQueue(context)
-        val jsonObjectRequest =
-            JsonObjectRequest(Request.Method.GET, getUrl, null, { response: JSONObject ->
-                try {
-                    val args = arrayOfNulls<String>(1)
-                    args[0] = response.getString("devices")
-                    Log.d(TAG, "DevTypes: " + args[0])
-                    action.run(args)
-                } catch (e: JSONException) {
-                    Log.d(TAG, "JSON Error: " + Objects.requireNonNull(e.message))
-                    e.printStackTrace()
-                }
-            }) { error: VolleyError ->
-                Log.d(TAG, "HTTP Error: $error")
-                error.printStackTrace()
+        val getUrl = "${context.getString(R.string.base_url)}/devices/types/?token=$jwt&user_id=$userId"
+        val request = Request.Builder().url(getUrl).get().build()
+        coroutineForRequests.launch {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d(TAG, "Request <$getUrl> was successfully sent.")
+                action.run(arrayOf(JSONObject(response.body!!.string()).getString("devices")))
+            } else {
+                Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
             }
-        requestQueue.add(jsonObjectRequest)
+        }
     }
 
     fun sendLogin(login: String?, password: String?, success: SuccessAction, error: ErrorAction) {
-        val postUrl = context.getString(R.string.base_url) + "/auth/"
-        val requestQueue = Volley.newRequestQueue(context)
-        val postData = JSONObject()
-        try {
-            postData.put("login", login)
-            postData.put("password", password)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        val jsonObjectRequest =
-            JsonObjectRequest(Request.Method.POST, postUrl, postData, { response: JSONObject ->
-                try {
-                    val args = arrayOfNulls<String>(2)
-                    args[0] = response.getString("jwt")
-                    args[1] = response.getString("user_id")
-                    success.run(args, response.getBoolean("confirmed"))
-                } catch (e: JSONException) {
-                    error.run()
-                    Log.d(TAG, "JSON Error: " + Objects.requireNonNull(e.message))
-                    e.printStackTrace()
-                }
-            }) { err: VolleyError ->
+        val postUrl = "${context.getString(R.string.base_url)}/auth/"
+        val json = JSONObject().apply {
+            put("login", login ?: "")
+            put("password", password ?: "")
+        }.toString().toRequestBody(JSON)
+        val request = Request.Builder()
+                .url(postUrl)
+                .post(json)
+                .addHeader("Content-Type", "application/json")
+                .build()
+        coroutineForRequests.launch {
+            val response = client.newCall(request).execute()
+            if (response.isSuccessful) {
+                Log.d(TAG, "Request <$postUrl> was successfully sent.")
+                val stringResponse = response.body?.string() ?: ""
+                val jsonStringResponse = JSONObject(stringResponse)
+                Log.w(TAG, jsonStringResponse.getString("jwt"))
+                val authInfo = Json.decodeFromString<AuthInfo>(stringResponse)
+                jwt = authInfo.jwt.also { Log.w(TAG, "jwt: $it") }
+                userId = authInfo.user_id.also { Log.w(TAG, "userId: $it") }
+
+                val auth = arrayOf(jwt, userId)
+                val isConfirmed = jsonStringResponse.getBoolean("confirmed")
+                success.run(auth, isConfirmed)
+            } else {
+                Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
                 error.run()
-                Log.d(TAG, "HTTP Error: $err")
-                err.printStackTrace()
             }
-        Log.d(TAG, "Sent")
-        requestQueue.add(jsonObjectRequest)
+        }
     }
 
     fun sendReg(
@@ -141,108 +148,132 @@ class HTTPRequests(private val context: Context, private val jwt: String? = null
         successAction: Action,
         errorAction: ErrorAction
     ) {
-        val postUrl = context.getString(R.string.base_url) + "/users/register/"
-        val requestQueue = Volley.newRequestQueue(context)
-        val postData = JSONObject()
-        try {
-            postData.put("name", name)
-            postData.put("surname", surname)
-            postData.put("patronymic", patronymic)
-            postData.put("birthdate", birthdate)
-            postData.put("email", email)
-            postData.put("phone_number", mobile)
-            postData.put("login", login)
-            postData.put("password", password)
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-        val jsonObjectRequest =
-            JsonObjectRequest(Request.Method.POST, postUrl, postData, { response: JSONObject ->
-                var err: String? = null
-                try {
-                    err = response.getString("error")
-                } catch (e: JSONException) {
-                    e.printStackTrace()
+        val postUrl = "${context.getString(R.string.base_url)}/users/register/"
+        val json = JSONObject().apply {
+            put("name", name!!)
+            put("surname", surname!!)
+            put("patronymic", patronymic!!)
+            put("birthdate", birthdate!!)
+            put("email", email!!)
+            put("phone_number", mobile!!)
+            put("login", login!!)
+            put("password", password!!)
+        }.toString().toRequestBody(JSON)
+        val request = Request.Builder().url(postUrl).post(json).build()
+        client.newCall(request).enqueue(
+            object: Callback {
+                override fun onResponse(call: Call, response: Response) {
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "Request <$postUrl> was successfully sent.")
+                        val err = JSONObject(response.body!!.string()).getString("error")
+                        successAction.run(arrayOf(err))
+                    } else {
+                        Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
+                        errorAction.run()
+                    }
                 }
-                val args = arrayOfNulls<String>(1)
-                args[0] = err
-                successAction.run(args)
-            }) { error: VolleyError ->
-                errorAction.run()
-                Log.d(TAG, "HTTP Error: $error")
-                error.printStackTrace()
+                override fun onFailure(call: Call, e: IOException) {
+                    Log.e(TAG, "Got [${e.localizedMessage}] from server with <$postUrl>.")
+                    errorAction.run()
+                }
             }
-        Log.d(TAG, "Sent")
-        requestQueue.add(jsonObjectRequest)
+        )
     }
 
     fun getData(action: Action) {
-        val getUrl =
-            context.getString(R.string.base_url) + "/users/info/?token=" + jwt + "&user_id=" + userId
-        val requestQueue = Volley.newRequestQueue(context)
-        val jsonObjectRequest =
-            JsonObjectRequest(Request.Method.GET, getUrl, null, { response: JSONObject ->
-                try {
-                    val args = arrayOfNulls<String>(8)
-                    args[0] = response.getInt("weight").toString()
-                    args[1] = response.getInt("height").toString()
-                    args[2] = response["birthdate"] as String
-                    args[3] = response["phone_number"] as String
-                    args[4] = response["email"] as String
-                    args[5] = response["name"] as String
-                    args[6] = response["surname"] as String
-                    args[7] = response["patronymic"] as String
-                    action.run(args)
-                } catch (e: JSONException) {
-                    Log.d(TAG, "JSON Error: " + Objects.requireNonNull(e.message))
-                    e.printStackTrace()
+        val getUrl = "${context.getString(R.string.base_url)}/users/info/?token=$jwt&user_id=$userId"
+        val request = Request.Builder()
+                .url(getUrl)
+                .get()
+                .build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Request <$getUrl> was successfully sent.")
+                    val jsonStringResponse = JSONObject(response.body!!.string())
+                    action.run(arrayOf(
+                        jsonStringResponse.getInt("weight").toString(),
+                        jsonStringResponse.getInt("height").toString(),
+                        jsonStringResponse["birthdate"] as String,
+                        jsonStringResponse["phone_number"] as String,
+                        jsonStringResponse["email"] as String,
+                        jsonStringResponse["name"] as String,
+                        jsonStringResponse["surname"] as String,
+                        jsonStringResponse["patronymic"] as String,
+                    ))
+                } else {
+                    Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
                 }
-            }) { error: VolleyError ->
-                Log.d(TAG, "HTTP Error: $error")
-                error.printStackTrace()
             }
-        requestQueue.add(jsonObjectRequest)
+
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$getUrl>.")
+            }
+        })
     }
 
     fun sendData(
         name: String?,
         surname: String?,
-        patr: String?,
+        patronymic: String?,
         birthdate: String?,
         email: String?,
         phone: String?,
         weight: Int,
         height: Int
     ) {
-        val postUrl =
-            context.getString(R.string.base_url) + "/users/info/?token=" + jwt + "&user_id=" + userId
-        val requestQueue = Volley.newRequestQueue(context)
-        val postData = JSONObject()
-        try {
-            postData.put("name", name)
-            postData.put("surname", surname)
-            postData.put("birthdate", birthdate)
-            postData.put("height", height)
-            postData.put("weight", weight)
-            postData.put("email", email)
-            postData.put("phone_number", phone)
-            postData.put("patronymic", patr)
-        } catch (e: JSONException) {
-            e.printStackTrace()
+        val postUrl = "${context.getString(R.string.base_url)}/users/info/?token=$jwt&user_id=$userId"
+        val json = JSONObject().apply {
+            put("name", name!!)
+            put("surname", surname!!)
+            put("birthdate", birthdate!!)
+            put("height", height.toString())
+            put("weight", weight.toString())
+            put("email", email!!)
+            put("phone_number", phone!!)
+            put("patronymic", patronymic!!)
+        }.toString().toRequestBody(JSON)
+        val request = Request.Builder().url(postUrl).post(json).build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful) {
+                    Log.d(TAG, "Request <$postUrl> was successfully sent.")
+                } else {
+                    Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
+                }
+            }
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$postUrl>.")
+            }
+        })
+
+    }
+
+    fun getDeviceConfig(configId: Long, ): String? {
+        var deviceStringConfig: String? = null
+        val saveConfig: (String) -> Unit = {
+            deviceStringConfig = it
         }
-        val jsonObjectRequest = JsonObjectRequest(
-            Request.Method.POST,
-            postUrl,
-            postData,
-            { response: JSONObject? -> }) { error: VolleyError ->
-            Log.d(TAG, "HTTP Error: $error")
-            error.printStackTrace()
-        }
-        Log.d(TAG, "Sent")
-        requestQueue.add(jsonObjectRequest)
+        val url = "${context.getString(R.string.base_url)}/devices/types?id=$configId&token=$jwt"
+        val request = Request.Builder().url(url).get().build()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onResponse(call: Call, response: Response) {
+                if (response.isSuccessful && response.body != null) {
+                    saveConfig(response.body!!.string())
+                } else {
+                    Log.e(TAG, "Got [${response.code}] from server with <$url>.")
+                }
+            }
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$url>.")
+            }
+        })
+
+        return deviceStringConfig
     }
 
     companion object {
         private const val TAG = "HTTPRequests"
+        private val JSON = "application/json; charset=utf-8".toMediaType()
     }
 }

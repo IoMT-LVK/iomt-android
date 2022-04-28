@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
+import com.iomt.android.config.ConfigParser
 import java.util.*
 
 class BLESearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
@@ -34,7 +35,8 @@ class BLESearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     private var mBluetoothLeScanner: BluetoothLeScanner? = null
     private var devTypes: List<DeviceType> = ArrayList()
     private var devs: List<DeviceInfo> = ArrayList()
-    private var httpRequests: HTTPRequests? = null
+    private lateinit var httpRequests: HTTPRequests
+    private val configParser = ConfigParser()
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public override fun onCreate(savedInstanceState: Bundle?) {
@@ -174,12 +176,17 @@ class BLESearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
             }
         }
         if (!found) {
-            httpRequests!!.sendDevice(deviceInfo)
+            httpRequests.sendDevice(deviceInfo)
+            val stringDeviceConfig = httpRequests.getDeviceConfig(1)
+            configParser.parseFromString(stringDeviceConfig ?: "")
+            configParser.parse()
+            Log.w(TAG, configParser.toString())
         }
         finish()
     }
 
     companion object {
+        private const val TAG = "BLEScanner"
         private const val PERMISSION_REQUEST_FINE_LOCATION = 1
         private const val SCAN_PERIOD: Long = 10000
     }
