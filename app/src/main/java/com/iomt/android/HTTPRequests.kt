@@ -1,13 +1,8 @@
 package com.iomt.android
 
 import android.content.Context
-import android.os.AsyncTask
 import android.util.Log
-import com.iomt.android.config.configs.DeviceConfig
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -24,6 +19,7 @@ data class AuthInfo(
         // snake case due to the format of data
         val user_id: String,
         val confirmed: Boolean,
+        val wasFailed: Boolean = false,
 )
 
 class HTTPRequests(
@@ -104,36 +100,34 @@ class HTTPRequests(
         }
     }
 
-    fun sendLogin(login: String?, password: String?, success: SuccessAction, error: ErrorAction) {
-        val postUrl = "${context.getString(R.string.base_url)}/auth/"
+    fun sendLogin(login: String, password: String) = runBlocking {
+        val url = "${context.getString(R.string.base_url)}/auth/"
         val json = JSONObject().apply {
-            put("login", login ?: "")
-            put("password", password ?: "")
+            put("login", login)
+            put("password", password)
         }.toString().toRequestBody(JSON)
         val request = Request.Builder()
-                .url(postUrl)
+                .url(url)
                 .post(json)
                 .addHeader("Content-Type", "application/json")
                 .build()
-        coroutineForRequests.launch {
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                Log.d(TAG, "Request <$postUrl> was successfully sent.")
-                val stringResponse = response.body?.string() ?: ""
-                val jsonStringResponse = JSONObject(stringResponse)
-                Log.w(TAG, jsonStringResponse.getString("jwt"))
-                val authInfo = Json.decodeFromString<AuthInfo>(stringResponse)
-                jwt = authInfo.jwt.also { Log.w(TAG, "jwt: $it") }
-                userId = authInfo.user_id.also { Log.w(TAG, "userId: $it") }
-
-                val auth = arrayOf(jwt, userId)
-                val isConfirmed = jsonStringResponse.getBoolean("confirmed")
-                success.run(auth, isConfirmed)
-            } else {
-                Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
-                error.run()
+        val deferred: CompletableDeferred<AuthInfo> = CompletableDeferred()
+        client.newCall(request).enqueue(object: Callback {
+            override fun onResponse(call: Call, response: Response) {
+                val stringResponse = response.body?.string()
+                if (response.isSuccessful && stringResponse != null) {
+                    deferred.complete(Json.decodeFromString(stringResponse))
+                } else {
+                    Log.e(TAG, "Got [${response.code}] from server with <$url>.")
+                    deferred.complete(AuthInfo("", "", false, wasFailed = true))
+                }
             }
-        }
+            override fun onFailure(call: Call, e: IOException) {
+                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$url>.")
+                deferred.complete(AuthInfo("", "", false, wasFailed = true))
+            }
+        })
+        deferred.await()
     }
 
     fun sendReg(
@@ -249,27 +243,26 @@ class HTTPRequests(
 
     }
 
-    fun getDeviceConfig(configId: Long, ): String? {
-        var deviceStringConfig: String? = null
-        val saveConfig: (String) -> Unit = {
-            deviceStringConfig = it
-        }
+    fun getDeviceConfig(configId: Long): String = runBlocking {
         val url = "${context.getString(R.string.base_url)}/devices/types?id=$configId&token=$jwt"
         val request = Request.Builder().url(url).get().build()
+        val deferred: CompletableDeferred<String> = CompletableDeferred()
         client.newCall(request).enqueue(object: Callback {
             override fun onResponse(call: Call, response: Response) {
+                val config = response.body?.string()
                 if (response.isSuccessful && response.body != null) {
-                    saveConfig(response.body!!.string())
+                    deferred.complete(config ?: "")
                 } else {
                     Log.e(TAG, "Got [${response.code}] from server with <$url>.")
+                    deferred.complete("")
                 }
             }
             override fun onFailure(call: Call, e: IOException) {
                 Log.e(TAG, "Got [${e.localizedMessage}] from server with <$url>.")
+                deferred.complete("")
             }
         })
-
-        return deviceStringConfig
+        deferred.await()
     }
 
     companion object {

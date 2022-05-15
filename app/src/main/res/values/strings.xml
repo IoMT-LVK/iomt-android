@@ -36,6 +36,8 @@
     <string name="create_account">Создать аккаунт</string>
     <string name="error_bluetooth_not_supported">Bluetooth не поддерживается на вашем устройстве</string>
     <string name="base_url">https://iomt.lvk.cs.msu.ru</string>
+    <string name="base_uri">tcp://iomt.lvk.cs.msu.ru</string>
+    <string name="mqtt_port">8883</string>
     <string name="login_text">Войти</string>
 
 </resources>

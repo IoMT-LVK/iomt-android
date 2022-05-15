@@ -1,16 +1,11 @@
 package com.iomt.android.config
 
-import kotlinx.serialization.decodeFromString
-
 import com.akuleshov7.ktoml.Toml
 import com.akuleshov7.ktoml.TomlConfig
 import com.iomt.android.config.configs.CharacteristicConfig
 import com.iomt.android.config.configs.DeviceConfig
 import com.iomt.android.config.configs.GeneralConfig
 import kotlinx.serialization.serializer
-import java.io.File
-import java.net.URL
-
 
 class ConfigParser {
     private val tomlConfig = TomlConfig(
@@ -30,8 +25,9 @@ class ConfigParser {
     override fun toString(): String =
         tomlLines.joinToString(separator = "\n")
 
-    fun parseFromString(tomlString: String) {
+    fun parseFromString(tomlString: String): DeviceConfig {
         tomlLines = tomlString.split("\n")
+        return parse()
     }
 
     fun parse(): DeviceConfig =

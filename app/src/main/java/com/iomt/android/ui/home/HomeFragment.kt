@@ -33,6 +33,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.iomt.android.*
+import com.iomt.android.config.ConfigParser
+import com.iomt.android.config.configs.DeviceConfig
 import java.util.*
 
 /**
@@ -50,7 +52,9 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private var deviceInfos: List<DeviceInfo> = ArrayList()
     private val builder = GsonBuilder()
     private val gson = builder.create()
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private var config: DeviceConfig? = null
+    private val configParser = ConfigParser()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
@@ -158,6 +162,8 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
                 }
             }
         }
+        val configString = httpRequests!!.getDeviceConfig(1)
+        config = configParser.parseFromString(configString)
 //        checkPermissions()
         httpRequests!!.getDevices(actionCells)
         return view
@@ -193,31 +199,6 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    //    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    //    private BluetoothAdapter.LeScanCallback mLeScanCallback1 =
-    //            new BluetoothAdapter.LeScanCallback() {
-    //                @Override
-    //                public void onLeScan(final BluetoothDevice device, int rssi,
-    //                                     byte[] scanRecord) {
-    //                    requireActivity().runOnUiThread(() -> {
-    //                        Log.d("BT", device.getName());
-    //                        if (device.getName() != null && device.getName().startsWith("HX")) {
-    //                            boolean found = false;
-    //                            for (DeviceCell d : deviceCells) {
-    //                                if (d.getDevice().getName().equals(device.getName())) {
-    //                                    found = true;
-    //                                    break;
-    //                                }
-    //                            }
-    //
-    //                            if(!found) {
-    //                                deviceCells.add(new DeviceCell(device));
-    //                                myAdapter.notifyDataSetChanged();
-    //                            }
-    //                        }
-    //                    });
-    //                }
-    //            };
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private val mLeScanCallback: ScanCallback = object : ScanCallback() {
         private val TAG = ScanCallback::class.java.toString()
@@ -227,8 +208,9 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
                 val isInSavedDeviceList = deviceInfos.any { it.name == device.name && it.address == device.address }
                 val isAlreadyPresent = deviceCells.any { it.device.address == device.address }
                 // TODO: should filter devices in a smart way
-                val isHexoskin = device.name.startsWith("HX")
-                if (!isInSavedDeviceList && !isAlreadyPresent && isHexoskin) {
+                Log.w("CONFIG", result.device.name)
+                val isConfigured = result.device.name.matches((config?.general?.nameRegex ?: "").toRegex())
+                if (!isInSavedDeviceList && !isAlreadyPresent && isConfigured) {
                     Log.d(TAG, "New device found: ${device.name} (${device.type})")
                     deviceCells.add(DeviceCell(device))
                     myAdapter!!.notifyDataSetChanged()
@@ -288,6 +270,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         // Show Device Detail
         val intent = Intent(activity, DeviceActivity::class.java)
         intent.putExtra("Device", device)
+        intent.putExtra("deviceConfig", configParser.toString())
         startActivity(intent)
     }
 
@@ -297,8 +280,8 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100
         private const val BLUETOOTH_PERMISSION_REQUEST_CODE = 9999
 
-        // Stops scanning after 10 seconds.
-        private const val SCAN_PERIOD: Long = 10000
+        // Stops scanning after 60 seconds.
+        private const val SCAN_PERIOD: Long = 60000
         private val TAG = this::class.java.toString()
     }
 }

@@ -14,7 +14,7 @@ import java.util.*
 
 class SenderService(ctx: Context, mdelay: Int) {
     private val TAG = "SenderService"
-    private val url = "tcp://iomt.lvk.cs.msu.su:8883"
+    private val url = "tcp://iomt.lvk.cs.msu.ru:8883"
     private var dbhelper: DatabaseHelper? = null
     private val handler: Handler = Handler(Looper.getMainLooper())
     private val delay: Int = mdelay

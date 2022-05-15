@@ -7,8 +7,13 @@
         <entry key="..\:/Users/lxf/AndroidStudioProjects/iomt-android-test/app/src/main/res/layout/app_bar_device.xml" value="0.228125" />
         <entry key="..\:/Users/lxf/AndroidStudioProjects/iomt-android-test/app/src/main/res/layout/content_device.xml" value="0.228125" />
         <entry key="..\:/Users/lxf/AndroidStudioProjects/iomt-android-test/app/src/main/res/layout/fragment_device.xml" value="0.228125" />
+        <entry key="app/src/main/res/drawable/battery.xml" value="0.18" />
+        <entry key="app/src/main/res/layout/activity_device.xml" value="0.15520833333333334" />
         <entry key="app/src/main/res/layout/activity_device_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/app_bar_device.xml" value="0.15520833333333334" />
+        <entry key="app/src/main/res/layout/content_device.xml" value="0.15520833333333334" />
         <entry key="app/src/main/res/layout/content_device_list.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_device.xml" value="0.15520833333333334" />
       </map>
     </option>
   </component>
