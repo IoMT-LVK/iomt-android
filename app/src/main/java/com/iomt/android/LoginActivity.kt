@@ -1,9 +1,8 @@
 package com.iomt.android
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
@@ -49,23 +48,18 @@ class LoginActivity : AppCompatActivity() {
         val login = loginText.text.toString()
         val password = passwordText.text.toString()
         val httpRequests = HTTPRequests(this)
-        val success = SuccessAction { args: Array<String?>?, confirmed: Boolean ->
-            if (!confirmed) {
-                val intent = Intent(applicationContext, EmailConf::class.java)
-                startActivity(intent)
-            } else {
-                jwt = args!![0].also { Log.w(TAG, "jwt=$it") }
-                userId = args[1].also { Log.w(TAG, "userId=$userId") }
-                Log.d(TAG, "$jwt $userId")
-                Handler(Looper.getMainLooper()).postDelayed(
-                    {
-                        onLoginSuccess()
-                        progressBar.visibility = ProgressBar.INVISIBLE
-                    }, 1000
-                )
-            }
+        val authInfo = httpRequests.sendLogin(login, password)
+        if (authInfo.wasFailed) {
+            onLoginFailed()
+        } else if (!authInfo.confirmed) {
+            val intent = Intent(applicationContext, EmailConf::class.java)
+            startActivity(intent)
+        } else {
+            jwt = authInfo.jwt
+            userId = authInfo.user_id
+            onLoginSuccess()
+            progressBar.visibility = ProgressBar.INVISIBLE
         }
-        httpRequests.sendLogin(login, password, success) { runOnUiThread { onLoginFailed() } }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -84,6 +78,14 @@ class LoginActivity : AppCompatActivity() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)
         val intent = Intent(this, DeviceListActivity::class.java)
+        val pref = getSharedPreferences(
+            baseContext.getString(R.string.ACC_DATA),
+            Context.MODE_PRIVATE
+        )
+        pref.edit().apply {
+            putString("JWT", jwt)
+            putString("UserId", userId)
+        }.apply()
         intent.putExtra("JWT", jwt)
         intent.putExtra("UserId", userId)
         startActivity(intent)
@@ -115,13 +117,6 @@ class LoginActivity : AppCompatActivity() {
         return valid
     }
 
-    /**
-     * public boolean check_jwt() {
-     * try {
-     * SharedPreferences prefs = getSharedPreferences(this.getString(R.string.jwt), MODE_PRIVATE);
-     * String jwt = prefs.getString("jwt", "");
-     * }
-     * } */
     companion object {
         private const val TAG = "LoginActivity"
         private const val REQUEST_SIGNUP = 0

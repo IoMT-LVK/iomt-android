@@ -79,14 +79,7 @@ class BLESearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
         }
     }
 
-    private fun getType(d: BluetoothDevice): String? {
-        for (i in devTypes) {
-            if (d.name.startsWith(i.prefix)) {
-                return i.device_type
-            }
-        }
-        return null
-    }
+    private fun getType(d: BluetoothDevice): String? = devTypes.find { d.name.startsWith(it.prefix) }?.device_type
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -128,23 +121,16 @@ class BLESearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private val mLeScanCallback: ScanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
+            Log.d("FOUND DEVICE", result.device.name)
             if (result.device.name != null) {
-                Log.d("FOUND DEVICE", result.device.name)
                 val type = getType(result.device)
-                if (type != null) {
-                    var found = false
-                    for (d in deviceCells) {
-                        if (d.device.name == result.device.name) {
-                            found = true
-                            break
-                        }
-                    }
-                    if (!found) {
-                        Log.d("ADD DEVICE", result.device.name)
+//                if (type != null) {
+                    deviceCells.find { it.device.name == result.device.name } ?: run {
                         deviceCells.add(DeviceCell(result.device))
+                        Log.d("ADD DEVICE", result.device.name)
                         myAdapter!!.notifyDataSetChanged()
                     }
-                }
+//                }
             }
         }
     }
@@ -177,10 +163,10 @@ class BLESearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
         }
         if (!found) {
             httpRequests.sendDevice(deviceInfo)
-            val stringDeviceConfig = httpRequests.getDeviceConfig(1)
-            configParser.parseFromString(stringDeviceConfig ?: "")
-            configParser.parse()
-            Log.w(TAG, configParser.toString())
+//            val stringDeviceConfig = httpRequests.getDeviceConfig(1)
+//            configParser.parseFromString(stringDeviceConfig ?: "")
+//            configParser.parse()
+//            Log.w(TAG, configParser.toString())
         }
         finish()
     }

@@ -9,11 +9,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.iomt.android.*
+import com.iomt.android.config.ConfigParser
+import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.entities.Characteristic
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.json.JSONObject
@@ -24,28 +28,26 @@ import kotlin.experimental.and
 
 class DeviceFragment : Fragment() {
     private var gatt: BluetoothGatt? = null
-    private val adapter: CharAdapter? = null
     private var mqttAndroidClient: MqttAndroidClient? = null
     private var db: DatabaseHelper? = null
     private val data = Collections.synchronizedList(ArrayList<CharCell>())
+    private var senderService: SenderService? = null
     private var devStatus: TextView? = null
-    private var heartRate: TextView? = null
-    private var respRate: TextView? = null
-    private var inspRate: TextView? = null
-    private var expRate: TextView? = null
-    private var stepsCount: TextView? = null
-    private var activityRate: TextView? = null
-    private var cadence: TextView? = null
     private var devName: TextView? = null
     private var devStPict: ImageView? = null
-    private var senderService: SenderService? = null
+    private lateinit var deviceConfig: DeviceConfig
+    private var inspRate: TextView? = null
+    private var expRate: TextView? = null
+
+    private val characteristics: MutableMap<String, Characteristic> = mutableMapOf()
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val period10Minutes = 10
-        val periodInMiliseconds = period10Minutes * 60 * 1000
-        senderService = SenderService(requireContext(), periodInMiliseconds)
-        mqttAndroidClient = MqttAndroidClient(requireContext(), "tcp://iomt.lvk.cs.msu.su:8883", "")
+        val periodInMilliseconds = period10Minutes * 60 * 1000
+        senderService = SenderService(requireContext(), periodInMilliseconds)
+        mqttAndroidClient = MqttAndroidClient(requireContext(), "${R.string.base_uri}:${R.string.mqtt_port}", "")
         mqttAndroidClient!!.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable) {
                 Log.d(TAG, "Connection was lost!")
@@ -61,6 +63,40 @@ class DeviceFragment : Fragment() {
         })
     }
 
+    private fun getIcon(charName: String): ImageView =
+        ImageView(context).apply {
+            setBackgroundResource(R.drawable.circular_grey_bordersolid)
+            when (charName) {
+                "heartRate" -> R.drawable.heart
+                "inspRate", "inspirationRate" -> R.drawable.insp
+                "expRate", "expirationRate" -> R.drawable.exp
+                "steps", "stepsCount" -> R.drawable.steps
+                "activity", "activityRate" -> R.drawable.act
+                "cadence" -> R.drawable.cadence
+                "battery", "batteryRate" -> R.drawable.battery
+                else -> R.drawable.circular_grey_bordersolid
+            }.let {
+                setImageResource(it)
+            }
+            maxWidth = 50
+            maxHeight = 50
+        }
+
+    private fun createCellLayout(charName: String, prettyCharName: String): Pair<LinearLayout, TextView> {
+        val charNameBadge = TextView(context).apply { text = prettyCharName }
+        val valueBadge = TextView(context)
+        val innerLayout = LinearLayout(context).apply {
+            addView(charNameBadge)
+            addView(valueBadge)
+        }
+        val icon = getIcon(charName)
+        val linearLayout = LinearLayout(context).apply {
+            addView(icon)
+            addView(innerLayout)
+        }
+        return linearLayout to valueBadge
+    }
+
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,6 +106,9 @@ class DeviceFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_device, container, false)
         setHasOptionsMenu(true)
         //val toolbar = view.findViewById<View>(R.id.toolbar_dev) as Toolbar
+
+        val configString: String = requireActivity().intent.getStringExtra("deviceConfig")!!
+        deviceConfig = ConfigParser().parseFromString(configString)
         val device = requireActivity().intent.getParcelableExtra<BluetoothDevice>("Device")
         (activity as AppCompatActivity).supportActionBar?.title = device?.name
         val editor = requireContext().getSharedPreferences(
@@ -78,18 +117,27 @@ class DeviceFragment : Fragment() {
         ).edit()
         editor.putString("DeviceId", device?.address)
         editor.apply()
+
+        when(deviceConfig.general.type) {
+            "Vest" -> R.drawable.hexoskin
+            "Band" -> R.drawable.band_icon
+            else -> R.drawable.circular_grey_bordersolid
+        }.let {
+            view.findViewById<ImageView>(R.id.deviceIcon)?.setImageResource(it)
+        }
+
+        val containerLayout: LinearLayout = view.findViewById(R.id.data_container)
+        deviceConfig.general.characteristicNames.forEach { name ->
+            val (layout, textView) = createCellLayout(name, deviceConfig.characteristics[name]?.name ?: "")
+            containerLayout.addView(layout)
+            characteristics[name] = Characteristic(textView)
+        }
+
         devStatus = view.findViewById(R.id.text_status)
-        heartRate = view.findViewById(R.id.text_heart)
-        respRate = view.findViewById(R.id.text_resp)
-        inspRate = view.findViewById(R.id.text_insp)
-        expRate = view.findViewById(R.id.text_exp)
-        stepsCount = view.findViewById(R.id.text_steps)
-        activityRate = view.findViewById(R.id.text_act)
-        cadence = view.findViewById(R.id.text_cad)
         devName = view.findViewById(R.id.device_name)
         devStPict = view.findViewById(R.id.device_st)
         devName?.text = device?.name
-        devStatus?.text = "Подкоючение"
+        devStatus?.text = "Подключение"
         db = DatabaseHelper(requireContext())
         gatt = device?.connectGatt(requireContext(), true, mCallback)
         return view
@@ -98,7 +146,7 @@ class DeviceFragment : Fragment() {
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun onDestroy() {
         super.onDestroy()
-        gatt!!.close()
+        gatt?.close()
     }
 
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -108,21 +156,17 @@ class DeviceFragment : Fragment() {
             super.onConnectionStateChange(gatt, status, newState)
             requireActivity().runOnUiThread {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
-                    devStatus!!.text = "Подключено"
-                    devStPict!!.setImageResource(R.drawable.blt)
-                    this@DeviceFragment.gatt!!.discoverServices()
-                    senderService!!.start()
+                    devStatus?.text = "Подключено"
+                    devStPict?.setImageResource(R.drawable.blt)
+                    this@DeviceFragment.gatt?.discoverServices()
+                    senderService?.start()
                 } else {
-                    devStatus!!.text = "Отключено"
-                    devStPict!!.setImageResource(R.drawable.nosig)
-                    senderService!!.stop()
-                    heartRate!!.text = ""
-                    respRate!!.text = ""
-                    inspRate!!.text = ""
-                    expRate!!.text = ""
-                    stepsCount!!.text = ""
-                    activityRate!!.text = ""
-                    cadence!!.text = ""
+                    devStatus?.text = "Отключено"
+                    devStPict?.setImageResource(R.drawable.nosig)
+                    senderService?.stop()
+                    characteristics.forEach { (charName, characteristic) ->
+                        characteristic.textView.text = ""
+                    }
                 }
             }
         }
@@ -130,42 +174,51 @@ class DeviceFragment : Fragment() {
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 // Listen for Heart Rate notification
-                val heartRateService = gatt.getService(HEART_RATE_MEASUREMENT_SERVICE_UUID)
-                val heartRateCharacteristic = heartRateService.getCharacteristic(HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID)
-                gatt.setCharacteristicNotification(heartRateCharacteristic, true)
-                val descriptor = heartRateCharacteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
-                descriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                gatt.writeDescriptor(descriptor)
+                deviceConfig.characteristics.map { (charName, config) ->
+                    characteristics[charName]?.bluetoothGattService = gatt.getService(UUID.fromString(config.serviceUUID))
+                        .also { service ->
+                            characteristics[charName]?.bluetoothGattCharacteristic = service.getCharacteristic(UUID.fromString(config.characteristicUUID))
+                                .also { characteristic ->
+                                    gatt.setCharacteristicNotification(characteristic, true)
+                                    characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
+                                        .let {
+                                            it.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                                            gatt.writeDescriptor(it)
+                                        }
+                                }
+                        }
+
+                }
             }
         }
 
-        override fun onDescriptorWrite(
-            gatt: BluetoothGatt,
-            descriptor: BluetoothGattDescriptor,
-            status: Int
-        ) {
-            if (descriptor.characteristic.uuid == HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID) {
-                // Listen for Respiration Rate notification
-                val respSvc = gatt.getService(RESPIRATION_SERVICE_UUID)
-                val respChar = respSvc.getCharacteristic(
-                    RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID
-                )
-                gatt.setCharacteristicNotification(respChar, true)
-                val respDescriptor = respChar.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
-                respDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                gatt.writeDescriptor(respDescriptor)
-            } else if (descriptor.characteristic.uuid == RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID) {
-                //Listen for Accelerometer notification
-                val accSvc = gatt.getService(ACCELEROMETER_SERVICE_UUID)
-                val accChar = accSvc.getCharacteristic(
-                    ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID
-                )
-                gatt.setCharacteristicNotification(accChar, true)
-                val accDescriptor = accChar.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
-                accDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                gatt.writeDescriptor(accDescriptor)
-            }
-        }
+//        override fun onDescriptorWrite(
+//            gatt: BluetoothGatt,
+//            descriptor: BluetoothGattDescriptor,
+//            status: Int
+//        ) {
+//            if (descriptor.characteristic.uuid == HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID) {
+//                // Listen for Respiration Rate notification
+//                val respSvc = gatt.getService(RESPIRATION_SERVICE_UUID)
+//                val respChar = respSvc.getCharacteristic(
+//                    RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID
+//                )
+//                gatt.setCharacteristicNotification(respChar, true)
+//                val respDescriptor = respChar.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
+//                respDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+//                gatt.writeDescriptor(respDescriptor)
+//            } else if (descriptor.characteristic.uuid == RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID) {
+//                //Listen for Accelerometer notification
+//                val accSvc = gatt.getService(ACCELEROMETER_SERVICE_UUID)
+//                val accChar = accSvc.getCharacteristic(
+//                    ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID
+//                )
+//                gatt.setCharacteristicNotification(accChar, true)
+//                val accDescriptor = accChar.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
+//                accDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+//                gatt.writeDescriptor(accDescriptor)
+//            }
+//        }
 
         private fun changeHeartRateLabel(heartRateCharacteristic: BluetoothGattCharacteristic) {
             val data = heartRateCharacteristic.value
@@ -176,7 +229,8 @@ class DeviceFragment : Fragment() {
                 BluetoothGattCharacteristic.FORMAT_UINT16
             }
             val heartRate = heartRateCharacteristic.getIntValue(format, 1)
-            this@DeviceFragment.heartRate!!.text = heartRate.toString()
+            characteristics["heartRate"]?.textView?.text = heartRate.toString()
+            characteristics["heartRate"]?.isUpdated = true
         }
 
         private fun changeRespirationRateLabel(respirationRateCharacteristic: BluetoothGattCharacteristic) {
@@ -188,10 +242,11 @@ class DeviceFragment : Fragment() {
                 BluetoothGattCharacteristic.FORMAT_UINT16
             }
             val respRate = respirationRateCharacteristic.getIntValue(format, 1)
-            this@DeviceFragment.respRate!!.text = respRate.toString()
+            characteristics["respRate"]?.textView?.text = respRate.toString()
+//            this@DeviceFragment.respRate!!.text = respRate.toString()
             val isInspExpPresent = flag and 0x02 != 0.toByte()
-            inspRate!!.text = ""
-            expRate!!.text = ""
+            inspRate?.text = ""
+            expRate?.text = ""
             if (isInspExpPresent) {
                 val startOffset =
                     1 + if (format == BluetoothGattCharacteristic.FORMAT_UINT8) 1 else 2
@@ -213,8 +268,10 @@ class DeviceFragment : Fragment() {
                     }
                     i += 2
                 }
-                inspRate!!.text = inspStringBuilder.toString()
-                expRate!!.text = expStringBuilder.toString()
+                characteristics["inspRate"]?.textView?.text = inspStringBuilder.toString()
+                characteristics["expRate"]?.textView?.text = inspStringBuilder.toString()
+//                inspRate!!.text = inspStringBuilder.toString()
+//                expRate!!.text = expStringBuilder.toString()
             }
         }
 
@@ -228,17 +285,20 @@ class DeviceFragment : Fragment() {
             val isCadencePresent = flag and 0x04 != 0.toByte()
             if (isStepCountPresent) {
                 val stepCount = accelerometerCharacteristic.getIntValue(format, dataIndex)
-                stepsCount!!.text = stepCount.toString()
+                characteristics["stepsCount"]?.textView?.text = stepCount.toString()
+//                stepsCount?.text = stepCount.toString()
                 dataIndex += 2
             }
             if (isActivityPresent) {
                 val activity = accelerometerCharacteristic.getIntValue(format, dataIndex) / 256.0f
-                this@DeviceFragment.activityRate!!.text = activity.toString()
+//                this@DeviceFragment.activityRate!!.text = activity.toString()
+                characteristics["activityRate"]?.textView?.text = activity.toString()
                 dataIndex += 2
             }
             if (isCadencePresent) {
                 val cadence = accelerometerCharacteristic.getIntValue(format, dataIndex)
-                this@DeviceFragment.cadence!!.text = cadence.toString()
+                characteristics["cadence"]?.textView?.text = cadence.toString()
+//                this@DeviceFragment.cadence!!.text = cadence.toString()
             }
         }
 
@@ -247,59 +307,78 @@ class DeviceFragment : Fragment() {
             characteristic: BluetoothGattCharacteristic
         ) {
             requireActivity().runOnUiThread {
-                when (characteristic.uuid) {
-                    HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID -> changeHeartRateLabel(characteristic)
-                    RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID -> changeHeartRateLabel(characteristic)
-                    ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID -> changeAccelerometerLabel(characteristic)
+                deviceConfig.characteristics.filter { (charName, config) ->
+                    UUID.fromString(config.characteristicUUID) == characteristic.uuid
                 }
+                    .map { it.key }
+                    .first()
+                    .let {
+                        when(it) {
+                            "heartRate" -> changeHeartRateLabel(characteristic)
+                            else -> throw NotImplementedError("Not implemented yet")
+                        }
+                    }
+//                when (characteristic.uuid) {
+//                    HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID -> changeHeartRateLabel(characteristic)
+//                    RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID -> changeRespirationRateLabel(characteristic)
+//                    ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID -> changeAccelerometerLabel(characteristic)
+//                }
                 //Heart Rate Received
                 val dfDateAndTime: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
                 val milliseconds: DateFormat = SimpleDateFormat("SSS", Locale.US)
                 val now = Date()
                 val myDate = dfDateAndTime.format(now)
                 val millis = milliseconds.format(now)
-                val result = JSONObject()
-                try {
-                    var value = heartRate!!.text.toString()
-                    result.put(
-                        "HeartRate",
-                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-                    )
-                    value = stepsCount!!.text.toString()
-                    result.put(
-                        "Steps",
-                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-                    )
-                    value = activityRate!!.text.toString()
-                    result.put(
-                        "Activity",
-                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
-                    )
-                    value = cadence!!.text.toString()
-                    result.put(
-                        "Cadence",
-                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-                    )
-                    result.put("Clitime", myDate)
-                    result.put("Millisec", Integer.valueOf(millis))
-                    value = respRate!!.text.toString()
-                    result.put(
-                        "RespRate",
-                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-                    )
-                    value = inspRate!!.text.toString()
-                    result.put(
-                        "Insp",
-                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
-                    )
-                    value = expRate!!.text.toString()
-                    result.put(
-                        "Exp",
-                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
-                    )
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
+                val result = JSONObject().apply {
+                    put("Clitime", myDate)
+                    put("Millisec", Integer.valueOf(millis))
                 }
+                characteristics.filter { (charName, characteristic) ->
+                    characteristic.isUpdated
+                }.forEach { (charName, characteristic) ->
+                    result.put(charName, Integer.valueOf(characteristic.textView.text.toString()))
+                }
+//                try {
+//                    var value = heartRate!!.text.toString()
+//                    result.put(
+//                        "HeartRate",
+//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
+//                    )
+//                    value = stepsCount!!.text.toString()
+//                    result.put(
+//                        "Steps",
+//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
+//                    )
+//                    value = activityRate!!.text.toString()
+//                    result.put(
+//                        "Activity",
+//                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
+//                    )
+//                    value = cadence!!.text.toString()
+//                    result.put(
+//                        "Cadence",
+//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
+//                    )
+//                    result.put("Clitime", myDate)
+//                    result.put("Millisec", Integer.valueOf(millis))
+//                    value = respRate!!.text.toString()
+//                    result.put(
+//                        "RespRate",
+//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
+//                    )
+//                    value = inspRate!!.text.toString()
+//                    result.put(
+//                        "Insp",
+//                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
+//                    )
+//                    value = expRate!!.text.toString()
+//                    result.put(
+//                        "Exp",
+//                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
+//                    )
+//                } catch (ex: Exception) {
+//                    ex.printStackTrace()
+//                }
                 Log.d(TAG, result.toString())
                 Log.d(TAG, db!!.insertNote(result).toString())
                 Log.d(TAG, db!!.notesCount.toString())
