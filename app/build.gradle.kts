@@ -3,6 +3,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("android.extensions")
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.1"
 }
 
 android {
@@ -74,4 +75,12 @@ repositories {
 
 configurations.all {
     resolutionStrategy { force("androidx.core:core-ktx:1.6.0") }
+}
+
+diktat {
+    inputs {
+        include("src/**/*.kt")
+        exclude("src/test/**", "src/androidTest/**")
+    }
+    debug = true
 }
