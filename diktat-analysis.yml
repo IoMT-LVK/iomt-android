@@ -1,10 +1,10 @@
 - name: DIKTAT_COMMON
   enabled: true
   configuration:
-    domainName: com.saveourtool.save
+    domainName: com.iomt.android
     kotlinVersion: 1.7
-    srcDirectories: "main,nativeMain,linuxX64Main"
-    testDirs: "test,nativeTest,linuxX64Test,jvmTest"
+    srcDirectories: "main"
+    testDirs: "test,androidTest"
 - name: ENUM_VALUE
   enabled: true
   configuration:
