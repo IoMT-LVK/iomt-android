@@ -8,7 +8,6 @@ plugins {
 
 android {
     compileSdkVersion(29)
-    buildToolsVersion("29.0.2")
     defaultConfig {
         applicationId = "com.iomt.android"
         minSdkVersion(21)
@@ -79,7 +78,8 @@ configurations.all {
 
 diktat {
     inputs {
-        include("src/**/*.kt")
+//        include("src/**/*.kt")
+        include("src/**/SignupActivity.kt", "src/**/SenderService.kt", "src/**/Requests.kt")
         exclude("src/test/**", "src/androidTest/**")
     }
     debug = true

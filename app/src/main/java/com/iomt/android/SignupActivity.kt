@@ -12,9 +12,9 @@ import androidx.appcompat.app.AppCompatActivity
 import java.util.*
 
 class SignupActivity : AppCompatActivity() {
-    private var mYear = 0
-    private var mMonth = 0
-    private var mDay = 0
+    private var year = 0
+    private var month = 0
+    private var day = 0
 
     private lateinit var progressBar: ProgressBar
     private lateinit var nameText: EditText
@@ -59,22 +59,23 @@ class SignupActivity : AppCompatActivity() {
 
     private fun callDatePicker() {
         val cal = Calendar.getInstance()
-        if (mYear == 0) {
-            mYear = cal[Calendar.YEAR]
-            mMonth = cal[Calendar.MONTH]
-            mDay = cal[Calendar.DAY_OF_MONTH]
+        if (year == 0) {
+            year = cal[Calendar.YEAR]
+            month = cal[Calendar.MONTH]
+            day = cal[Calendar.DAY_OF_MONTH]
         }
-        val datePickerDialog = DatePickerDialog(this,
+        val datePickerDialog = DatePickerDialog(
+            this,
             R.style.MySpinnerDatePickerStyle,
-            { _, year, monthOfYear, dayOfMonth ->
+            { _, currentYear, monthOfYear, dayOfMonth ->
                 val zm = if (monthOfYear + 1 >= 10) "" else "0"
                 val zd = if (dayOfMonth >= 10) "" else "0"
-                val editTextDateParam = zd + dayOfMonth + "." + zm + (monthOfYear + 1) + "." + year
+                val editTextDateParam = "$zd$dayOfMonth.$zm${monthOfYear + 1}.$currentYear"
                 birthdateText.setText(editTextDateParam)
-                mYear = year
-                mMonth = monthOfYear
-                mDay = dayOfMonth
-            }, mYear, mMonth, mDay
+                year = currentYear
+                month = monthOfYear
+                day = dayOfMonth
+            }, year, month, day
         )
         datePickerDialog.show()
     }
@@ -82,27 +83,29 @@ class SignupActivity : AppCompatActivity() {
     private fun signup() {
         Log.d(TAG, "Signup")
         if (!validate()) {
-            onSignupFailed("")
+            onSignupFailed("Validation failed.")
             return
         }
         signupButton.isEnabled = false
         progressBar.isIndeterminate = true
         progressBar.visibility = ProgressBar.VISIBLE
-        val name = nameText.text.toString()
-        val surname = surnameText.text.toString()
-        val patronymic = patronymicText.text.toString()
-        val birthdate = birthdateText.text.toString()
-        val email = emailText.text.toString()
-        val mobile = mobileText.text.toString()
-        val login = loginText.text.toString()
-        val password = passwordText.text.toString()
-        val successAction = Action { args: Array<String?>? ->
+        Requests(this).sendReg(
+            nameText.text.toString(),
+            surnameText.text.toString(),
+            patronymicText.text.toString(),
+            birthdateText.text.toString(),
+            emailText.text.toString(),
+            mobileText.text.toString(),
+            loginText.text.toString(),
+            passwordText.text.toString(),
+            { runOnUiThread {  onSignupFailed("") } }
+        ) { args: Array<String?>? ->
             runOnUiThread {
                 Handler(Looper.getMainLooper()).postDelayed(
                     {
-                        assert(args!![0] != null)
-                        if (args[0]!!.isNotEmpty()) {
-                            onSignupFailed(args[0])
+                        val arg = requireNotNull(args?.get(0))
+                        if (arg.isNotEmpty()) {
+                            onSignupFailed(arg)
                         } else {
                             onSignupSuccess()
                         }
@@ -111,20 +114,6 @@ class SignupActivity : AppCompatActivity() {
                 )
             }
         }
-        val errorAction = ErrorAction { runOnUiThread {  onSignupFailed("") } }
-        val httpRequests = HTTPRequests(this)
-        httpRequests.sendReg(
-            name,
-            surname,
-            patronymic,
-            birthdate,
-            email,
-            mobile,
-            login,
-            password,
-            successAction,
-            errorAction
-        )
     }
 
     private fun onSignupSuccess() {
@@ -136,94 +125,99 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun onSignupFailed(err: String?) {
-        Toast.makeText(baseContext, "Не удалось зарегистрировать", Toast.LENGTH_LONG).show()
+        Toast.makeText(baseContext, COULD_NOT_SIGNUP_ERROR_TEXT, Toast.LENGTH_LONG).show()
         signupButton.isEnabled = true
         if (err == "email") {
-            emailText.error = "Этот e-mail занят"
+            emailText.error = EMAIL_IS_BUSY_ERROR_TEXT
         } else if (err == "login") {
-            loginText.error = "Этот логин занят"
+            loginText.error = LOGIN_IS_BUSY_ERROR_TEXT
+        }
+    }
+
+    private fun validateName() = validateStringForm(nameText, NAME_ERROR_TEXT)
+    private fun validateSurname() = validateStringForm(surnameText, SURNAME_ERROR_TEXT)
+    private fun validatePatronymic() = validateStringForm(patronymicText, PATRONYMIC_ERROR_TEXT)
+
+    private fun validateBirthdate() = validateStringForm(birthdateText, NO_BIRTHDAY_ERROR_TEXT) {
+        it.isEmpty()
+    }
+
+    private fun validateBirthday(year: Int, month: Int, day: Int): Boolean {
+        val calendar = Calendar.getInstance()
+        val calYear = calendar[Calendar.YEAR]
+        val calMonth = calendar[Calendar.MONTH]
+        val calDay = calendar[Calendar.DAY_OF_MONTH]
+        return if (
+            year == 0 ||
+            year > calYear ||
+            year == calYear && month > calMonth ||
+            year == calYear && month == calMonth && day > calDay
+        ) {
+            birthdateText.error = BIRTHDAY_ERROR_TEXT
+            false
+        } else {
+            birthdateText.error = null
+            true
+        }
+    }
+
+    private fun validateLogin() = validateStringForm(loginText, LOGIN_ERROR_TEXT)
+
+    private fun validateEmail() = validateStringForm(emailText, EMAIL_ERROR_TEXT) {
+        it.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(it).matches()
+    }
+
+    private fun validatePhoneNumber() =  validateStringForm(mobileText, PHONE_NUMBER_ERROR_TEXT) {
+        it.length != 11
+    }
+
+    private fun validatePasswords(): Boolean = validateStringForm(passwordText, PASSWORD_ERROR_TEXT) {
+            it.length < 4 || it.length > 14
+        } && validateStringForm(reEnterPasswordText, SECOND_PASSWORD_ERROR_TEXT) {
+            it.length < 4 || it.length > 14
+        }
+
+    private fun validateStringForm(
+        form: EditText,
+        errorText: String,
+        isInvalidFunc: (String) -> Boolean = { it.length < 2 },
+    ) = form.text.toString().let { textFromForm ->
+        if (isInvalidFunc(textFromForm)) {
+            form.error = errorText
+            false
+        } else {
+            form.error = null
+            true
         }
     }
 
     private fun validate(): Boolean {
-        var valid = true
-        val cal = Calendar.getInstance()
-        val year = cal[Calendar.YEAR]
-        val month = cal[Calendar.MONTH]
-        val day = cal[Calendar.DAY_OF_MONTH]
-        val name = nameText.text.toString()
-        val surname = surnameText.text.toString()
-        val patronymic = patronymicText.text.toString()
-        val birthdate = birthdateText.text.toString()
-        val email = emailText.text.toString()
-        val mobile = mobileText.text.toString()
-        val login = loginText.text.toString()
-        val password = passwordText.text.toString()
-        val reEnterPassword = reEnterPasswordText.text.toString()
-        if (name.isEmpty() || name.length < 2) {
-            nameText.error = "Не менее 2 символов"
-            valid = false
-        } else {
-            nameText.error = null
-        }
-        if (surname.isEmpty() || surname.length < 2) {
-            surnameText.error = "Не менее 2 символов"
-            valid = false
-        } else {
-            surnameText.error = null
-        }
-        if (patronymic.isEmpty() || patronymic.length < 2) {
-            patronymicText.error = "Не менее 2 символов"
-            valid = false
-        } else {
-            patronymicText.error = null
-        }
-        if (birthdate.isEmpty()) {
-            birthdateText.error = "Введите дату рождения"
-            valid = false
-        } else {
-            birthdateText.error = null
-        }
-        if (mYear == 0 || mYear > year || mYear == year && mMonth > month || mYear == year && mMonth == month && mDay > day) {
-            birthdateText.error = "Введите корректно дату рождения"
-            valid = false
-        } else {
-            birthdateText.error = null
-        }
-        if (login.isEmpty() || login.length < 2) {
-            loginText.error = "Не менее 2 символов"
-            valid = false
-        } else {
-            loginText.error = null
-        }
-        if (email.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            emailText.error = "Введите корректно e-mail"
-            valid = false
-        } else {
-            emailText.error = null
-        }
-        if (mobile.length != 11) {
-            mobileText.error = "Введите корректно номер телефона"
-            valid = false
-        } else {
-            mobileText.error = null
-        }
-        if (password.isEmpty() || password.length < 4 || password.length > 14) {
-            passwordText.error = "Не менее 4 и не более 14 символов"
-            valid = false
-        } else {
-            passwordText.error = null
-        }
-        if (reEnterPassword.isEmpty() || reEnterPassword.length < 4 || reEnterPassword.length > 14 || reEnterPassword != password) {
-            reEnterPasswordText.error = "Пароли не совпадают"
-            valid = false
-        } else {
-            reEnterPasswordText.error = null
-        }
-        return valid
+        val validateNames = validateName() && validateSurname() && validatePatronymic()
+        val validateCredentials = validateLogin() && validateEmail() && validatePasswords() && validatePhoneNumber()
+        val validateDates = validateBirthdate() && validateBirthday(year, month, day)
+        return validateNames && validateCredentials && validateDates
     }
 
     companion object {
         private const val TAG = "SignupActivity"
+
+        private const val NAME_ERROR_TEXT = "Не менее 2 символов"
+        private const val SURNAME_ERROR_TEXT = "Не менее 2 символов"
+        private const val PATRONYMIC_ERROR_TEXT = "Не менее 2 символов"
+
+        private const val LOGIN_ERROR_TEXT = "Не менее 2 символов"
+        private const val EMAIL_ERROR_TEXT = "Введите корректно e-mail"
+        private const val PHONE_NUMBER_ERROR_TEXT = "Введите корректно номер телефона"
+
+        private const val PASSWORD_ERROR_TEXT = "Не менее 4 и не более 14 символов"
+        private const val SECOND_PASSWORD_ERROR_TEXT = "Пароли не совпадают"
+
+        private const val NO_BIRTHDAY_ERROR_TEXT = "Введите дату рождения"
+        private const val BIRTHDAY_ERROR_TEXT = "Введите корректно дату рождения"
+
+        private const val EMAIL_IS_BUSY_ERROR_TEXT = "Этот e-mail занят"
+        private const val LOGIN_IS_BUSY_ERROR_TEXT = "Этот логин занят"
+
+        private const val COULD_NOT_SIGNUP_ERROR_TEXT = "Не удалось зарегистрировать"
     }
 }
