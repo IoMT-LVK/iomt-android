@@ -23,8 +23,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
-import com.iomt.android.config.ConfigParser
-
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 
@@ -42,7 +40,6 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     private var devTypes: List<DeviceType> = ArrayList()
     private var devs: List<DeviceInfo> = ArrayList()
     private lateinit var httpRequests: Requests
-    private val configParser = ConfigParser()
 
     public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

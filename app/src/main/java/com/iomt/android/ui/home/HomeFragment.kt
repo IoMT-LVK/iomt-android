@@ -30,8 +30,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.iomt.android.*
-import com.iomt.android.config.ConfigParser
 import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.config.parseConfig
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -54,7 +54,6 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private val builder = GsonBuilder()
     private val gson = builder.create()
     private var config: DeviceConfig? = null
-    private val configParser = ConfigParser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -166,7 +165,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
             }
         }
         val configString = httpRequests!!.getDeviceConfig(1)
-        config = configParser.parseFromString(configString)
+        config = parseConfig(configString)
         // checkPermissions()
         httpRequests!!.getDevices(actionCells)
         return view
@@ -265,7 +264,6 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         // Show Device Detail
         val intent = Intent(activity, DeviceActivity::class.java)
         intent.putExtra("Device", device)
-        intent.putExtra("deviceConfig", configParser.toString())
         startActivity(intent)
     }
 

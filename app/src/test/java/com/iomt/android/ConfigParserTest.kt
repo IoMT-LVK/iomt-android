@@ -1,9 +1,8 @@
 package com.iomt.android
 
-import com.iomt.android.config.ConfigParser
+import com.iomt.android.config.parseConfig
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import java.io.File
 
 class ConfigParserTest {
     private val configLines = """
@@ -20,13 +19,10 @@ class ConfigParserTest {
         |    serviceUUID = "0x180F"
         |    characteristicUUID = "0x2A19"
     """.trimMargin()
-    private val configParser: ConfigParser = ConfigParser().apply {
-        tomlLines = configLines.split("\n")
-    }
 
     @Test
     fun `should prase general section from file`() {
-        val generalConfig = configParser.parseGeneralConfig()
+        val generalConfig = parseConfig(configLines).general
         assertTrue(generalConfig.name == "Test")
         assertTrue(generalConfig.nameRegex.toRegex().matches(generalConfig.name))
         assertTrue(generalConfig.characteristicNames.size == 2)
@@ -35,7 +31,7 @@ class ConfigParserTest {
 
     @Test
     fun `should prase all characteristics`() {
-        val deviceConfig = configParser.parse()
+        val deviceConfig = parseConfig(configLines)
         assertTrue(deviceConfig.characteristics.size == 2)
 
         val heartRate = deviceConfig.characteristics["heartRate"]

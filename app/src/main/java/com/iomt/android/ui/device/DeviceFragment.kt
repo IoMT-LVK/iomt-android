@@ -17,9 +17,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.iomt.android.*
-import com.iomt.android.config.ConfigParser
 import com.iomt.android.config.configs.CharacteristicConfig
 import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.config.parseConfig
 import com.iomt.android.entities.Characteristic
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
@@ -116,7 +116,7 @@ class DeviceFragment : Fragment() {
         setHasOptionsMenu(true)
 
         val configString: String = requireActivity().intent.getStringExtra("deviceConfig")!!
-        deviceConfig = ConfigParser().parseFromString(configString)
+        deviceConfig = parseConfig(configString)
         val device: BluetoothDevice? = requireActivity().intent.getParcelableExtra("Device")
         (activity as AppCompatActivity).supportActionBar?.title = device?.name
         val editor = requireContext().getSharedPreferences(
