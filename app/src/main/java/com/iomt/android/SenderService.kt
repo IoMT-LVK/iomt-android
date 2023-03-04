@@ -1,11 +1,13 @@
 package com.iomt.android
 
 import android.content.Context
+import android.database.Cursor
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.iomt.android.utils.getValueByColumnName
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.*
 import org.json.JSONException
@@ -33,19 +35,16 @@ class SenderService(private val context: Context, private val delay: Int) {
                 override fun connectionLost(cause: Throwable) {
                     Log.d(TAG, "Connection was lost!")
                 }
-
                 override fun messageArrived(topic: String, message: MqttMessage) {
                     Log.d(TAG, "Message Arrived!: $topic: ${String(message.payload)}")
                 }
-
                 override fun deliveryComplete(token: IMqttDeliveryToken) {
                     Log.d(TAG, "Delivery Complete!")
                 }
             })
             dbhelper = DatabaseHelper(context)
             val db = dbhelper!!.readableDatabase
-            val cursor =
-                db.query(Note.TABLE_NAME, null, null, null, null, null, Note.COLUMN_TIMESTAMP, null)
+            val cursor = db.query(Note.TABLE_NAME, null, null, null, null, null, Note.COLUMN_TIMESTAMP, null)
 
             // looping through all rows and adding to list
             val res: MutableList<JSONObject> = ArrayList()
@@ -56,110 +55,20 @@ class SenderService(private val context: Context, private val delay: Int) {
                     cnt++
                     val result = JSONObject()
                     try {
-                        result.put(
-                            "HeartRate",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_HEART_RATE))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getInt(cursor.getColumnIndex(Note.COLUMN_HEART_RATE))
-                            }
-                        )
-                        result.put(
-                            "RespRate",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_RESP_RATE))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getInt(
-                                    cursor.getColumnIndex(Note.COLUMN_RESP_RATE)
-                                )
-                            }
-                        )
-                        result.put(
-                            "Insp",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_INSP))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getFloat(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_INSP
-                                    )
-                                )
-                            }
-                        )
-                        result.put(
-                            "Exp",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_EXP))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getFloat(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_EXP
-                                    )
-                                )
-                            }
-                        )
-                        result.put(
-                            "Cadence",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_CADENCE))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getInt(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_CADENCE
-                                    )
-                                )
-                            }
-                        )
-                        result.put(
-                            "Steps",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_STEP_COUNT))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getInt(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_STEP_COUNT
-                                    )
-                                )
-                            }
-                        )
-                        result.put(
-                            "Activity",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_ACT))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getFloat(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_ACT
-                                    )
-                                )
-                            }
-                        )
-                        result.put(
-                            "Clitime",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_CLI))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getString(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_CLI
-                                    )
-                                )
-                            }
-                        )
-                        result.put(
-                            "Millisec",
-                            if (cursor.isNull(cursor.getColumnIndex(Note.COLUMN_MIL))) {
-                                JSONObject.NULL
-                            } else {
-                                cursor.getInt(
-                                    cursor.getColumnIndex(
-                                        Note.COLUMN_MIL
-                                    )
-                                )
-                            }
-                        )
+                        sequenceOf<Pair<String, Cursor.(Int) -> Any>>(
+                            Note.COLUMN_HEART_RATE to { getInt(it) },
+                            Note.COLUMN_RESP_RATE to { getInt(it) },
+                            Note.COLUMN_INSP to { getFloat(it) },
+                            Note.COLUMN_EXP to { getFloat(it) },
+                            Note.COLUMN_CADENCE to { getInt(it) },
+                            Note.COLUMN_STEP_COUNT to { getInt(it) },
+                            Note.COLUMN_ACT to { getFloat(it) },
+                            Note.COLUMN_CLI to { getString(it) },
+                            Note.COLUMN_MIL to { getInt(it) },
+                        ).map { (columnName, getter) -> result.put(columnName, cursor.getValueByColumnName(columnName, getter)) }
+
                         res.add(result)
-                        ids.add(cursor.getInt(cursor.getColumnIndex(Note.COLUMN_ID)))
+                        ids.add(cursor.getInt(cursor.getColumnIndexOrThrow(Note.COLUMN_ID)))
                     } catch (e: JSONException) {
                         e.printStackTrace()
                     }
@@ -199,17 +108,10 @@ class SenderService(private val context: Context, private val delay: Int) {
      * @param ids
      */
     fun sendMedicalData(mqttAndroidClient: MqttAndroidClient, data: List<JSONObject>, ids: List<Int>) {
-        val prefs =
-            context.getSharedPreferences(context.getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
-        val jwt = requireNotNull(prefs.getString("JWT", "")) {
-            "JWT token should not be null"
-        }
-        val userId = requireNotNull(prefs.getString("UserId", "")) {
-            "userId should not be null"
-        }
-        val deviceId = requireNotNull(prefs.getString("DeviceId", "")) {
-            "deviceId should not be null"
-        }
+        val prefs = context.getSharedPreferences(context.getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
+        val jwt = requireNotNull(prefs.getString("JWT", "")) { "JWT token should not be null" }
+        val userId = requireNotNull(prefs.getString("UserId", "")) { "userId should not be null" }
+        val deviceId = requireNotNull(prefs.getString("DeviceId", "")) { "deviceId should not be null" }
         val options = MqttConnectOptions().apply {
             userName = "username"
             password = jwt.toCharArray()
@@ -222,7 +124,7 @@ class SenderService(private val context: Context, private val delay: Int) {
                         for (i in data.indices) {
                             val dataStr = data[i].toString()
                             val message = MqttMessage(dataStr.toByteArray())
-                            Log.d(TAG, "Publishing message$message")
+                            Log.d(TAG, "Publishing message: [$message]")
                             message.qos = 2
                             message.isRetained = false
                             mqttAndroidClient.publish("c/$userId/$deviceId/data", message)
