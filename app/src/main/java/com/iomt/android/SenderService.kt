@@ -45,7 +45,7 @@ class SenderService(private val context: Context, private val delay: Int) {
             dbhelper = DatabaseHelper(context)
             val db = dbhelper!!.readableDatabase
             val cursor =
-                    db.query(Note.TABLE_NAME, null, null, null, null, null, Note.COLUMN_TIMESTAMP, null)
+                db.query(Note.TABLE_NAME, null, null, null, null, null, Note.COLUMN_TIMESTAMP, null)
 
             // looping through all rows and adding to list
             val res: MutableList<JSONObject> = ArrayList()
@@ -200,7 +200,7 @@ class SenderService(private val context: Context, private val delay: Int) {
      */
     fun sendMedicalData(mqttAndroidClient: MqttAndroidClient, data: List<JSONObject>, ids: List<Int>) {
         val prefs =
-                context.getSharedPreferences(context.getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
+            context.getSharedPreferences(context.getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
         val jwt = requireNotNull(prefs.getString("JWT", "")) {
             "JWT token should not be null"
         }

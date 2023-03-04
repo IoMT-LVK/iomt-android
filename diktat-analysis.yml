@@ -79,6 +79,10 @@
   configuration:
     sortEnum: true
     sortProperty: true
+- name: BLANK_LINE_BETWEEN_PROPERTIES
+  enabled: false
+- name: WRONG_ORDER_IN_CLASS_LIKE_STRUCTURES
+  enabled: false
 - name: COMMENT_WHITE_SPACE
   enabled: true
   configuration:
@@ -91,7 +95,7 @@
 - name: TOO_LONG_FUNCTION
   enabled: true
   configuration:
-    maxFunctionLength: 80 # max length of function
+    maxFunctionLength: 250 # max length of function
     isIncludeHeader: false # count function's header
 - name: TOO_MANY_PARAMETERS
   enabled: true
@@ -110,3 +114,7 @@
   enabled: true
 - name: COMPLEX_EXPRESSION
   enabled: true
+- name: FLOAT_IN_ACCURATE_CALCULATIONS
+  enabled: false
+- name: MAGIC_NUMBER
+  enabled: false

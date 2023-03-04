@@ -5,16 +5,24 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.io.File
 
-
 class ConfigParserTest {
-    private val sep: String = File.separator
-    private val resourcesPath = listOf(
-        System.getProperty("user.dir"),
-        "src",
-        "test",
-        "resources",
-        "ConfigParser").joinToString (separator = sep)
-    private val configParser: ConfigParser = ConfigParser("$resourcesPath${sep}config.toml")
+    private val configLines = """
+        |[general]
+        |    name = "Test"
+        |    nameRegex = "T.*"
+        |    characteristicNames = ["heartRate", "batteryInfo"]
+        |[heartRate]
+        |    name = "Heart Rate"
+        |    serviceUUID = "0x180D"
+        |    characteristicUUID = "0x2A37"
+        |[batteryInfo]
+        |    name = "Battery"
+        |    serviceUUID = "0x180F"
+        |    characteristicUUID = "0x2A19"
+    """.trimMargin()
+    private val configParser: ConfigParser = ConfigParser().apply {
+        tomlLines = configLines.split("\n")
+    }
 
     @Test
     fun `should prase general section from file`() {
@@ -32,23 +40,18 @@ class ConfigParserTest {
 
         val heartRate = deviceConfig.characteristics["heartRate"]
         heartRate.let {
-            assertNotNull(it)
-            assertTrue(it!!.serviceUUID == "0x180D")
-            assertTrue(it.characteristicUUID == "0x2A37")
-            assertNull(it.descriptorUUID)
+            requireNotNull(it)
+            assertTrue(it.serviceUuid == "0x180D")
+            assertTrue(it.characteristicUuid == "0x2A37")
+            assertNull(it.descriptorUuid)
         }
 
         val batteryInfo = deviceConfig.characteristics["batteryInfo"]
         batteryInfo.let {
-            assertNotNull(it)
-            assertTrue(it!!.serviceUUID == "0x180F")
-            assertTrue(it.characteristicUUID == "0x2A19")
-            assertNull(it.descriptorUUID)
+            requireNotNull(it)
+            assertTrue(it.serviceUuid == "0x180F")
+            assertTrue(it.characteristicUuid == "0x2A19")
+            assertNull(it.descriptorUuid)
         }
-    }
-
-    @Test
-    fun `should read toml from url`() {
-        val url = ""
     }
 }

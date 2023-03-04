@@ -1,3 +1,6 @@
 package com.iomt.android
 
-class DeviceInfoCell(var deviceInfo: DeviceInfo) : AbsCell()
+/**
+ * @property deviceInfo
+ */
+data class DeviceInfoCell(var deviceInfo: DeviceInfo) : AbstractCell()

@@ -21,20 +21,21 @@ import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.checkSelfPermission
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+
 import com.iomt.android.*
 import com.iomt.android.config.ConfigParser
 import com.iomt.android.config.configs.DeviceConfig
+
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+
 import java.util.*
 
 /**
@@ -45,10 +46,10 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private var menuItem: MenuItem? = null
     private val deviceCells: MutableList<DeviceCell> = ArrayList()
     private var myAdapter: DeviceAdapter? = null
-    private var mBluetoothLeScanner: BluetoothLeScanner? = null
+    private var bluetoothLeScanner: BluetoothLeScanner? = null
     private var jwt: String? = null
     private var userId: String? = null
-    private var httpRequests: HTTPRequests? = null
+    private var httpRequests: Requests? = null
     private var deviceInfos: List<DeviceInfo> = ArrayList()
     private val builder = GsonBuilder()
     private val gson = builder.create()
@@ -58,13 +59,14 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+        @Suppress("SAY_NO_TO_VAR")
         var bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         if (bluetoothAdapter == null || !bluetoothAdapter.isEnabled) {
             val enableBtIntent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT)
             bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         }
-        if (bluetoothAdapter == null) {
+        bluetoothAdapter ?: run {
             Toast.makeText(
                 requireContext(),
                 R.string.error_bluetooth_not_supported,
@@ -74,8 +76,8 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
             return
         }
 
-        if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-            && checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && checkSelfPermission(requireContext(), Manifest
+            .permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                 requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 MY_PERMISSIONS_REQUEST_READ_CONTACTS
@@ -83,7 +85,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         }
 
         statusCheck()
-        mBluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
+        bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         uiHandler = Handler(Looper.getMainLooper())
         val prefs = requireActivity().getSharedPreferences(
             requireContext().getString(R.string.ACC_DATA),
@@ -91,7 +93,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         )
         jwt = prefs.getString("JWT", "")
         userId = prefs.getString("UserId", "")
-        httpRequests = HTTPRequests(requireContext(), jwt, userId)
+        httpRequests = Requests(requireContext(), jwt, userId)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -141,7 +143,6 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         setHasOptionsMenu(true)
-//        val toolbar = view.findViewById(R.id.toolbar_list) as Toolbar?
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "Устройства"
         val recyclerView: RecyclerView = view.findViewById(R.id.my_recycler_view)
         recyclerView.setHasFixedSize(true)
@@ -150,11 +151,13 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         recyclerView.layoutManager = layoutManager
         myAdapter = DeviceAdapter(inflater, deviceCells, this)
         recyclerView.adapter = myAdapter
-        val noDev = view.findViewById<TextView>(R.id.text_no_dev)
-        noDev.visibility = View.GONE
+        val noDev = view.findViewById<TextView>(R.id.text_no_dev).apply {
+            visibility = View.GONE
+        }
         val actionCells = Action { args: Array<String?>? ->
             uiHandler?.post {
-                val listOfDevices = object: TypeToken<ArrayList<DeviceInfo?>?>() {}.type
+                @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+                val listOfDevices = object : TypeToken<ArrayList<DeviceInfo?>?>() {}.type
                 deviceInfos = gson.fromJson(args!![0], listOfDevices)
                 noDev.visibility = View.GONE
                 if (deviceInfos.isEmpty()) {
@@ -164,7 +167,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         }
         val configString = httpRequests!!.getDeviceConfig(1)
         config = configParser.parseFromString(configString)
-//        checkPermissions()
+        // checkPermissions()
         httpRequests!!.getDevices(actionCells)
         return view
     }
@@ -174,14 +177,12 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         permissions: Array<String>,
         grantResults: IntArray
     ) {
-        if (requestCode == PERMISSION_REQUEST_FINE_LOCATION) {
-            if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setTitle("Location not granted")
-                builder.setMessage("Since location access has not been granted, this app will not be able to discover nearby bluetooth devices.")
-                builder.setPositiveButton(android.R.string.ok, null)
-                builder.show()
-            }
+        if (requestCode == PERMISSION_REQUEST_FINE_LOCATION && grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setTitle("Location not granted")
+            builder.setMessage("Since location access has not been granted, this app will not be able to discover nearby bluetooth devices.")
+            builder.setPositiveButton(android.R.string.ok, null)
+            builder.show()
         }
     }
 
@@ -190,7 +191,6 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         menuItem = menu.findItem(R.id.scan)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.scan) {
             scanLeDevice()
@@ -199,11 +199,10 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         return super.onOptionsItemSelected(item)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private val mLeScanCallback: ScanCallback = object : ScanCallback() {
-        private val TAG = ScanCallback::class.java.toString()
+    private val leScanCallback: ScanCallback = object : ScanCallback() {
+        private val tag = ScanCallback::class.java.toString()
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            if (result.device.name != null) {
+            result.device.name?.let {
                 val device = result.device
                 val isInSavedDeviceList = deviceInfos.any { it.name == device.name && it.address == device.address }
                 val isAlreadyPresent = deviceCells.any { it.device.address == device.address }
@@ -211,7 +210,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
                 Log.w("CONFIG", result.device.name)
                 val isConfigured = result.device.name.matches((config?.general?.nameRegex ?: "").toRegex())
                 if (!isInSavedDeviceList && !isAlreadyPresent && isConfigured) {
-                    Log.d(TAG, "New device found: ${device.name} (${device.type})")
+                    Log.d(tag, "New device found: ${device.name} (${device.type})")
                     deviceCells.add(DeviceCell(device))
                     myAdapter!!.notifyDataSetChanged()
                 }
@@ -219,52 +218,48 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         }
     }
 
-//    private fun checkPermissions() {
-//        val requiredPermissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-//            listOf(Manifest.permission.ACCESS_FINE_LOCATION)
-//        } else {
-//            listOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_ADVERTISE)
-//        }
-//        val missingPermissions = requiredPermissions.filter { permission ->
-//            checkSelfPermission(context!!, permission) != PackageManager.PERMISSION_GRANTED
-//        }
-//        if (missingPermissions.isEmpty()) {
-//            scanLeDevice()
-//        } else {
-//            requestPermissions(missingPermissions.toTypedArray(), BLUETOOTH_PERMISSION_REQUEST_CODE)
-//        }
-//    }
-
+    // private fun checkPermissions() {
+    // val requiredPermissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+    // listOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    // } else {
+    // listOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_ADVERTISE)
+    // }
+    // val missingPermissions = requiredPermissions.filter { permission ->
+    // checkSelfPermission(context!!, permission) != PackageManager.PERMISSION_GRANTED
+    // }
+    // if (missingPermissions.isEmpty()) {
+    // scanLeDevice()
+    // } else {
+    // requestPermissions(missingPermissions.toTypedArray(), BLUETOOTH_PERMISSION_REQUEST_CODE)
+    // }
+    // }
 
     // Scan for BLE devices
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private fun scanLeDevice() {
         // Clear devices
         deviceCells.clear()
 
         // reload table
         myAdapter!!.notifyDataSetChanged()
-        //stopScan();
+        // stopScan();
 
         // Stops scanning after a pre-defined scan period.
         uiHandler!!.postDelayed({ stopScan() }, SCAN_PERIOD)
         menuItem!!.isEnabled = false
 
         // scan
-        //bluetoothAdapter.startLeScan(mLeScanCallback);
-        mBluetoothLeScanner!!.startScan(mLeScanCallback)
-        Log.d(TAG, "Scan started")
+        // bluetoothAdapter.startLeScan(mLeScanCallback);
+        bluetoothLeScanner?.startScan(leScanCallback)
+        Log.d(loggerTag, "Scan started")
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    fun stopScan() {
-        menuItem!!.isEnabled = true
-        //bluetoothAdapter.stopLeScan(mLeScanCallback);
-        mBluetoothLeScanner!!.stopScan(mLeScanCallback)
-        Log.d(TAG, "Scan stopped")
+    private fun stopScan() {
+        menuItem?.isEnabled = true
+        // bluetoothAdapter.stopLeScan(mLeScanCallback);
+        bluetoothLeScanner?.stopScan(leScanCallback)
+        Log.d(loggerTag, "Scan stopped")
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun onClickItem(deviceCell: DeviceCell?, device: BluetoothDevice?) {
         stopScan()
         // Show Device Detail
@@ -275,13 +270,13 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     }
 
     companion object {
+        private const val BLUETOOTH_PERMISSION_REQUEST_CODE = 9999
+        private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100
         private const val PERMISSION_REQUEST_FINE_LOCATION = 1
         private const val REQUEST_ENABLE_BT = 1
-        private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS = 100
-        private const val BLUETOOTH_PERMISSION_REQUEST_CODE = 9999
 
         // Stops scanning after 60 seconds.
         private const val SCAN_PERIOD: Long = 60000
-        private val TAG = this::class.java.toString()
+        private val loggerTag = this::class.java.toString()
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("MISSING_KDOC_CLASS_ELEMENTS")
+
 package com.iomt.android
 
 import android.content.Context
@@ -9,23 +11,22 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.iomt.android.DeviceInfoAdapter.DeviceInfoHolder
 
+/**
+ * [RecyclerView.Adapter] of [DeviceInfoHolder]
+ */
 class DeviceInfoAdapter(
     private val inflater: LayoutInflater,
     private val cells: MutableList<DeviceInfoCell>,
     private val onClickListener: OnClickListener
 ) : RecyclerView.Adapter<DeviceInfoHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceInfoHolder {
-        return DeviceInfoHolder(inflater, parent, onClickListener)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeviceInfoHolder = DeviceInfoHolder(inflater, parent, onClickListener)
 
     override fun onBindViewHolder(deviceInfoHolder: DeviceInfoHolder, position: Int) {
         deviceInfoHolder.bind(cells[position])
         deviceInfoHolder.deviceInfo = cells[position].deviceInfo
     }
 
-    override fun getItemCount(): Int {
-        return cells.size
-    }
+    override fun getItemCount(): Int = cells.size
 
     inner class DeviceInfoHolder(
         inflater: LayoutInflater,
@@ -38,8 +39,12 @@ class DeviceInfoAdapter(
         var delImage: ImageView
         private var cell: DeviceInfoCell? = null
         var deviceInfo: DeviceInfo? = null
-        fun bind(absCell: AbsCell) {
-            val deviceInfoCell = absCell as DeviceInfoCell
+
+        /**
+         * @param abstractCell
+         */
+        fun bind(abstractCell: AbstractCell) {
+            val deviceInfoCell = abstractCell as DeviceInfoCell
             cell = deviceInfoCell
             name.text = deviceInfoCell.deviceInfo.name
             mac.text = deviceInfoCell.deviceInfo.address
@@ -51,7 +56,7 @@ class DeviceInfoAdapter(
                 itemView.context.getString(R.string.ACC_DATA),
                 Context.MODE_PRIVATE
             )
-            val httpRequests = HTTPRequests(
+            val httpRequests = Requests(
                 itemView.context,
                 prefs.getString("JWT", ""),
                 prefs.getString("UserId", "")
@@ -70,15 +75,17 @@ class DeviceInfoAdapter(
             imageView = itemView.findViewById(R.id.device_pict)
             delImage = itemView.findViewById(R.id.action)
             itemView.setOnClickListener { view: View? ->
-                if (cell == null) {
-                    return@setOnClickListener
-                }
+                cell ?: return@setOnClickListener
                 onClickListener.onClickItem(cell, deviceInfo)
             }
         }
     }
 
     interface OnClickListener {
+        /**
+         * @param deviceInfoCell
+         * @param deviceInfo
+         */
         fun onClickItem(deviceInfoCell: DeviceInfoCell?, deviceInfo: DeviceInfo?)
     }
 }

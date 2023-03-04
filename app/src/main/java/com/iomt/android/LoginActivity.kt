@@ -8,6 +8,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 
+/**
+ * [AppCompatActivity] that is responsible for logging in
+ */
 class LoginActivity : AppCompatActivity() {
     private var jwt: String? = null
     private var userId: String? = null
@@ -39,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun login() {
         Log.d(TAG, "Login")
-        if (!validate()) {
+        if (!isValid()) {
             onLoginFailed()
             return
         }
@@ -47,16 +50,16 @@ class LoginActivity : AppCompatActivity() {
         progressBar.visibility = ProgressBar.VISIBLE
         val login = loginText.text.toString()
         val password = passwordText.text.toString()
-        val httpRequests = HTTPRequests(this)
+        val httpRequests = Requests(this)
         val authInfo = httpRequests.sendLogin(login, password)
         if (authInfo.wasFailed) {
             onLoginFailed()
         } else if (!authInfo.confirmed) {
-            val intent = Intent(applicationContext, EmailConf::class.java)
+            val intent = Intent(applicationContext, EmailConfirmation::class.java)
             startActivity(intent)
         } else {
             jwt = authInfo.jwt
-            userId = authInfo.user_id
+            userId = authInfo.userId
             onLoginSuccess()
             progressBar.visibility = ProgressBar.INVISIBLE
         }
@@ -98,7 +101,8 @@ class LoginActivity : AppCompatActivity() {
         progressBar.visibility = ProgressBar.INVISIBLE
     }
 
-    private fun validate(): Boolean {
+    private fun isValid(): Boolean {
+        @Suppress("SAY_NO_TO_VAR")
         var valid = true
         val login = loginText.text.toString()
         val password = passwordText.text.toString()
@@ -118,7 +122,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     companion object {
-        private const val TAG = "LoginActivity"
         private const val REQUEST_SIGNUP = 0
+        private const val TAG = "LoginActivity"
     }
 }

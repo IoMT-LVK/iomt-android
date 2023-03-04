@@ -15,6 +15,9 @@ import com.iomt.android.DatabaseHelper
 import com.iomt.android.LoginActivity
 import com.iomt.android.R
 
+/**
+ * Fragment that is responsible for settings
+ */
 class SettingsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,19 +29,14 @@ class SettingsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
         container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.fragment_settings, container, false)
-        val mobileSwitch: SwitchCompat = root.findViewById(R.id.switch_mobile)
-        if (mobileSwitch != null) {
-            mobileSwitch.setOnCheckedChangeListener(this)
-        }
-        val leaveAccount = root.findViewById<LinearLayout>(R.id.leave_acc)
-        leaveAccount.setOnClickListener { v: View? ->
-            val db = DatabaseHelper(requireContext())
-            db.clear()
+        root.findViewById<SwitchCompat>(R.id.switch_mobile).setOnCheckedChangeListener(this)
+        root.findViewById<LinearLayout>(R.id.leave_acc).setOnClickListener {
+            DatabaseHelper(requireContext()).clear()
             val intent = Intent(requireActivity(), LoginActivity::class.java)
             startActivity(intent)
             requireActivity().finish()
         }
-        (activity as AppCompatActivity?)!!.supportActionBar!!.title = "Настройки"
+        (activity as AppCompatActivity).supportActionBar!!.title = "Настройки"
         return root
     }
 

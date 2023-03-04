@@ -1,8 +1,9 @@
 package com.iomt.android.ui.device
 
+import android.Manifest
 import android.bluetooth.*
 import android.content.Context
-import android.os.Build
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,11 +12,13 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.iomt.android.*
 import com.iomt.android.config.ConfigParser
+import com.iomt.android.config.configs.CharacteristicConfig
 import com.iomt.android.config.configs.DeviceConfig
 import com.iomt.android.entities.Characteristic
 import org.eclipse.paho.android.service.MqttAndroidClient
@@ -26,11 +29,13 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.experimental.and
 
+/**
+ * Fragment that is responsible for device displaying
+ */
 class DeviceFragment : Fragment() {
     private var gatt: BluetoothGatt? = null
     private var mqttAndroidClient: MqttAndroidClient? = null
     private var db: DatabaseHelper? = null
-    private val data = Collections.synchronizedList(ArrayList<CharCell>())
     private var senderService: SenderService? = null
     private var devStatus: TextView? = null
     private var devName: TextView? = null
@@ -41,26 +46,31 @@ class DeviceFragment : Fragment() {
 
     private val characteristics: MutableMap<String, Characteristic> = mutableMapOf()
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val period10Minutes = 10
-        val periodInMilliseconds = period10Minutes * 60 * 1000
-        senderService = SenderService(requireContext(), periodInMilliseconds)
+        senderService = SenderService(requireContext(), TEN_MINUTES_IN_MILLISECONDS)
         mqttAndroidClient = MqttAndroidClient(requireContext(), "${R.string.base_uri}:${R.string.mqtt_port}", "")
-        mqttAndroidClient!!.setCallback(object : MqttCallback {
+        mqttAndroidClient?.setCallback(object : MqttCallback {
             override fun connectionLost(cause: Throwable) {
-                Log.d(TAG, "Connection was lost!")
+                Log.d(loggerTag, "Connection was lost!")
             }
 
             override fun messageArrived(topic: String, message: MqttMessage) {
-                Log.d(TAG, "Message Arrived!: " + topic + ": " + String(message.payload))
+                Log.d(loggerTag, "Message Arrived!: $topic: ${String(message.payload)}")
             }
 
             override fun deliveryComplete(token: IMqttDeliveryToken) {
-                Log.d(TAG, "Delivery Complete!")
+                Log.d(loggerTag, "Delivery Complete!")
             }
         })
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+                if (permissions[Manifest.permission.BLUETOOTH] != true) {
+                    // permission was granted, proceed with the operation that requires the permission
+                    throw IllegalStateException("Requested permission was not granted")
+                }
+            }.launch(arrayOf(Manifest.permission.BLUETOOTH))
+        }
     }
 
     private fun getIcon(charName: String): ImageView =
@@ -78,8 +88,8 @@ class DeviceFragment : Fragment() {
             }.let {
                 setImageResource(it)
             }
-            maxWidth = 50
-            maxHeight = 50
+            maxWidth = MAX_ICON_SIZES
+            maxHeight = MAX_ICON_SIZES
         }
 
     private fun createCellLayout(charName: String, prettyCharName: String): Pair<LinearLayout, TextView> {
@@ -97,7 +107,6 @@ class DeviceFragment : Fragment() {
         return linearLayout to valueBadge
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -105,11 +114,10 @@ class DeviceFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_device, container, false)
         setHasOptionsMenu(true)
-        //val toolbar = view.findViewById<View>(R.id.toolbar_dev) as Toolbar
 
         val configString: String = requireActivity().intent.getStringExtra("deviceConfig")!!
         deviceConfig = ConfigParser().parseFromString(configString)
-        val device = requireActivity().intent.getParcelableExtra<BluetoothDevice>("Device")
+        val device: BluetoothDevice? = requireActivity().intent.getParcelableExtra("Device")
         (activity as AppCompatActivity).supportActionBar?.title = device?.name
         val editor = requireContext().getSharedPreferences(
             requireContext().getString(R.string.ACC_DATA),
@@ -118,9 +126,9 @@ class DeviceFragment : Fragment() {
         editor.putString("DeviceId", device?.address)
         editor.apply()
 
-        when(deviceConfig.general.type) {
-            "Vest" -> R.drawable.hexoskin
-            "Band" -> R.drawable.band_icon
+        when (deviceConfig.general.type?.lowercase()) {
+            "vest" -> R.drawable.hexoskin
+            "band" -> R.drawable.band_icon
             else -> R.drawable.circular_grey_bordersolid
         }.let {
             view.findViewById<ImageView>(R.id.deviceIcon)?.setImageResource(it)
@@ -139,18 +147,16 @@ class DeviceFragment : Fragment() {
         devName?.text = device?.name
         devStatus?.text = "Подключение"
         db = DatabaseHelper(requireContext())
-        gatt = device?.connectGatt(requireContext(), true, mCallback)
+        gatt = device?.connectGatt(requireContext(), true, callback)
         return view
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
     override fun onDestroy() {
         super.onDestroy()
         gatt?.close()
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN_MR2)
-    private val mCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
+    private val callback: BluetoothGattCallback = object : BluetoothGattCallback() {
         // Invoked when Bluetooth connection changes
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             super.onConnectionStateChange(gatt, status, newState)
@@ -164,115 +170,62 @@ class DeviceFragment : Fragment() {
                     devStatus?.text = "Отключено"
                     devStPict?.setImageResource(R.drawable.nosig)
                     senderService?.stop()
-                    characteristics.forEach { (charName, characteristic) ->
+                    characteristics.forEach { (_, characteristic) ->
                         characteristic.textView.text = ""
                     }
                 }
             }
         }
 
+        private fun getInitializedCharacteristic(
+            gatt: BluetoothGatt,
+            characteristicName: String,
+            characteristicConfig: CharacteristicConfig,
+        ): Characteristic {
+            val service = gatt.getService(UUID.fromString(characteristicConfig.serviceUuid))
+            val characteristic = service.getCharacteristic(UUID.fromString(characteristicConfig.characteristicUuid))
+                .also { characteristic ->
+                    gatt.setCharacteristicNotification(characteristic, true)
+                    characteristic.getDescriptor(clientCharacteristicConfigUuid)
+                        .let {
+                            it.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            gatt.writeDescriptor(it)
+                        }
+                }
+            return characteristics.getValue(characteristicName).copy(
+                bluetoothGattService = service,
+                bluetoothGattCharacteristic = characteristic,
+            )
+        }
+
+        /**
+         * Initialize all the characteristics mentioned in config file
+         *
+         * @param gatt [BluetoothGatt]
+         * @param status
+         */
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 // Listen for Heart Rate notification
                 deviceConfig.characteristics.map { (charName, config) ->
-                    characteristics[charName]?.bluetoothGattService = gatt.getService(UUID.fromString(config.serviceUUID))
-                        .also { service ->
-                            characteristics[charName]?.bluetoothGattCharacteristic = service.getCharacteristic(UUID.fromString(config.characteristicUUID))
-                                .also { characteristic ->
-                                    gatt.setCharacteristicNotification(characteristic, true)
-                                    characteristic.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
-                                        .let {
-                                            it.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-                                            gatt.writeDescriptor(it)
-                                        }
-                                }
-                        }
-
+                    characteristics[charName] = getInitializedCharacteristic(gatt, charName, config)
                 }
             }
         }
 
-//        override fun onDescriptorWrite(
-//            gatt: BluetoothGatt,
-//            descriptor: BluetoothGattDescriptor,
-//            status: Int
-//        ) {
-//            if (descriptor.characteristic.uuid == HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID) {
-//                // Listen for Respiration Rate notification
-//                val respSvc = gatt.getService(RESPIRATION_SERVICE_UUID)
-//                val respChar = respSvc.getCharacteristic(
-//                    RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID
-//                )
-//                gatt.setCharacteristicNotification(respChar, true)
-//                val respDescriptor = respChar.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
-//                respDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-//                gatt.writeDescriptor(respDescriptor)
-//            } else if (descriptor.characteristic.uuid == RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID) {
-//                //Listen for Accelerometer notification
-//                val accSvc = gatt.getService(ACCELEROMETER_SERVICE_UUID)
-//                val accChar = accSvc.getCharacteristic(
-//                    ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID
-//                )
-//                gatt.setCharacteristicNotification(accChar, true)
-//                val accDescriptor = accChar.getDescriptor(CLIENT_CHARACTERISTIC_CONFIG_UUID)
-//                accDescriptor.value = BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
-//                gatt.writeDescriptor(accDescriptor)
-//            }
-//        }
-
-        private fun changeHeartRateLabel(heartRateCharacteristic: BluetoothGattCharacteristic) {
-            val data = heartRateCharacteristic.value
-            val flag = data[0].toInt()
-            val format: Int = if (flag and 0x01 == 0) {
+        private fun changeCharacteristicLabel(
+            characteristicName: String,
+            gattCharacteristic: BluetoothGattCharacteristic,
+        ) {
+            val isUint8 = gattCharacteristic.value[0].toInt().and(0x01).let { it == 0 }
+            val format: Int = if (isUint8) {
                 BluetoothGattCharacteristic.FORMAT_UINT8
             } else {
                 BluetoothGattCharacteristic.FORMAT_UINT16
             }
-            val heartRate = heartRateCharacteristic.getIntValue(format, 1)
-            characteristics["heartRate"]?.textView?.text = heartRate.toString()
-            characteristics["heartRate"]?.isUpdated = true
-        }
-
-        private fun changeRespirationRateLabel(respirationRateCharacteristic: BluetoothGattCharacteristic) {
-            val data = respirationRateCharacteristic.value
-            val flag = data[0]
-            val format: Int = if (flag and 0x01 == 0.toByte()) {
-                BluetoothGattCharacteristic.FORMAT_UINT8
-            } else {
-                BluetoothGattCharacteristic.FORMAT_UINT16
-            }
-            val respRate = respirationRateCharacteristic.getIntValue(format, 1)
-            characteristics["respRate"]?.textView?.text = respRate.toString()
-//            this@DeviceFragment.respRate!!.text = respRate.toString()
-            val isInspExpPresent = flag and 0x02 != 0.toByte()
-            inspRate?.text = ""
-            expRate?.text = ""
-            if (isInspExpPresent) {
-                val startOffset =
-                    1 + if (format == BluetoothGattCharacteristic.FORMAT_UINT8) 1 else 2
-                var inspFirst = flag and 0x04 == 0.toByte()
-                val inspStringBuilder = StringBuilder()
-                val expStringBuilder = StringBuilder()
-                var i = startOffset
-                while (i < data.size) {
-                    val value = respirationRateCharacteristic.getIntValue(
-                        BluetoothGattCharacteristic.FORMAT_UINT16,
-                        i
-                    ) / 32.0f
-                    inspFirst = if (inspFirst) {
-                        inspStringBuilder.append(value)
-                        false
-                    } else {
-                        expStringBuilder.append(value)
-                        true
-                    }
-                    i += 2
-                }
-                characteristics["inspRate"]?.textView?.text = inspStringBuilder.toString()
-                characteristics["expRate"]?.textView?.text = inspStringBuilder.toString()
-//                inspRate!!.text = inspStringBuilder.toString()
-//                expRate!!.text = expStringBuilder.toString()
-            }
+            val value = gattCharacteristic.getIntValue(format, 1)
+            characteristics[characteristicName]?.textView?.text = value.toString()
+            characteristics[characteristicName]?.isUpdated = true
         }
 
         private fun changeAccelerometerLabel(accelerometerCharacteristic: BluetoothGattCharacteristic) {
@@ -286,19 +239,16 @@ class DeviceFragment : Fragment() {
             if (isStepCountPresent) {
                 val stepCount = accelerometerCharacteristic.getIntValue(format, dataIndex)
                 characteristics["stepsCount"]?.textView?.text = stepCount.toString()
-//                stepsCount?.text = stepCount.toString()
                 dataIndex += 2
             }
             if (isActivityPresent) {
                 val activity = accelerometerCharacteristic.getIntValue(format, dataIndex) / 256.0f
-//                this@DeviceFragment.activityRate!!.text = activity.toString()
                 characteristics["activityRate"]?.textView?.text = activity.toString()
                 dataIndex += 2
             }
             if (isCadencePresent) {
                 val cadence = accelerometerCharacteristic.getIntValue(format, dataIndex)
                 characteristics["cadence"]?.textView?.text = cadence.toString()
-//                this@DeviceFragment.cadence!!.text = cadence.toString()
             }
         }
 
@@ -307,23 +257,21 @@ class DeviceFragment : Fragment() {
             characteristic: BluetoothGattCharacteristic
         ) {
             requireActivity().runOnUiThread {
-                deviceConfig.characteristics.filter { (charName, config) ->
-                    UUID.fromString(config.characteristicUUID) == characteristic.uuid
+                deviceConfig.characteristics.filter { (_, config) ->
+                    UUID.fromString(config.characteristicUuid) == characteristic.uuid
                 }
                     .map { it.key }
-                    .first()
-                    .let {
-                        when(it) {
-                            "heartRate" -> changeHeartRateLabel(characteristic)
-                            else -> throw NotImplementedError("Not implemented yet")
+                    .firstOrNull()
+                    ?.lowercase()
+                    ?.let {
+                        if (it == "accelerometer") {
+                            changeAccelerometerLabel(characteristic)
+                        } else {
+                            changeCharacteristicLabel(it, characteristic)
                         }
                     }
-//                when (characteristic.uuid) {
-//                    HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID -> changeHeartRateLabel(characteristic)
-//                    RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID -> changeRespirationRateLabel(characteristic)
-//                    ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID -> changeAccelerometerLabel(characteristic)
-//                }
-                //Heart Rate Received
+
+                // Heart Rate Received
                 val dfDateAndTime: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
                 val milliseconds: DateFormat = SimpleDateFormat("SSS", Locale.US)
                 val now = Date()
@@ -333,59 +281,22 @@ class DeviceFragment : Fragment() {
                     put("Clitime", myDate)
                     put("Millisec", Integer.valueOf(millis))
                 }
-                characteristics.filter { (charName, characteristic) ->
+                characteristics.filter { (_, characteristic) ->
                     characteristic.isUpdated
                 }.forEach { (charName, characteristic) ->
                     result.put(charName, Integer.valueOf(characteristic.textView.text.toString()))
                 }
-//                try {
-//                    var value = heartRate!!.text.toString()
-//                    result.put(
-//                        "HeartRate",
-//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-//                    )
-//                    value = stepsCount!!.text.toString()
-//                    result.put(
-//                        "Steps",
-//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-//                    )
-//                    value = activityRate!!.text.toString()
-//                    result.put(
-//                        "Activity",
-//                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
-//                    )
-//                    value = cadence!!.text.toString()
-//                    result.put(
-//                        "Cadence",
-//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-//                    )
-//                    result.put("Clitime", myDate)
-//                    result.put("Millisec", Integer.valueOf(millis))
-//                    value = respRate!!.text.toString()
-//                    result.put(
-//                        "RespRate",
-//                        if (value.isNotEmpty()) Integer.valueOf(value) else JSONObject.NULL
-//                    )
-//                    value = inspRate!!.text.toString()
-//                    result.put(
-//                        "Insp",
-//                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
-//                    )
-//                    value = expRate!!.text.toString()
-//                    result.put(
-//                        "Exp",
-//                        if (value.isNotEmpty()) java.lang.Float.valueOf(value) else JSONObject.NULL
-//                    )
-//                } catch (ex: Exception) {
-//                    ex.printStackTrace()
-//                }
-                Log.d(TAG, result.toString())
-                Log.d(TAG, db!!.insertNote(result).toString())
-                Log.d(TAG, db!!.notesCount.toString())
+                Log.d(loggerTag, result.toString())
+                Log.d(loggerTag, db!!.insertNote(result).toString())
+                Log.d(loggerTag, db!!.notesCount.toString())
             }
         }
     }
 
+    /**
+     * @param mqttAndroidClient
+     * @param data
+     */
     fun sendData(mqttAndroidClient: MqttAndroidClient, data: JSONObject) {
         val prefs = requireContext().getSharedPreferences(
             requireContext().getString(R.string.ACC_DATA),
@@ -394,29 +305,30 @@ class DeviceFragment : Fragment() {
         val jwt = prefs.getString("JWT", "")
         val userId = prefs.getString("UserId", "")
         val deviceId = prefs.getString("DeviceId", "")
-        val options = MqttConnectOptions()
-        options.userName = "username"
-        options.password = jwt!!.toCharArray()
+        val options = MqttConnectOptions().apply {
+            userName = "username"
+            password = jwt!!.toCharArray()
+        }
         try {
             mqttAndroidClient.connect(options, object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken) {
-                    Log.d(TAG, "Connection Success!")
+                    Log.d(loggerTag, "Connection Success!")
                     try {
                         val dataString = data.toString()
                         val message = MqttMessage(dataString.toByteArray())
-                        Log.d(TAG, "Publishing message$message")
+                        Log.d(loggerTag, "Publishing message$message")
                         message.qos = 2
                         message.isRetained = false
                         mqttAndroidClient.publish("c/$userId/$deviceId/data", message)
-                        //SenderService.this.dbhelper.deleteNote(ids.get(i));
+                        // SenderService.this.dbhelper.deleteNote(ids.get(i));
                     } catch (ex: MqttException) {
                         ex.printStackTrace()
                     }
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken, exception: Throwable) {
-                    Log.d(TAG, "Connection Failure!")
-                    Log.d(TAG, exception.toString())
+                    Log.d(loggerTag, "Connection Failure!")
+                    Log.d(loggerTag, exception.toString())
                 }
             })
         } catch (ex: MqttException) {
@@ -424,34 +336,51 @@ class DeviceFragment : Fragment() {
         }
     }
 
+    private fun requirePermission() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { permissions ->
+                if (permissions[Manifest.permission.BLUETOOTH] != true) {
+                    // permission was granted, proceed with the operation that requires the permission
+                    throw IllegalStateException("Requested permission was not granted")
+                }
+            }.launch(arrayOf(Manifest.permission.BLUETOOTH))
+        }
+    }
+
     companion object {
         // Heart Rate Service UUID
-        private val HEART_RATE_MEASUREMENT_SERVICE_UUID =
+        private val heartRateMeasurementServiceUuid =
             UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb")
 
         // Heart Rate Measurement UUID
-        private val HEART_RATE_MEASUREMENT_CHARACTERISTIC_UUID =
+        private val heartRateMeasurementCharacteristicUuid =
             UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")
 
         // Respiration Rate Service UUID
-        private val RESPIRATION_SERVICE_UUID =
+        private val respirationServiceUuid =
             UUID.fromString("3b55c581-bc19-48f0-bd8c-b522796f8e24")
 
         // Respiration Rate Measurement UUID
-        private val RESPIRATION_RATE_MEASUREMENT_CHARACTERISTIC_UUID =
+        private val respirationRateMeasurementCharacteristicUuid =
             UUID.fromString("9bc730c3-8cc0-4d87-85bc-573d6304403c")
 
         // UUID for notification
-        private val CLIENT_CHARACTERISTIC_CONFIG_UUID =
+        private val clientCharacteristicConfigUuid =
             UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
         // Accelerometer Service UUID
-        private val ACCELEROMETER_SERVICE_UUID =
+        private val accelerometerServiceUuid =
             UUID.fromString("bdc750c7-2649-4fa8-abe8-fbf25038cda3")
 
         // Accelerometer Measurement UUID
-        private val ACCELEROMETER_MEASUREMENT_CHARACTERISTIC_UUID =
+        private val accelerometerMeasurementCharacteristicUuid =
             UUID.fromString("75246a26-237a-4863-aca6-09b639344f43")
-        private val TAG = DeviceFragment::class.java.simpleName
+        private val loggerTag = DeviceFragment::class.java.simpleName
+
+        private const val MAX_ICON_SIZES = 50
+        private const val REQUEST_PERMISSION_BLUETOOTH = 421
+        private const val TEN_MINUTES = 10
+
+        private const val TEN_MINUTES_IN_MILLISECONDS = TEN_MINUTES * 60 * 1000
     }
 }

@@ -1,3 +1,7 @@
 package com.iomt.android
 
-class DeviceType(val device_type: String, val prefix: String)
+/**
+ * @property deviceType
+ * @property prefix
+ */
+data class DeviceType(val deviceType: String, val prefix: String)
