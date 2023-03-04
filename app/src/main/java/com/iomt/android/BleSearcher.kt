@@ -1,6 +1,7 @@
 package com.iomt.android
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.BluetoothLeScanner
@@ -22,9 +23,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import com.iomt.android.entities.DeviceInfo
+import com.iomt.android.entities.DeviceType
 
 import java.util.*
 
@@ -46,23 +46,9 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
         setContentView(R.layout.activity_searcher)
         val jwt = intent.getStringExtra("JWT")
         val userId = intent.getStringExtra("UserId")
-        httpRequests = Requests(this, jwt, userId)
-        val actionTypes = Action { args: Array<String?>? ->
-            val builder = GsonBuilder()
-            val gson = builder.create()
-            @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-            val listOfDeviceTypes = object : TypeToken<ArrayList<DeviceType?>?>() {}.type
-            devTypes = gson.fromJson(args!![0], listOfDeviceTypes)
-        }
-        httpRequests.getDeviceTypes(actionTypes)
-        val actionDevs = Action { args: Array<String?>? ->
-            val builder = GsonBuilder()
-            val gson = builder.create()
-            @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-            val listOfDevices = object : TypeToken<ArrayList<DeviceInfo?>?>() {}.type
-            devs = gson.fromJson(args!![0], listOfDevices)
-        }
-        httpRequests.getDevices(actionDevs)
+        httpRequests = Requests(jwt, userId)
+        httpRequests.getDeviceTypes { devTypes = it }
+        httpRequests.getDevices { devs = it }
         val bluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
         bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         uiHandler = Handler(Looper.getMainLooper())
@@ -75,12 +61,10 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
         recyclerView.layoutManager = layoutManager
         myAdapter = SavedDeviceAdapter(LayoutInflater.from(this), deviceCells, this)
         recyclerView.adapter = myAdapter
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_FINE_LOCATION
-            )
-        }
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_REQUEST_FINE_LOCATION
+        )
     }
 
     private fun getType(device: BluetoothDevice?): String? = devTypes.find { device?.name?.startsWith(it.prefix) ?: false }?.deviceType
@@ -113,7 +97,6 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
         return true
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.scan) {
             scanLeDevice()
@@ -123,19 +106,20 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     }
 
     private val leScanCallback: ScanCallback = object : ScanCallback() {
+        @SuppressLint("NotifyDataSetChanged")
         override fun onScanResult(callbackType: Int, result: ScanResult) {
-            Log.d("FOUND DEVICE", result.device.name)
+            Log.d(TAG, "Found device: ${result.device.name}")
             result.device.name?.let {
-                val type = getType(result.device)
                 deviceCells.find { it.device.name == result.device.name } ?: run {
                     deviceCells.add(DeviceCell(result.device))
-                    Log.d("ADD DEVICE", result.device.name)
+                    Log.d(TAG, "Added device: ${result.device.name}")
                     myAdapter?.notifyDataSetChanged()
                 }
             }
         }
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun scanLeDevice() {
         deviceCells.clear()
         myAdapter?.notifyDataSetChanged()
@@ -147,14 +131,11 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     /**
      * Stop BLE scan
      */
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     fun stopScan() {
         menuItem?.isEnabled = true
         bluetoothLeScanner?.stopScan(leScanCallback)
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    @Suppress("COMMENTED_OUT_CODE")
     override fun onClickItem(deviceCell: DeviceCell?, device: BluetoothDevice?) {
         stopScan()
         requireNotNull(device)
@@ -163,13 +144,7 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
             device.address,
             getType(device) ?: "UNKNOWN"
         )
-        devs.find { it == deviceInfo }?.let {
-            httpRequests.sendDevice(deviceInfo)
-            // val stringDeviceConfig = httpRequests.getDeviceConfig(1)
-            // configParser.parseFromString(stringDeviceConfig ?: "")
-            // configParser.parse()
-            // Log.w(TAG, configParser.toString())
-        }
+        devs.find { it == deviceInfo }?.let { httpRequests.sendDevice(deviceInfo) }
         finish()
     }
 

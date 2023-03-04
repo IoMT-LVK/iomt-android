@@ -1,6 +1,7 @@
 package com.iomt.android.ui.home
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -12,7 +13,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,10 +32,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.iomt.android.*
 import com.iomt.android.config.configs.DeviceConfig
 import com.iomt.android.config.parseConfig
-
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
-
+import com.iomt.android.entities.DeviceInfo
 import java.util.*
 
 /**
@@ -51,8 +48,6 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private var userId: String? = null
     private var httpRequests: Requests? = null
     private var deviceInfos: List<DeviceInfo> = ArrayList()
-    private val builder = GsonBuilder()
-    private val gson = builder.create()
     private var config: DeviceConfig? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,19 +81,14 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         statusCheck()
         bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
         uiHandler = Handler(Looper.getMainLooper())
-        val prefs = requireActivity().getSharedPreferences(
-            requireContext().getString(R.string.ACC_DATA),
-            Context.MODE_PRIVATE
-        )
+        val prefs = requireActivity().getSharedPreferences(requireContext().getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
         jwt = prefs.getString("JWT", "")
         userId = prefs.getString("UserId", "")
-        httpRequests = Requests(requireContext(), jwt, userId)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_FINE_LOCATION
-            )
-        }
+        httpRequests = Requests(jwt, userId)
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_REQUEST_FINE_LOCATION
+        )
     }
 
     private fun statusCheck() {
@@ -153,21 +143,18 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         val noDev = view.findViewById<TextView>(R.id.text_no_dev).apply {
             visibility = View.GONE
         }
-        val actionCells = Action { args: Array<String?>? ->
+        val configString = httpRequests!!.getDeviceConfig(1)
+        config = parseConfig(configString)
+        // checkPermissions()
+        httpRequests!!.getDevices { devices ->
             uiHandler?.post {
-                @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-                val listOfDevices = object : TypeToken<ArrayList<DeviceInfo?>?>() {}.type
-                deviceInfos = gson.fromJson(args!![0], listOfDevices)
+                deviceInfos = devices
                 noDev.visibility = View.GONE
                 if (deviceInfos.isEmpty()) {
                     noDev.visibility = View.VISIBLE
                 }
             }
         }
-        val configString = httpRequests!!.getDeviceConfig(1)
-        config = parseConfig(configString)
-        // checkPermissions()
-        httpRequests!!.getDevices(actionCells)
         return view
     }
 
@@ -200,6 +187,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
 
     private val leScanCallback: ScanCallback = object : ScanCallback() {
         private val tag = ScanCallback::class.java.toString()
+        @SuppressLint("NotifyDataSetChanged")
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             result.device.name?.let {
                 val device = result.device
@@ -217,23 +205,8 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         }
     }
 
-    // private fun checkPermissions() {
-    // val requiredPermissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-    // listOf(Manifest.permission.ACCESS_FINE_LOCATION)
-    // } else {
-    // listOf(Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_ADVERTISE)
-    // }
-    // val missingPermissions = requiredPermissions.filter { permission ->
-    // checkSelfPermission(context!!, permission) != PackageManager.PERMISSION_GRANTED
-    // }
-    // if (missingPermissions.isEmpty()) {
-    // scanLeDevice()
-    // } else {
-    // requestPermissions(missingPermissions.toTypedArray(), BLUETOOTH_PERMISSION_REQUEST_CODE)
-    // }
-    // }
-
     // Scan for BLE devices
+    @SuppressLint("NotifyDataSetChanged")
     private fun scanLeDevice() {
         // Clear devices
         deviceCells.clear()

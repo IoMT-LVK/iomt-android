@@ -1,5 +1,6 @@
 package com.iomt.android.ui.account
 
+import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
@@ -19,9 +20,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.iomt.android.*
+import com.iomt.android.entities.DeviceInfo
 
-import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
+import com.iomt.android.entities.UserData
 
 import java.util.*
 
@@ -66,15 +67,42 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
     private var userId: String? = null
     private val deviceInfoCells: MutableList<DeviceInfoCell> = ArrayList()
     private var deviceInfoAdapter: DeviceInfoAdapter? = null
-    private val builder = GsonBuilder()
-    private val gson = builder.create()
-    private var action: Action? = null
     private var httpRequests: Requests? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         uiHandler = Handler(Looper.getMainLooper())
     }
 
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+    private val getDataRequestCallback: (UserData) -> Unit = { userData ->
+        uiHandler?.post {
+            weight = userData.weight
+            height = userData.height
+            birthdate = userData.birthdate
+            phone = userData.phoneNumber
+            email = userData.email
+            name = userData.name
+            surname = userData.surname
+            patr = userData.patronymic
+            requireActivity().getSharedPreferences(requireActivity().applicationContext.getString(R.string.ACC_DATA), Context.MODE_PRIVATE).edit()
+                .apply {
+                    putInt("height", height)
+                    putInt("weight", weight)
+                    putString("phone", phone)
+                    putString("email", email)
+                    putString("birthdate", birthdate)
+                }.apply()
+            val nameLbl = "$name $surname"
+            textName?.text = nameLbl
+            textWeight?.text = weight.toString()
+            textHeight?.text = height.toString()
+            textPhone?.text = phone
+            textEmail?.text = email
+            textBirthday?.text = birthdate
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
@@ -111,37 +139,8 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
         )
         jwt = prefs.getString("JWT", "")
         userId = prefs.getString("UserId", "")
-        action = Action { args: Array<String?>? ->
-            uiHandler?.post {
-                val editor = requireActivity().getSharedPreferences(
-                    requireActivity().applicationContext.getString(R.string.ACC_DATA),
-                    Context.MODE_PRIVATE
-                ).edit()
-                weight = args!![0]!!.toInt()
-                height = args[1]!!.toInt()
-                birthdate = args[2]
-                phone = args[3]
-                email = args[4]
-                name = args[5]
-                surname = args[6]
-                patr = args[7]
-                editor.putInt("height", height)
-                editor.putInt("weight", weight)
-                editor.putString("phone", phone)
-                editor.putString("email", email)
-                editor.putString("birthdate", birthdate)
-                editor.apply()
-                val nameLbl = "$name $surname"
-                textName?.text = nameLbl
-                textWeight?.text = weight.toString()
-                textHeight?.text = height.toString()
-                textPhone?.text = phone
-                textEmail?.text = email
-                textBirthday?.text = birthdate
-            }
-        }
-        httpRequests = Requests(requireContext(), jwt, userId)
-        httpRequests?.getData(action!!)
+        httpRequests = Requests(jwt, userId)
+        httpRequests?.getData(getDataRequestCallback)
         update()
         val recyclerView: RecyclerView = view.findViewById(R.id.recycler)
         recyclerView.setHasFixedSize(true)
@@ -150,7 +149,7 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
         recyclerView.layoutManager = layoutManager
         deviceInfoAdapter = DeviceInfoAdapter(inflater, deviceInfoCells, this)
         recyclerView.adapter = deviceInfoAdapter
-        this.textName?.text = "$name $surname"
+        textName?.text = "$name $surname"
         editWeight?.visibility = View.GONE
         editHeight?.visibility = View.GONE
         editBirthday?.visibility = View.GONE
@@ -313,24 +312,15 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
         datePickerDialog.show()
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private fun update() {
-        action?.let {
-            httpRequests?.getData(it)
-        }
-        val actionCells = Action { args: Array<String?>? ->
-            uiHandler?.post {
-                @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-                val listOfDevices = object : TypeToken<ArrayList<DeviceInfo?>?>() {}.type
-                val devs: List<DeviceInfo> = gson.fromJson(
-                    args?.get(0), listOfDevices
-                )
+        httpRequests?.getData(getDataRequestCallback)
+        httpRequests?.getDevices { devices ->
+            uiHandler?.let {
                 deviceInfoCells.clear()
-                devs.forEach {
-                    deviceInfoCells.add(DeviceInfoCell(it))
-                }
+                devices.forEach { deviceInfo -> deviceInfoCells.add(DeviceInfoCell(deviceInfo)) }
                 deviceInfoAdapter?.notifyDataSetChanged()
             }
         }
-        httpRequests?.getDevices(actionCells)
     }
 }

@@ -119,12 +119,10 @@ class DeviceFragment : Fragment() {
         deviceConfig = parseConfig(configString)
         val device: BluetoothDevice? = requireActivity().intent.getParcelableExtra("Device")
         (activity as AppCompatActivity).supportActionBar?.title = device?.name
-        val editor = requireContext().getSharedPreferences(
-            requireContext().getString(R.string.ACC_DATA),
-            Context.MODE_PRIVATE
-        ).edit()
-        editor.putString("DeviceId", device?.address)
-        editor.apply()
+        requireContext().getSharedPreferences(requireContext().getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
+            .edit()
+            .apply { putString("DeviceId", device?.address) }
+            .apply()
 
         when (deviceConfig.general.type?.lowercase()) {
             "vest" -> R.drawable.hexoskin
@@ -288,7 +286,7 @@ class DeviceFragment : Fragment() {
                 }
                 Log.d(loggerTag, result.toString())
                 Log.d(loggerTag, db!!.insertNote(result).toString())
-                Log.d(loggerTag, db!!.notesCount.toString())
+                Log.d(loggerTag, db!!.getNotesCount().toString())
             }
         }
     }
@@ -348,31 +346,24 @@ class DeviceFragment : Fragment() {
     }
 
     companion object {
-        // Heart Rate Service UUID
         private val heartRateMeasurementServiceUuid =
             UUID.fromString("0000180d-0000-1000-8000-00805f9b34fb")
 
-        // Heart Rate Measurement UUID
         private val heartRateMeasurementCharacteristicUuid =
             UUID.fromString("00002a37-0000-1000-8000-00805f9b34fb")
 
-        // Respiration Rate Service UUID
         private val respirationServiceUuid =
             UUID.fromString("3b55c581-bc19-48f0-bd8c-b522796f8e24")
 
-        // Respiration Rate Measurement UUID
         private val respirationRateMeasurementCharacteristicUuid =
             UUID.fromString("9bc730c3-8cc0-4d87-85bc-573d6304403c")
 
-        // UUID for notification
         private val clientCharacteristicConfigUuid =
             UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
 
-        // Accelerometer Service UUID
         private val accelerometerServiceUuid =
             UUID.fromString("bdc750c7-2649-4fa8-abe8-fbf25038cda3")
 
-        // Accelerometer Measurement UUID
         private val accelerometerMeasurementCharacteristicUuid =
             UUID.fromString("75246a26-237a-4863-aca6-09b639344f43")
         private val loggerTag = DeviceFragment::class.java.simpleName

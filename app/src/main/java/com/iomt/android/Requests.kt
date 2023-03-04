@@ -1,58 +1,50 @@
 package com.iomt.android
 
-import android.content.Context
 import android.util.Log
+import com.iomt.android.entities.*
 
-import com.iomt.android.entities.AuthInfo
-
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.logging.HttpLoggingInterceptor
-import org.json.JSONObject
-
-import java.io.IOException
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
 
 import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.channels.Channel
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+private val httpClient = HttpClient {
+    install(ContentNegotiation) {
+        json()
+    }
+}
+private val scope = CoroutineScope(Dispatchers.IO)
 
 /**
  * Class that is used to perform requests.
  */
 class Requests(
-    private val context: Context,
     private var jwt: String? = null,
     private var userId: String? = null,
 ) {
-    private val loggingInterceptor = HttpLoggingInterceptor {
-        Log.d(TAG, it)
-    }.apply {
-        setLevel(HttpLoggingInterceptor.Level.BASIC)
-    }
-    private val client = OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
-    private val coroutineForRequests = CoroutineScope(Job())
-
     /**
      * @param device [DeviceInfo] that will be sent
      */
     fun sendDevice(device: DeviceInfo) {
-        val postUrl = "${context.getString(R.string.base_url)}/devices/register/?token=$jwt&user_id=$userId"
-        val json = JSONObject().apply {
-            put("device_id", device.address)
-            put("device_name", device.name)
-            put("device_type", device.deviceType)
-        }.toString().toRequestBody(jsonMediaType)
-        val request = Request.Builder()
-            .url(postUrl)
-            .post(json)
-            .build()
-        coroutineForRequests.launch {
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                Log.d(TAG, "Request <$postUrl> was successfully sent.")
+        val url = "$BASE_URL/devices/register/?token=$jwt&user_id=$userId"
+        scope.launch {
+            val response = httpClient.post {
+                url(url)
+                contentType(ContentType.Application.Json)
+                setBody(device)
+            }
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
             } else {
-                Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
+                Log.e(TAG, "Got ${response.status} from server with <$url>.")
             }
         }
     }
@@ -61,63 +53,68 @@ class Requests(
      * @param device [DeviceInfo] of device that will be deleted
      */
     fun deleteDevice(device: DeviceInfo) {
-        val getUrl = "${context.getString(R.string.base_url)}/devices/delete/?token=$jwt&user_id=$userId&id=${device.address}"
-        val request = Request.Builder()
-            .url(getUrl)
-            .get()
-            .build()
-        coroutineForRequests.launch {
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                Log.d(TAG, "Request <$getUrl> was successfully sent.")
+        val url = "$BASE_URL/devices/delete/?token=$jwt&user_id=$userId&id=${device.address}"
+        scope.launch {
+            val response = httpClient.get {
+                url(url)
+            }
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
             } else {
-                Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
 
     /**
-     * @param action
+     * @param resultCallback callback that should be invoked on success
      */
-    fun getDevices(action: Action) {
+    fun getDevices(resultCallback: (List<DeviceInfo>) -> Unit) {
+        /**
+         * @property deviceList
+         */
+        @Serializable
+        data class DeviceList(val deviceList: List<DeviceInfo>)
+
         Log.w(TAG, "JWT: $jwt, userID: $userId")
-        val getUrl = "${context.getString(R.string.base_url)}/devices/get/?token=$jwt&user_id=$userId"
-        val request = Request.Builder()
-            .url(getUrl)
-            .get()
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Request <$getUrl> was successfully sent.")
-                    action.run(arrayOf(JSONObject(response.body!!.string()).getString("devices")))
-                } else {
-                    Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
-                }
+        val url = "$BASE_URL/devices/get/?token=$jwt&user_id=$userId"
+
+        scope.launch {
+            val response = httpClient.get {
+                url(url)
             }
-            @Suppress("IDENTIFIER_LENGTH")
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$getUrl>.")
+
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
+                val devices: DeviceList = response.body()
+                resultCallback(devices.deviceList)
+            } else {
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
             }
-        })
+        }
     }
 
     /**
-     * @param action
+     * @param resultCallback callback that should be invoked on success
      */
-    fun getDeviceTypes(action: Action) {
-        val getUrl = "${context.getString(R.string.base_url)}/devices/types/?token=$jwt&user_id=$userId"
-        val request = Request.Builder()
-            .url(getUrl)
-            .get()
-            .build()
-        coroutineForRequests.launch {
-            val response = client.newCall(request).execute()
-            if (response.isSuccessful) {
-                Log.d(TAG, "Request <$getUrl> was successfully sent.")
-                action.run(arrayOf(JSONObject(response.body!!.string()).getString("devices")))
+    fun getDeviceTypes(resultCallback: (List<DeviceType>) -> Unit) {
+        /**
+         * @property deviceList
+         */
+        @Serializable data class DeviceTypeList(val deviceList: List<DeviceType>)
+
+        val url = "$BASE_URL/devices/types/?token=$jwt&user_id=$userId"
+
+        scope.launch {
+            val response = httpClient.get {
+                url(url)
+            }
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
+                val devices: DeviceTypeList = response.body()
+                resultCallback(devices.deviceList)
             } else {
-                Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
@@ -127,131 +124,87 @@ class Requests(
      * @param password
      * @return [AuthInfo]
      */
-    fun sendLogin(login: String, password: String) = runBlocking {
-        val url = "${context.getString(R.string.base_url)}/auth/"
-        val json = JSONObject().apply {
-            put("login", login)
-            put("password", password)
-        }.toString().toRequestBody(jsonMediaType)
-        val request = Request.Builder()
-            .url(url)
-            .post(json)
-            .addHeader("Content-Type", "application/json")
-            .build()
-        val deferred: CompletableDeferred<AuthInfo> = CompletableDeferred()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                val stringResponse = response.body?.string()
-                if (response.isSuccessful && stringResponse != null) {
-                    deferred.complete(Json.decodeFromString(stringResponse))
-                } else {
-                    Log.e(TAG, "Got [${response.code}] from server with <$url>.")
-                    deferred.complete(AuthInfo("", "", false, wasFailed = true))
-                }
+    fun sendLogin(login: String, password: String): AuthInfo = runBlocking {
+        /**
+         * @property login
+         * @property password
+         */
+        @Serializable data class Credentials(val login: String, val password: String)
+
+        val url = "$BASE_URL/auth/"
+
+        val channel: Channel<AuthInfo> = Channel()
+
+        scope.launch {
+            val response = httpClient.post {
+                url(url)
+                contentType(ContentType.Application.Json)
+                setBody(Credentials(login, password))
             }
-            @Suppress("IDENTIFIER_LENGTH")
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$url>.")
-                deferred.complete(AuthInfo("", "", false, wasFailed = true))
+            if (response.status.isSuccess()) {
+                val authInfo: AuthInfo = response.body()
+                channel.send(authInfo)
+            } else {
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                channel.send(AuthInfo.empty)
             }
-        })
-        deferred.await()
+        }
+        channel.receive()
     }
 
     /**
-     * @param name
-     * @param surname
-     * @param patronymic
-     * @param birthdate
-     * @param email
-     * @param mobile
-     * @param login
-     * @param password
-     * @param successAction
+     * @param signUpInfo
      * @param errorAction
+     * @param successAction
      */
     @Suppress("TOO_MANY_PARAMETERS")
     fun sendReg(
-        name: String?,
-        surname: String?,
-        patronymic: String?,
-        birthdate: String?,
-        email: String?,
-        mobile: String?,
-        login: String?,
-        password: String?,
-        errorAction: ErrorAction,
-        successAction: Action,
+        signUpInfo: SignUpInfo,
+        errorAction: () -> Unit,
+        successAction: (String?) -> Unit,
     ) {
-        val postUrl = "${context.getString(R.string.base_url)}/users/register/"
-        val json = JSONObject().apply {
-            put("name", name!!)
-            put("surname", surname!!)
-            put("patronymic", patronymic!!)
-            put("birthdate", birthdate!!)
-            put("email", email!!)
-            put("phone_number", mobile!!)
-            put("login", login!!)
-            put("password", password!!)
-        }.toString().toRequestBody(jsonMediaType)
-        val request = Request.Builder()
-            .url(postUrl)
-            .post(json)
-            .build()
-        client.newCall(request).enqueue(
-            object : Callback {
-                override fun onResponse(call: Call, response: Response) {
-                    if (response.isSuccessful) {
-                        Log.d(TAG, "Request <$postUrl> was successfully sent.")
-                        val err = JSONObject(response.body!!.string()).getString("error")
-                        successAction.run(arrayOf(err))
-                    } else {
-                        Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
-                        errorAction.run()
-                    }
-                }
-                @Suppress("IDENTIFIER_LENGTH")
-                override fun onFailure(call: Call, e: IOException) {
-                    Log.e(TAG, "Got [${e.localizedMessage}] from server with <$postUrl>.")
-                    errorAction.run()
-                }
+        /**
+         * @property error
+         */
+        @Serializable data class ErrorBody(val error: String?)
+
+        val url = "$BASE_URL/users/register/"
+
+        scope.launch {
+            val response = httpClient.post {
+                url(url)
+                contentType(ContentType.Application.Json)
+                setBody(signUpInfo)
             }
-        )
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
+                val error: ErrorBody = response.body()
+                successAction(error.error)
+            } else {
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                errorAction()
+            }
+        }
     }
 
     /**
-     * @param action
+     * @param resultCallback callback that should be invoked on success
      */
-    fun getData(action: Action) {
-        val getUrl = "${context.getString(R.string.base_url)}/users/info/?token=$jwt&user_id=$userId"
-        val request = Request.Builder()
-            .url(getUrl)
-            .get()
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Request <$getUrl> was successfully sent.")
-                    val jsonStringResponse = JSONObject(response.body!!.string())
-                    action.run(arrayOf(
-                        jsonStringResponse.getInt("weight").toString(),
-                        jsonStringResponse.getInt("height").toString(),
-                        jsonStringResponse["birthdate"] as String,
-                        jsonStringResponse["phone_number"] as String,
-                        jsonStringResponse["email"] as String,
-                        jsonStringResponse["name"] as String,
-                        jsonStringResponse["surname"] as String,
-                        jsonStringResponse["patronymic"] as String,
-                    ))
-                } else {
-                    Log.e(TAG, "Got [${response.code}] from server with <$getUrl>.")
-                }
+    fun getData(resultCallback: (UserData) -> Unit) {
+        val url = "$BASE_URL/users/info/?token=$jwt&user_id=$userId"
+
+        scope.launch {
+            val response = httpClient.get {
+                url(url)
             }
-            @Suppress("IDENTIFIER_LENGTH")
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$getUrl>.")
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
+                val userData: UserData = response.body()
+                resultCallback(userData)
+            } else {
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
             }
-        })
+        }
     }
 
     /**
@@ -275,34 +228,53 @@ class Requests(
         weight: Int,
         height: Int
     ) {
-        val postUrl = "${context.getString(R.string.base_url)}/users/info/?token=$jwt&user_id=$userId"
-        val json = JSONObject().apply {
-            put("name", name!!)
-            put("surname", surname!!)
-            put("birthdate", birthdate!!)
-            put("height", height.toString())
-            put("weight", weight.toString())
-            put("email", email!!)
-            put("phone_number", phone!!)
-            put("patronymic", patronymic!!)
-        }.toString().toRequestBody(jsonMediaType)
-        val request = Request.Builder()
-            .url(postUrl)
-            .post(json)
-            .build()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                if (response.isSuccessful) {
-                    Log.d(TAG, "Request <$postUrl> was successfully sent.")
-                } else {
-                    Log.e(TAG, "Got [${response.code}] from server with <$postUrl>.")
-                }
+        /**
+         * @property name
+         * @property surname
+         * @property birthdate
+         * @property height
+         * @property weight
+         * @property email
+         * @property phoneNumber
+         * @property patronymic
+         */
+        @Serializable
+        data class UserDataDto(
+            val name: String?,
+            val surname: String?,
+            val birthdate: String?,
+            val height: Int,
+            val weight: Int,
+            val email: String?,
+            @SerialName("phone_number") val phoneNumber: String?,
+            val patronymic: String?,
+        )
+
+        val url = "$BASE_URL/users/info/?token=$jwt&user_id=$userId"
+
+        scope.launch {
+            val response = httpClient.post {
+                url(url)
+                contentType(ContentType.Application.Json)
+                setBody(
+                    UserDataDto(
+                        name,
+                        surname,
+                        birthdate,
+                        height,
+                        weight,
+                        email,
+                        phone,
+                        patronymic,
+                    )
+                )
             }
-            @Suppress("IDENTIFIER_LENGTH")
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$postUrl>.")
+            if (response.status.isSuccess()) {
+                Log.d(TAG, "Request <$url> was successfully sent.")
+            } else {
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
             }
-        })
+        }
     }
 
     /**
@@ -310,33 +282,26 @@ class Requests(
      * @return [String] of device config
      */
     fun getDeviceConfig(configId: Long): String = runBlocking {
-        val url = "${context.getString(R.string.base_url)}/devices/types?id=$configId&token=$jwt"
-        val request = Request.Builder()
-            .url(url)
-            .get()
-            .build()
-        val deferred: CompletableDeferred<String> = CompletableDeferred()
-        client.newCall(request).enqueue(object : Callback {
-            override fun onResponse(call: Call, response: Response) {
-                val config = response.body?.string()
-                if (response.isSuccessful && response.body != null) {
-                    deferred.complete(config ?: "")
-                } else {
-                    Log.e(TAG, "Got [${response.code}] from server with <$url>.")
-                    deferred.complete("")
-                }
+        val url = "$BASE_URL/devices/types/?id=$configId&token=$jwt"
+
+        val channel: Channel<String> = Channel()
+
+        scope.launch {
+            val response = httpClient.get {
+                url(url)
             }
-            @Suppress("IDENTIFIER_LENGTH")
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e(TAG, "Got [${e.localizedMessage}] from server with <$url>.")
-                deferred.complete("")
+            if (response.status.isSuccess()) {
+                channel.send(response.bodyAsText())
+            } else {
+                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                channel.close(IllegalStateException("Got [${response.status}] from server with <$url>."))
             }
-        })
-        deferred.await()
+        }
+        channel.receive()
     }
 
     companion object {
-        private const val TAG = "HTTPRequests"
-        private val jsonMediaType = "application/json; charset=utf-8".toMediaType()
+        private const val BASE_URL = "https://iomt.lvk.cs.msu.ru"
+        private const val TAG = "Requests"
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.iomt.android.DeviceInfoAdapter.DeviceInfoHolder
+import com.iomt.android.entities.DeviceInfo
 
 /**
  * [RecyclerView.Adapter] of [DeviceInfoHolder]
@@ -57,7 +58,6 @@ class DeviceInfoAdapter(
                 Context.MODE_PRIVATE
             )
             val httpRequests = Requests(
-                itemView.context,
                 prefs.getString("JWT", ""),
                 prefs.getString("UserId", "")
             )

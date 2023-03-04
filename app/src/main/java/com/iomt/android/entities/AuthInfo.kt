@@ -16,4 +16,8 @@ data class AuthInfo(
     val userId: String,
     val confirmed: Boolean,
     val wasFailed: Boolean = false,
-)
+) {
+    companion object {
+        val empty = AuthInfo("", "", false, wasFailed = true)
+    }
+}

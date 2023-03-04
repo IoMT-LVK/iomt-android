@@ -50,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
         progressBar.visibility = ProgressBar.VISIBLE
         val login = loginText.text.toString()
         val password = passwordText.text.toString()
-        val httpRequests = Requests(this)
+        val httpRequests = Requests()
         val authInfo = httpRequests.sendLogin(login, password)
         if (authInfo.wasFailed) {
             onLoginFailed()
@@ -81,11 +81,7 @@ class LoginActivity : AppCompatActivity() {
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)
         val intent = Intent(this, DeviceListActivity::class.java)
-        val pref = getSharedPreferences(
-            baseContext.getString(R.string.ACC_DATA),
-            Context.MODE_PRIVATE
-        )
-        pref.edit().apply {
+        getSharedPreferences(baseContext.getString(R.string.ACC_DATA), Context.MODE_PRIVATE).edit().apply {
             putString("JWT", jwt)
             putString("UserId", userId)
         }.apply()

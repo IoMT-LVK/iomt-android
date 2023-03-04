@@ -1,11 +1,9 @@
 package com.iomt.android
 
 import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.customview.widget.ViewDragHelper
@@ -13,7 +11,11 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
+
+import com.iomt.android.entities.UserData
+
 import com.google.android.material.navigation.NavigationView
+
 import java.lang.reflect.Field
 
 /**
@@ -21,16 +23,10 @@ import java.lang.reflect.Field
  */
 class DeviceListActivity : AppCompatActivity() {
     private var appBarConfiguration: AppBarConfiguration? = null
-    private var sname: String? = null
-    private var ssurname: String? = null
     private var jwt: String? = null
     private var userId: String? = null
-    private var height = 0
-    private var width = 0
     private var httpRequests: Requests? = null
-    private var action: Action? = null
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device_list)
@@ -38,36 +34,7 @@ class DeviceListActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         jwt = intent.getStringExtra("JWT")
         userId = intent.getStringExtra("UserId")
-        httpRequests = Requests(this, jwt, userId)
-        action = Action { args: Array<String?>? ->
-            width = args!![0]!!.toInt()
-            height = args[1]!!.toInt()
-            sname = args[5]
-            ssurname = args[6]
-            val editor = getSharedPreferences(
-                applicationContext.getString(R.string.ACC_DATA),
-                MODE_PRIVATE
-            ).edit()
-            editor.putString("name", sname)
-            editor.putString("surname", ssurname)
-            editor.putInt("height", height)
-            editor.putInt("weight", width)
-            editor.putString("JWT", jwt)
-            editor.putString("UserId", userId)
-            editor.apply()
-            findViewById<TextView>(R.id.surname_head).apply {
-                text = ssurname
-            }
-            findViewById<TextView>(R.id.name_head).apply {
-                text = sname
-            }
-            findViewById<TextView>(R.id.height_head).apply {
-                text = String.format(applicationContext.getString(R.string.height_head), height)
-            }
-            findViewById<TextView>(R.id.weight_head).apply {
-                text = String.format(applicationContext.getString(R.string.weight_head), width)
-            }
-        }
+        httpRequests = Requests(jwt, userId)
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         val dragger: Field
         try {
@@ -85,31 +52,39 @@ class DeviceListActivity : AppCompatActivity() {
             e.printStackTrace()
         }
         val navigationView: NavigationView = findViewById(R.id.nav_view_dlist)
-        appBarConfiguration = AppBarConfiguration
-            .Builder(R.id.nav_home, R.id.nav_settings, R.id.nav_account)
-            .setOpenableLayout(drawer)
-            .build()
+        appBarConfiguration = AppBarConfiguration.Builder(R.id.nav_home, R.id.nav_settings, R.id.nav_account).setOpenableLayout(drawer).build()
         val navController = Navigation.findNavController(this, R.id.nav_host_device_list)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration!!)
         NavigationUI.setupWithNavController(navigationView, navController)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_FINE_LOCATION
-            )
-        }
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_REQUEST_FINE_LOCATION
+        )
+    }
+
+    @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+    private val getDataRequestCallback: (UserData) -> Unit = { userData ->
+        getSharedPreferences(applicationContext.getString(R.string.ACC_DATA), MODE_PRIVATE).edit().apply {
+            putString("name", userData.name)
+            putString("surname", userData.surname)
+            putInt("height", userData.height)
+            putInt("weight", userData.weight)
+            putString("JWT", jwt)
+            putString("UserId", userId)
+        }.apply()
+        findViewById<TextView>(R.id.name_head).apply { text = userData.name }
+        findViewById<TextView>(R.id.surname_head).apply { text = userData.surname }
+        findViewById<TextView>(R.id.height_head).apply { text = String.format(applicationContext.getString(R.string.height_head), userData.height) }
+        findViewById<TextView>(R.id.weight_head).apply { text = String.format(applicationContext.getString(R.string.weight_head), userData.weight) }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = Navigation.findNavController(this, R.id.nav_host_device_list)
-        httpRequests!!.getData(action!!)
+        httpRequests!!.getData(getDataRequestCallback)
         return (NavigationUI.navigateUp(navController, appBarConfiguration!!) || super.onSupportNavigateUp())
     }
 
-    override fun onResume() {
-        httpRequests!!.getData(action!!)
-        super.onResume()
-    }
+    override fun onResume() = httpRequests?.getData(getDataRequestCallback).also { super.onResume() } ?: Unit
 
     companion object {
         private const val PERMISSION_REQUEST_FINE_LOCATION = 1

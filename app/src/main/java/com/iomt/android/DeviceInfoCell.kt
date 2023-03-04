@@ -1,5 +1,7 @@
 package com.iomt.android
 
+import com.iomt.android.entities.DeviceInfo
+
 /**
  * @property deviceInfo
  */

@@ -1,10 +1,8 @@
 package com.iomt.android
 
 import android.Manifest
-import android.os.Build
 import android.os.Bundle
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.customview.widget.ViewDragHelper
@@ -20,7 +18,6 @@ import java.lang.reflect.Field
  */
 class DeviceActivity : AppCompatActivity() {
     private var appBarConfiguration: AppBarConfiguration? = null
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device)
@@ -51,12 +48,10 @@ class DeviceActivity : AppCompatActivity() {
         val navController = Navigation.findNavController(this, R.id.nav_host_device)
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration!!)
         NavigationUI.setupWithNavController(navigationView, navController)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_FINE_LOCATION
-            )
-        }
+        requestPermissions(
+            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+            PERMISSION_REQUEST_FINE_LOCATION
+        )
     }
 
     override fun onSupportNavigateUp(): Boolean {

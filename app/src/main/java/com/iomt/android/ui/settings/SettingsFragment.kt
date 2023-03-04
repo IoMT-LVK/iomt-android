@@ -40,12 +40,11 @@ class SettingsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
         return root
     }
 
-    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
-        val editor = requireActivity().getSharedPreferences(
-            requireActivity().applicationContext.getString(R.string.ACC_DATA),
-            Context.MODE_PRIVATE
-        ).edit()
-        editor.putBoolean("lte", isChecked)
-        editor.apply()
-    }
+    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) = requireActivity().getSharedPreferences(
+        requireActivity().applicationContext.getString(R.string.ACC_DATA),
+        Context.MODE_PRIVATE,
+    )
+        .edit()
+        .apply { putBoolean("lte", isChecked) }
+        .apply()
 }

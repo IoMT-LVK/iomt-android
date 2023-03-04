@@ -8,6 +8,7 @@ import android.os.Looper
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import com.iomt.android.entities.SignUpInfo
 import java.util.*
 
 /**
@@ -95,25 +96,22 @@ class SignupActivity : AppCompatActivity() {
         signupButton.isEnabled = false
         progressBar.isIndeterminate = true
         progressBar.visibility = ProgressBar.VISIBLE
-        Requests(this).sendReg(
-            nameText.text.toString(),
-            surnameText.text.toString(),
-            patronymicText.text.toString(),
-            birthdateText.text.toString(),
-            emailText.text.toString(),
-            mobileText.text.toString(),
-            loginText.text.toString(),
-            passwordText.text.toString(),
+        Requests().sendReg(
+            SignUpInfo(
+                nameText.text.toString(),
+                surnameText.text.toString(),
+                patronymicText.text.toString(),
+                birthdateText.text.toString(),
+                emailText.text.toString(),
+                mobileText.text.toString(),
+                loginText.text.toString(),
+                passwordText.text.toString(),
+            ),
             { runOnUiThread { onSignupFailed("") } }
-        ) { args: Array<String?>? ->
+        ) { error ->
             runOnUiThread {
                 Handler(Looper.getMainLooper()).postDelayed({
-                    val arg = requireNotNull(args?.get(0))
-                    if (arg.isNotEmpty()) {
-                        onSignupFailed(arg)
-                    } else {
-                        onSignupSuccess()
-                    }
+                    error?.let { errorMessage -> onSignupFailed(errorMessage) } ?: onSignupSuccess()
                     progressBar.visibility = ProgressBar.INVISIBLE
                 }, 1000
                 )
