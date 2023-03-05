@@ -13,6 +13,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -21,6 +22,8 @@ import android.util.Log
 import android.view.*
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -30,14 +33,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 
 import com.iomt.android.*
+import com.iomt.android.R
 import com.iomt.android.config.configs.DeviceConfig
 import com.iomt.android.config.parseConfig
 import com.iomt.android.entities.DeviceInfo
+import permissions.dispatcher.*
 import java.util.*
 
 /**
  * Displays list of Hexoskin Devices
  */
+@RuntimePermissions
 class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private var uiHandler: Handler? = null
     private var menuItem: MenuItem? = null
@@ -49,6 +55,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private var httpRequests: Requests? = null
     private var deviceInfos: List<DeviceInfo> = ArrayList()
     private var config: DeviceConfig? = null
+    private var configString: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,9 +150,12 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         val noDev = view.findViewById<TextView>(R.id.text_no_dev).apply {
             visibility = View.GONE
         }
-        val configString = httpRequests!!.getDeviceConfig(1)
-        config = parseConfig(configString)
-        // checkPermissions()
+        httpRequests?.getDeviceConfig(1) { configAsString ->
+            Log.d(loggerTag, configAsString)
+            config = parseConfig(configAsString)
+            configString = configAsString
+        }
+
         httpRequests!!.getDevices { devices ->
             uiHandler?.post {
                 deviceInfos = devices
@@ -177,9 +187,11 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         menuItem = menu.findItem(R.id.scan)
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.scan) {
-            scanLeDevice()
+            scanLeDeviceWithPermissionCheck()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -187,7 +199,10 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
 
     private val leScanCallback: ScanCallback = object : ScanCallback() {
         private val tag = ScanCallback::class.java.toString()
+
         @SuppressLint("NotifyDataSetChanged")
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             result.device.name?.let {
                 val device = result.device
@@ -205,9 +220,16 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         }
     }
 
-    // Scan for BLE devices
+    /**
+     * Start BLE scan
+     *
+     * kapt generates [scanLeDeviceWithPermissionCheck] for [scanLeDevice] processing permission requests
+     */
     @SuppressLint("NotifyDataSetChanged")
-    private fun scanLeDevice() {
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    @NeedsPermission(Manifest.permission.BLUETOOTH_SCAN)
+    fun scanLeDevice() {
         // Clear devices
         deviceCells.clear()
 
@@ -225,18 +247,27 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
         Log.d(loggerTag, "Scan started")
     }
 
-    private fun stopScan() {
+    /**
+     * Stop BLE scan
+     *
+     * kapt generates [stopScanWithPermissionCheck] for [stopScan] processing permission requests
+     */
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
+    @NeedsPermission(Manifest.permission.BLUETOOTH_SCAN)
+    fun stopScan() {
         menuItem?.isEnabled = true
-        // bluetoothAdapter.stopLeScan(mLeScanCallback);
         bluetoothLeScanner?.stopScan(leScanCallback)
         Log.d(loggerTag, "Scan stopped")
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     override fun onClickItem(deviceCell: DeviceCell?, device: BluetoothDevice?) {
         stopScan()
-        // Show Device Detail
         val intent = Intent(activity, DeviceActivity::class.java)
         intent.putExtra("Device", device)
+        intent.putExtra("configString", configString)
         startActivity(intent)
     }
 

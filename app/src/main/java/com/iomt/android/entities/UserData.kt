@@ -12,19 +12,15 @@ import kotlinx.serialization.Serializable
  * @property phoneNumber
  * @property height
  * @property weight
- * @property jwt
- * @property userId
  */
 @Serializable
 data class UserData(
-    @SerialName("sname") val name: String,
-    @SerialName("ssurname") val surname: String,
+    val name: String,
+    val surname: String,
     val patronymic: String?,
     val email: String?,
     val birthdate: String?,
     @SerialName("phone_number") val phoneNumber: String?,
     val height: Int,
     val weight: Int,
-    val jwt: String,
-    val userId: String,
 )

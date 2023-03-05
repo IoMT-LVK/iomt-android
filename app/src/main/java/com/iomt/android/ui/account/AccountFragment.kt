@@ -93,12 +93,14 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
                     putString("birthdate", birthdate)
                 }.apply()
             val nameLbl = "$name $surname"
-            textName?.text = nameLbl
-            textWeight?.text = weight.toString()
-            textHeight?.text = height.toString()
-            textPhone?.text = phone
-            textEmail?.text = email
-            textBirthday?.text = birthdate
+            uiHandler?.post {
+                textName?.text = nameLbl
+                textWeight?.text = weight.toString()
+                textHeight?.text = height.toString()
+                textPhone?.text = phone
+                textEmail?.text = email
+                textBirthday?.text = birthdate
+            }
         }
     }
 
@@ -316,7 +318,7 @@ class AccountFragment : Fragment(), DeviceInfoAdapter.OnClickListener {
     private fun update() {
         httpRequests?.getData(getDataRequestCallback)
         httpRequests?.getDevices { devices ->
-            uiHandler?.let {
+            uiHandler?.post {
                 deviceInfoCells.clear()
                 devices.forEach { deviceInfo -> deviceInfoCells.add(DeviceInfoCell(deviceInfo)) }
                 deviceInfoAdapter?.notifyDataSetChanged()

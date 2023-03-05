@@ -12,7 +12,6 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -42,9 +41,9 @@ class Requests(
                 setBody(device)
             }
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
             } else {
-                Log.e(TAG, "Got ${response.status} from server with <$url>.")
+                Log.e(loggerTag, "Got ${response.status} from server with <$url>.")
             }
         }
     }
@@ -59,9 +58,9 @@ class Requests(
                 url(url)
             }
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
@@ -71,12 +70,12 @@ class Requests(
      */
     fun getDevices(resultCallback: (List<DeviceInfo>) -> Unit) {
         /**
-         * @property deviceList
+         * @property devices
          */
         @Serializable
-        data class DeviceList(val deviceList: List<DeviceInfo>)
+        data class DeviceList(val devices: List<DeviceInfo>)
 
-        Log.w(TAG, "JWT: $jwt, userID: $userId")
+        Log.w(loggerTag, "JWT: $jwt, userID: $userId")
         val url = "$BASE_URL/devices/get/?token=$jwt&user_id=$userId"
 
         scope.launch {
@@ -85,11 +84,11 @@ class Requests(
             }
 
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
                 val devices: DeviceList = response.body()
-                resultCallback(devices.deviceList)
+                resultCallback(devices.devices)
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
@@ -110,11 +109,11 @@ class Requests(
                 url(url)
             }
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
                 val devices: DeviceTypeList = response.body()
                 resultCallback(devices.deviceList)
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
@@ -122,18 +121,16 @@ class Requests(
     /**
      * @param login
      * @param password
+     * @param callback callback that will be invoked on success
      * @return [AuthInfo]
      */
-    fun sendLogin(login: String, password: String): AuthInfo = runBlocking {
+    fun sendLogin(login: String, password: String, callback: (AuthInfo) -> Unit) {
         /**
          * @property login
          * @property password
          */
         @Serializable data class Credentials(val login: String, val password: String)
-
         val url = "$BASE_URL/auth/"
-
-        val channel: Channel<AuthInfo> = Channel()
 
         scope.launch {
             val response = httpClient.post {
@@ -143,13 +140,12 @@ class Requests(
             }
             if (response.status.isSuccess()) {
                 val authInfo: AuthInfo = response.body()
-                channel.send(authInfo)
+                callback(authInfo)
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
-                channel.send(AuthInfo.empty)
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
+                callback(AuthInfo.empty)
             }
         }
-        channel.receive()
     }
 
     /**
@@ -177,11 +173,11 @@ class Requests(
                 setBody(signUpInfo)
             }
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
                 val error: ErrorBody = response.body()
                 successAction(error.error)
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
                 errorAction()
             }
         }
@@ -198,11 +194,11 @@ class Requests(
                 url(url)
             }
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
                 val userData: UserData = response.body()
                 resultCallback(userData)
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
@@ -270,38 +266,38 @@ class Requests(
                 )
             }
             if (response.status.isSuccess()) {
-                Log.d(TAG, "Request <$url> was successfully sent.")
+                Log.d(loggerTag, "Request <$url> was successfully sent.")
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
             }
         }
     }
 
     /**
      * @param configId
+     * @param callback
      * @return [String] of device config
+     * @throws IllegalStateException
      */
-    fun getDeviceConfig(configId: Long): String = runBlocking {
+    fun getDeviceConfig(configId: Long, callback: (String) -> Unit) {
         val url = "$BASE_URL/devices/types/?id=$configId&token=$jwt"
-
-        val channel: Channel<String> = Channel()
-
+        Log.d(loggerTag, "Fetching config with id $configId")
         scope.launch {
             val response = httpClient.get {
                 url(url)
             }
             if (response.status.isSuccess()) {
-                channel.send(response.bodyAsText())
+                callback(response.bodyAsText())
             } else {
-                Log.e(TAG, "Got [${response.status}] from server with <$url>.")
-                channel.close(IllegalStateException("Got [${response.status}] from server with <$url>."))
+                Log.e(loggerTag, "Got [${response.status}] from server with <$url>.")
+                throw IllegalStateException("Could not get config $configId")
             }
         }
-        channel.receive()
     }
 
     companion object {
         private const val BASE_URL = "https://iomt.lvk.cs.msu.ru"
-        private const val TAG = "Requests"
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        private val loggerTag = object {}.javaClass.enclosingClass.name
     }
 }

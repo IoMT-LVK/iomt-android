@@ -55,9 +55,9 @@ dependencies {
     implementation("androidx.drawerlayout:drawerlayout:1.1.1")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.recyclerview:recyclerview:1.2.1")
 
     implementation("com.google.android.material:material:1.9.0-alpha02")
-    implementation("androidx.recyclerview:recyclerview:1.2.1")
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0")
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") { exclude("support-v4") }
 
@@ -70,7 +70,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.3")
 
     implementation("com.github.permissions-dispatcher:permissionsdispatcher:4.9.2")
-    kapt("com.github.permissions-dispatcher:permissionsdispatcher:4.9.2")
+    kapt("com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.2")
 
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
@@ -87,4 +87,8 @@ diktat {
         exclude("src/test/**", "src/androidTest/**")
     }
     debug = false
+}
+
+kapt {
+    showProcessorStats = true
 }

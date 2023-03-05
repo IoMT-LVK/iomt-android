@@ -72,15 +72,17 @@ class DeviceListActivity : AppCompatActivity() {
             putString("JWT", jwt)
             putString("UserId", userId)
         }.apply()
-        findViewById<TextView>(R.id.name_head).apply { text = userData.name }
-        findViewById<TextView>(R.id.surname_head).apply { text = userData.surname }
-        findViewById<TextView>(R.id.height_head).apply { text = String.format(applicationContext.getString(R.string.height_head), userData.height) }
-        findViewById<TextView>(R.id.weight_head).apply { text = String.format(applicationContext.getString(R.string.weight_head), userData.weight) }
+        runOnUiThread {
+            findViewById<TextView>(R.id.name_head).apply { text = userData.name }
+            findViewById<TextView>(R.id.surname_head).apply { text = userData.surname }
+            findViewById<TextView>(R.id.height_head).apply { text = String.format(applicationContext.getString(R.string.height_head), userData.height) }
+            findViewById<TextView>(R.id.weight_head).apply { text = String.format(applicationContext.getString(R.string.weight_head), userData.weight) }
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         val navController = Navigation.findNavController(this, R.id.nav_host_device_list)
-        httpRequests!!.getData(getDataRequestCallback)
+        httpRequests?.getData(getDataRequestCallback)
         return (NavigationUI.navigateUp(navController, appBarConfiguration!!) || super.onSupportNavigateUp())
     }
 

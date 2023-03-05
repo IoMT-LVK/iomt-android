@@ -51,17 +51,20 @@ class LoginActivity : AppCompatActivity() {
         val login = loginText.text.toString()
         val password = passwordText.text.toString()
         val httpRequests = Requests()
-        val authInfo = httpRequests.sendLogin(login, password)
-        if (authInfo.wasFailed) {
-            onLoginFailed()
-        } else if (!authInfo.confirmed) {
-            val intent = Intent(applicationContext, EmailConfirmation::class.java)
-            startActivity(intent)
-        } else {
-            jwt = authInfo.jwt
-            userId = authInfo.userId
-            onLoginSuccess()
-            progressBar.visibility = ProgressBar.INVISIBLE
+        httpRequests.sendLogin(login, password) { authInfo ->
+            if (authInfo.wasFailed) {
+                runOnUiThread { onLoginFailed() }
+            } else if (!authInfo.confirmed) {
+                val intent = Intent(applicationContext, EmailConfirmation::class.java)
+                runOnUiThread {
+                    startActivity(intent)
+                }
+            } else {
+                jwt = authInfo.jwt
+                userId = authInfo.userId
+                onLoginSuccess()
+                progressBar.visibility = ProgressBar.INVISIBLE
+            }
         }
     }
 
@@ -76,7 +79,7 @@ class LoginActivity : AppCompatActivity() {
         moveTaskToBack(true)
     }
 
-    private fun onLoginSuccess() {
+    private fun onLoginSuccess() = runOnUiThread {
         loginButton.isEnabled = false
         val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(window.decorView.windowToken, 0)

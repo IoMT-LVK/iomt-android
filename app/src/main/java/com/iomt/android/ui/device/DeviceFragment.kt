@@ -4,6 +4,7 @@ import android.Manifest
 import android.bluetooth.*
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -13,6 +14,8 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -107,6 +110,8 @@ class DeviceFragment : Fragment() {
         return linearLayout to valueBadge
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -115,14 +120,19 @@ class DeviceFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_device, container, false)
         setHasOptionsMenu(true)
 
-        val configString: String = requireActivity().intent.getStringExtra("deviceConfig")!!
-        deviceConfig = parseConfig(configString)
         val device: BluetoothDevice? = requireActivity().intent.getParcelableExtra("Device")
         (activity as AppCompatActivity).supportActionBar?.title = device?.name
         requireContext().getSharedPreferences(requireContext().getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
             .edit()
             .apply { putString("DeviceId", device?.address) }
             .apply()
+
+        Log.d(loggerTag, requireActivity().intent.extras.toString())
+
+        val configString: String = requireNotNull(requireActivity().intent.getStringExtra("configString")) {
+            "Could not find a proper config for this device"
+        }
+        deviceConfig = parseConfig(configString)
 
         when (deviceConfig.general.type?.lowercase()) {
             "vest" -> R.drawable.hexoskin
@@ -149,6 +159,8 @@ class DeviceFragment : Fragment() {
         return view
     }
 
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onDestroy() {
         super.onDestroy()
         gatt?.close()
@@ -156,6 +168,8 @@ class DeviceFragment : Fragment() {
 
     private val callback: BluetoothGattCallback = object : BluetoothGattCallback() {
         // Invoked when Bluetooth connection changes
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
             super.onConnectionStateChange(gatt, status, newState)
             requireActivity().runOnUiThread {
@@ -175,6 +189,8 @@ class DeviceFragment : Fragment() {
             }
         }
 
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         private fun getInitializedCharacteristic(
             gatt: BluetoothGatt,
             characteristicName: String,
@@ -202,6 +218,8 @@ class DeviceFragment : Fragment() {
          * @param gatt [BluetoothGatt]
          * @param status
          */
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
         override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 // Listen for Heart Rate notification
@@ -222,6 +240,7 @@ class DeviceFragment : Fragment() {
                 BluetoothGattCharacteristic.FORMAT_UINT16
             }
             val value = gattCharacteristic.getIntValue(format, 1)
+            val char = characteristics[characteristicName]
             characteristics[characteristicName]?.textView?.text = value.toString()
             characteristics[characteristicName]?.isUpdated = true
         }
@@ -260,7 +279,6 @@ class DeviceFragment : Fragment() {
                 }
                     .map { it.key }
                     .firstOrNull()
-                    ?.lowercase()
                     ?.let {
                         if (it == "accelerometer") {
                             changeAccelerometerLabel(characteristic)

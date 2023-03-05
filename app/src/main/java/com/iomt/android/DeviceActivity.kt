@@ -58,15 +58,15 @@ class DeviceActivity : AppCompatActivity() {
         val context = applicationContext
         val navController = Navigation.findNavController(this, R.id.nav_host_device)
         val prefs = getSharedPreferences(context.getString(R.string.ACC_DATA), MODE_PRIVATE)
-        val sname = prefs.getString("name", "Null")
-        val ssurname = prefs.getString("surname", "Null")
+        val name = prefs.getString("name", "Null")
+        val surname = prefs.getString("surname", "Null")
         val height = prefs.getInt("height", 0)
         val weight = prefs.getInt("weight", 0)
-        findViewById<TextView>(R.id.surname_head).apply {
-            text = ssurname
-        }
         findViewById<TextView>(R.id.name_head).apply {
-            text = sname
+            text = name
+        }
+        findViewById<TextView>(R.id.surname_head).apply {
+            text = surname
         }
         findViewById<TextView>(R.id.height_head).apply {
             text = String.format(context.getString(R.string.height_head), height)
