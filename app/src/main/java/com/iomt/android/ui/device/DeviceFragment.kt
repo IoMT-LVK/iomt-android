@@ -240,7 +240,6 @@ class DeviceFragment : Fragment() {
                 BluetoothGattCharacteristic.FORMAT_UINT16
             }
             val value = gattCharacteristic.getIntValue(format, 1)
-            val char = characteristics[characteristicName]
             characteristics[characteristicName]?.textView?.text = value.toString()
             characteristics[characteristicName]?.isUpdated = true
         }
