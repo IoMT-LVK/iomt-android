@@ -5,7 +5,6 @@
 package com.iomt.android.jetpack
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -19,21 +18,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.NavHostController
 import com.iomt.android.*
 import com.iomt.android.R
 import com.iomt.android.entities.AuthInfo
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
 
 /**
  * Login activity content
+ *
+ * @param preNavController [NavHostController] for pre-logged-in state
+ * @param updateAuthInfo callback to update [AuthInfo]
  */
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
-@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION", "FUNCTION_NAME_INCORRECT_CASE")
-fun LoginView() {
+@Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
+fun LoginView(preNavController: NavHostController, updateAuthInfo: (AuthInfo) -> Unit) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -42,8 +45,6 @@ fun LoginView() {
 
     var isSignInFailed by remember { mutableStateOf(false) }
 
-    var authInfo by remember { mutableStateOf<AuthInfo?>(null) }
-
     val context = LocalContext.current
 
     val onLoginClicked = {
@@ -51,26 +52,16 @@ fun LoginView() {
         isPasswordError = password.isBlank() || password.length < 4 || password.length > 16
         if (!isLoginError && !isPasswordError) {
             sendLoginRequest(login, password, { isSignInFailed = it }) { newAuthInfo ->
+                updateAuthInfo(newAuthInfo)
                 if (newAuthInfo.wasFailed) {
                     isSignInFailed = true
                 } else if (!newAuthInfo.confirmed) {
-                    val intent = Intent(context, EmailConfirmation::class.java)
-                    context.startActivity(intent)
+                    preNavController.navigate("emailConf")
                 } else {
-                    val intent = Intent(context, DeviceListActivity::class.java)
-                    context.getSharedPreferences(context.getString(R.string.ACC_DATA), Context.MODE_PRIVATE)
-                        .edit()
-                        .apply {
-                            putString("JWT", newAuthInfo.jwt)
-                            putString("UserId", newAuthInfo.userId)
-                        }
-                        .apply()
-                    intent.putExtra("JWT", newAuthInfo.jwt)
-                    intent.putExtra("UserId", newAuthInfo.userId)
-                    context.startActivity(intent)
-                    (context as? Activity)?.finish()
+                    MainScope().launch {
+                        preNavController.navigate("navViewSystem")
+                    }
                 }
-                authInfo = newAuthInfo
             }
         }
     }

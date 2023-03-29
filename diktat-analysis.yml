@@ -118,3 +118,5 @@
   enabled: false
 - name: MAGIC_NUMBER
   enabled: false
+- name: FUNCTION_NAME_INCORRECT_CASE
+  enabled: false

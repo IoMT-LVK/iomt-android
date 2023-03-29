@@ -144,7 +144,7 @@ class DeviceFragment : Fragment() {
 
         val containerLayout: LinearLayout = view.findViewById(R.id.data_container)
         deviceConfig.general.characteristicNames.forEach { name ->
-            val (layout, textView) = createCellLayout(name, deviceConfig.characteristics[name]?.name ?: "")
+            val (layout, textView) = createCellLayout(name, deviceConfig.characteristics[name]?.name.orEmpty())
             containerLayout.addView(layout)
             characteristics[name] = Characteristic(textView)
         }
