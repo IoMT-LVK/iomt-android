@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun TextFieldWithIcon(cell: Cell) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Icon(cell.iconPainter, "Weight", Modifier.padding(10.dp).size(24.dp))
+        Icon(cell.iconPainter, cell.description, Modifier.padding(10.dp).size(24.dp))
         TextField(cell.value, onValueChange = cell.onValueChange, Modifier.weight(1f))
     }
 }

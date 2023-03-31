@@ -2,7 +2,7 @@
  * Home View
  */
 
-package com.iomt.android.jetpack.view
+package com.iomt.android.jetpack.view.main
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -10,13 +10,16 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+
 import com.iomt.android.jetpack.components.DeviceList
+import com.iomt.android.jetpack.theme.colorScheme
 
 /**
  * @param knownDevices
@@ -37,5 +40,5 @@ fun HomeView(knownDevices: SnapshotStateList<BluetoothDevice>, onKnownDeviceClic
 @Composable
 private fun HomeViewPreview() {
     val connectedDevices = remember { mutableStateListOf<BluetoothDevice>() }
-    HomeView(connectedDevices) { connectedDevices.add(it) }
+    MaterialTheme(colorScheme) { HomeView(connectedDevices) { connectedDevices.add(it) } }
 }

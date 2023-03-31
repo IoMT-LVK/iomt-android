@@ -1,10 +1,11 @@
-@file:Suppress("FILE_NAME_MATCH_CLASS")
+/**
+ * File containing the scaffold of post-login part of app
+ */
 
 package com.iomt.android.jetpack.components
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
@@ -16,35 +17,17 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.iomt.android.R
 import com.iomt.android.entities.AuthInfo
-import com.iomt.android.jetpack.view.*
+import com.iomt.android.jetpack.navigation.NavRouter
+import com.iomt.android.jetpack.navigation.NavRouter.Companion.useMainNavHost
+import com.iomt.android.utils.navigate
 
 /**
- * @property iconId
- * @property path
- */
-enum class NavRouter(val iconId: Int, val path: String) {
-    ACCOUNT(R.drawable.ic_menu_account, "Account"),
-    BLE_SCANNER(R.drawable.blt, "Ble Scanner"),
-    DEVICE(R.drawable.default_device, "Device {id}"),
-    HOME(R.drawable.ic_menu_home, "Home"),
-    SETTINGS(R.drawable.ic_menu_settings, "Settings"),
-    ;
-    companion object {
-        val default = HOME
-    }
-}
-
-/**
- * @param navController
- * @param bluetoothManager
- * @param authInfo
- * @param signOut
- * @param onMenuButtonPressed
+ * @param navController post-login [NavHostController]
+ * @param authInfo [AuthInfo] of current user
+ * @param signOut callback invoked on sign out
+ * @param onMenuButtonPressed callback invoked on menu button pressed - this should open drawer
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
@@ -53,21 +36,20 @@ enum class NavRouter(val iconId: Int, val path: String) {
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 fun Scaffold(
     navController: NavHostController,
-    bluetoothManager: BluetoothManager,
     authInfo: AuthInfo,
     signOut: () -> Unit,
     onMenuButtonPressed: () -> Unit,
 ) {
-    var knownDevices = remember { mutableStateListOf<BluetoothDevice>() }
+    val knownDevices = remember { mutableStateListOf<BluetoothDevice>() }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     Scaffold(
         Modifier.fillMaxSize(),
         topBar = { TopBar(navController, onMenuButtonClicked = onMenuButtonPressed) },
         floatingActionButton = {
-            if (navBackStackEntry?.destination?.route == NavRouter.HOME.path) {
+            if (navBackStackEntry?.destination?.route == NavRouter.Main.Home.path) {
                 ExtendedFloatingActionButton(
-                    onClick = { navController.navigate(NavRouter.BLE_SCANNER.path) },
+                    onClick = { navController.navigate(NavRouter.Main.BleScanner) },
                     shape = ShapeDefaults.Medium,
                 ) {
                     Icon(Icons.Default.Add, "Add")
@@ -79,12 +61,11 @@ fun Scaffold(
         },
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
-        NavHost(navController, modifier = Modifier.padding(paddingValues), startDestination = NavRouter.default.path) {
-            composable(NavRouter.HOME.path) { HomeView(knownDevices) { knownDevices.add(it) } }
-            composable(NavRouter.SETTINGS.path) { SettingsView(signOut) }
-            // composable(NavRouter.DEVICE.path) { DeviceView() }
-            composable(NavRouter.ACCOUNT.path) { AccountView(knownDevices) }
-            composable(NavRouter.BLE_SCANNER.path) { BleScannerView(navController, bluetoothManager) { knownDevices.add(it) } }
-        }
+        navController.useMainNavHost(
+            knownDevices,
+            Modifier.padding(paddingValues),
+            signOut,
+            { /* navController.navigate(NavRouter.Main.Device) */ },
+        ) { knownDevices.add(it) }
     }
 }

@@ -10,4 +10,11 @@ import kotlinx.serialization.Serializable
 data class DeviceConfig(
     val general: GeneralConfig,
     val characteristics: Map<String, CharacteristicConfig>,
-)
+) {
+    companion object {
+        val stub = DeviceConfig(
+            GeneralConfig.stub,
+            mapOf("heartRate" to CharacteristicConfig.stub),
+        )
+    }
+}

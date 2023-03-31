@@ -1,11 +1,9 @@
 package com.iomt.android
 
 import android.Manifest
-import android.bluetooth.BluetoothManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.widget.*
 import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
@@ -24,10 +22,8 @@ class LoginActivity : AppCompatActivity() {
             requestPermissions(permissions.toTypedArray(), MASTER_PERMISSION_REQUEST_CODE)
         }
 
-        val bluetoothManager = getBluetoothManager()
-
         setContent {
-            EntryPoint(bluetoothManager)
+            EntryPoint()
         }
     }
 
@@ -37,10 +33,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun checkPermission() = permissions.all { permission ->
         ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun getBluetoothManager(): BluetoothManager = requireNotNull(getSystemService(BluetoothManager::class.java)) {
-        "Could not get BluetoothManager"
     }
 
     companion object {

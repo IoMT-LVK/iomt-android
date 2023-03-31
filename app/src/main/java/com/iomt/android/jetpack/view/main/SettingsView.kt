@@ -2,14 +2,16 @@
  * Settings view
  */
 
-package com.iomt.android.jetpack.view
+package com.iomt.android.jetpack.view.main
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.iomt.android.jetpack.theme.colorScheme
 
 /**
  * @param signOut
@@ -76,4 +78,10 @@ private fun Section(sectionName: String, content: @Composable () -> Unit) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+private fun SettingsViewPreview() {
+    MaterialTheme(colorScheme) { SettingsView { } }
 }

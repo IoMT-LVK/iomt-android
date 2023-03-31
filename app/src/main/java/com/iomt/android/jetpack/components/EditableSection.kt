@@ -17,10 +17,12 @@ import androidx.compose.ui.unit.dp
  * @property value
  * @property validator
  * @property onValueChange
+ * @property description
  */
 data class Cell(
     val iconPainter: Painter,
     val value: String,
+    val description: String? = null,
     val validator: ((String) -> Boolean)? = null,
     val onValueChange: (String) -> Unit,
 )

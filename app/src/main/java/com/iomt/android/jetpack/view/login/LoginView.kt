@@ -2,7 +2,7 @@
  * Login activity content
  */
 
-package com.iomt.android.jetpack
+package com.iomt.android.jetpack.view.login
 
 import android.app.Activity
 import android.content.Intent
@@ -18,25 +18,26 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.navigation.NavHostController
 import com.iomt.android.*
 import com.iomt.android.R
 import com.iomt.android.entities.AuthInfo
+import com.iomt.android.jetpack.theme.colorScheme
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 
 /**
  * Login activity content
  *
- * @param preNavController [NavHostController] for pre-logged-in state
  * @param updateAuthInfo callback to update [AuthInfo]
+ * @param navigateToMain callback to navigate to after-login part of the app
+ * @param navigateToEmailConf callback to navigate to EmailConfView
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
-fun LoginView(preNavController: NavHostController, updateAuthInfo: (AuthInfo) -> Unit) {
+fun LoginView(updateAuthInfo: (AuthInfo) -> Unit, navigateToMain: () -> Unit, navigateToEmailConf: () -> Unit) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -56,11 +57,9 @@ fun LoginView(preNavController: NavHostController, updateAuthInfo: (AuthInfo) ->
                 if (newAuthInfo.wasFailed) {
                     isSignInFailed = true
                 } else if (!newAuthInfo.confirmed) {
-                    preNavController.navigate("emailConf")
+                    MainScope().launch { navigateToEmailConf() }
                 } else {
-                    MainScope().launch {
-                        preNavController.navigate("navViewSystem")
-                    }
+                    MainScope().launch { navigateToMain() }
                 }
             }
         }
@@ -133,4 +132,10 @@ private fun sendLoginRequest(
         updateIsSignupFailed(true)
     }
     Requests().sendLogin(login, password, updateAuthInfo)
+}
+
+@Preview
+@Composable
+private fun LoginViewPreview() {
+    MaterialTheme(colorScheme) { LoginView({ }, { }) { } }
 }

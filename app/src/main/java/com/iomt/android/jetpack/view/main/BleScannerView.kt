@@ -2,7 +2,7 @@
  * Bluetooth LE scanner view
  */
 
-package com.iomt.android.jetpack.view
+package com.iomt.android.jetpack.view.main
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -16,28 +16,34 @@ import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
+import com.iomt.android.jetpack.theme.colorScheme
+import com.iomt.android.utils.getService
 
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.delay
 
+private val scanningPeriod = 30.seconds
+
 /**
- * @param navController
- * @param bluetoothManager
- * @param onDeviceClick
+ * @param navigateBack callback to go to previous view (HomeView)
+ * @param onDeviceClick callback invoked on [BluetoothDevice] click
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
-fun BleScannerView(navController: NavHostController, bluetoothManager: BluetoothManager, onDeviceClick: (BluetoothDevice) -> Unit) {
+fun BleScannerView(navigateBack: () -> Unit, onDeviceClick: (BluetoothDevice) -> Unit) {
     val foundDevices = remember { mutableStateListOf<BluetoothDevice>() }
     val isScanning by remember { mutableStateOf(false) }
 
+    val bluetoothManager: BluetoothManager = LocalContext.getService()
     val bluetoothAdapter = bluetoothManager.adapter
     val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
 
@@ -58,7 +64,7 @@ fun BleScannerView(navController: NavHostController, bluetoothManager: Bluetooth
     bluetoothLeScanner.startScan(leScanCallback)
     LaunchedEffect(isScanning) {
         if (isScanning) {
-            delay(30.seconds)
+            delay(scanningPeriod)
             bluetoothLeScanner.stopScan(leScanCallback)
         }
     }
@@ -66,7 +72,7 @@ fun BleScannerView(navController: NavHostController, bluetoothManager: Bluetooth
     Column(Modifier.fillMaxSize()) {
         foundDevices.map { device ->
             Row(
-                Modifier.fillMaxWidth().clickable { onDeviceClick(device).also { navController.popBackStack() } },
+                Modifier.fillMaxWidth().clickable { onDeviceClick(device).also { navigateBack() } },
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(device.name)
@@ -75,4 +81,12 @@ fun BleScannerView(navController: NavHostController, bluetoothManager: Bluetooth
             }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.S)
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
+@Preview
+@Composable
+private fun BleScannerViewPreview() {
+    MaterialTheme(colorScheme) { BleScannerView({ }) { } }
 }

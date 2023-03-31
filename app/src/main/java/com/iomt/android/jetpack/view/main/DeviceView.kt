@@ -2,28 +2,34 @@
  * Device View
  */
 
-package com.iomt.android.jetpack.view
+package com.iomt.android.jetpack.view.main
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
 import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.jetpack.theme.colorScheme
+import com.iomt.android.utils.getService
 
 /**
  * @param device
@@ -83,4 +89,13 @@ private fun CharacteristicsSection(config: DeviceConfig) {
             Text(0.toString())
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.S)
+@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+@Preview
+@Composable
+private fun DeviceViewPreview() {
+    val stubDevice = LocalContext.getService<BluetoothManager>().adapter.getRemoteDevice("test-address")
+    MaterialTheme(colorScheme) { DeviceView(stubDevice, DeviceConfig.stub) }
 }

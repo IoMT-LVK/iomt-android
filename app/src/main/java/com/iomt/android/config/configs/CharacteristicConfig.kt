@@ -15,4 +15,8 @@ data class CharacteristicConfig(
     @SerialName("serviceUUID") var serviceUuid: String? = null,
     @SerialName("characteristicUUID") var characteristicUuid: String? = null,
     @SerialName("descriptorUUID") var descriptorUuid: String? = null,
-)
+) {
+    companion object {
+        val stub = CharacteristicConfig("heartRate")
+    }
+}

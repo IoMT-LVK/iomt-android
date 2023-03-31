@@ -1,6 +1,6 @@
 @file:Suppress("FILE_NAME_MATCH_CLASS")
 
-package com.iomt.android.jetpack.view
+package com.iomt.android.jetpack.view.main
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
@@ -24,14 +24,16 @@ import com.iomt.android.R
 import com.iomt.android.jetpack.components.Cell
 import com.iomt.android.jetpack.components.DeviceList
 import com.iomt.android.jetpack.components.EditableSection
+import com.iomt.android.jetpack.theme.colorScheme
 
 /**
  * @property prettyName
  * @property tabIndex
  */
+@Suppress("WRONG_DECLARATIONS_ORDER")
 private enum class AccountViewTabs(val prettyName: String, val tabIndex: Int) {
-    DEVICES("Devices", 1),
     USER("User info", 0),
+    DEVICES("Devices", 1),
     ;
     companion object {
         val default = USER
@@ -111,5 +113,5 @@ private fun RenderConnectedDevices(connectedDevices: SnapshotStateList<Bluetooth
 @Composable
 private fun AccountViewPreview() {
     val connectedDevices = remember { mutableStateListOf<BluetoothDevice>() }
-    AccountView(connectedDevices)
+    MaterialTheme(colorScheme) { AccountView(connectedDevices) }
 }
