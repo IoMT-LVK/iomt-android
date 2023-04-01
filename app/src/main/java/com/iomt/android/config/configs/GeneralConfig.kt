@@ -14,4 +14,12 @@ data class GeneralConfig(
     var nameRegex: String,
     var characteristicNames: List<String>,
     var type: String? = null,
-)
+) {
+    companion object {
+        val stub = GeneralConfig(
+            "stub",
+            ".*stub.*",
+            listOf("heartRate"),
+        )
+    }
+}

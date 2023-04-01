@@ -17,4 +17,5 @@
     <color name="yellow">#F8BA0F</color>
     <color name="goodgrey">#535353</color>
     <color name="lightgrey">#EEEEEE</color>
+    <color name="transparent">#00000000</color>
 </resources>

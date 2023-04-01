@@ -26,16 +26,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.iomt.android.entities.DeviceInfo
 import com.iomt.android.entities.DeviceType
-import com.iomt.android.ui.home.scanLeDeviceWithPermissionCheck
-import permissions.dispatcher.NeedsPermission
-import permissions.dispatcher.RuntimePermissions
 
 import java.util.*
 
 /**
  * [AppCompatActivity] responsible for bluetooth low energy search
  */
-@RuntimePermissions
 class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     private var uiHandler: Handler? = null
     private var menuItem: MenuItem? = null
@@ -104,9 +100,10 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.scan) {
-            scanLeDeviceWithPermissionCheck()
+            scanLeDevice()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -130,13 +127,10 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
 
     /**
      * Start BLE scan
-     *
-     * kapt generates [scanLeDeviceWithPermissionCheck] for [scanLeDevice] processing permission requests
      */
     @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
-    @NeedsPermission(Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT)
     fun scanLeDevice() {
         deviceCells.clear()
         myAdapter?.notifyDataSetChanged()
@@ -147,12 +141,9 @@ class BleSearcher : AppCompatActivity(), SavedDeviceAdapter.OnClickListener {
 
     /**
      * Stop BLE scan
-     *
-     * kapt generates [stopScanWithPermissionCheck] for [stopScan] processing permission requests
      */
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
-    @NeedsPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun stopScan() {
         menuItem?.isEnabled = true
         bluetoothLeScanner?.stopScan(leScanCallback)
