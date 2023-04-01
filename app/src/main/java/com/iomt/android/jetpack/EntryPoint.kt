@@ -31,7 +31,7 @@ import com.iomt.android.utils.navigate
 fun EntryPoint() {
     MaterialTheme(colorScheme = colorScheme) {
         val activity = LocalView.current.context as? Activity
-        activity?.window?.statusBarColor = MaterialTheme.colorScheme.primaryContainer.toArgb()
+        activity?.window?.statusBarColor = colorScheme.primaryContainer.toArgb()
         val preNavController = rememberNavController()
 
         var authInfo by remember { mutableStateOf(AuthInfo.empty) }

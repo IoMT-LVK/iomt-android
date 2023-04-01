@@ -3,6 +3,7 @@
 package com.iomt.android.jetpack.components
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -10,7 +11,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.iomt.android.R
+import com.iomt.android.jetpack.theme.colorScheme
 
 /**
  * @property iconPainter
@@ -28,9 +33,9 @@ data class Cell(
 )
 
 /**
- * @param title
- * @param fields
- * @param onSave
+ * @param title name of the section
+ * @param fields [List] of [Cell]s that should be displayed in the section
+ * @param onSave callback invoked on save button pressed
  */
 @Composable
 fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
@@ -54,5 +59,14 @@ fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
             }
             fields.map { TextFieldWithIcon(it) }
         }
+    }
+}
+
+@Preview
+@Composable
+private fun EditableSectionPreview() {
+    var value by remember { mutableStateOf("15.06.2001") }
+    MaterialTheme(colorScheme) {
+        EditableSection("Section Name", listOf(Cell(painterResource(R.drawable.cake), value) { value = it })) { }
     }
 }

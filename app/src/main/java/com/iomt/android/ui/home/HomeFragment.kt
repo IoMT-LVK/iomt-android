@@ -37,13 +37,11 @@ import com.iomt.android.R
 import com.iomt.android.config.configs.DeviceConfig
 import com.iomt.android.config.parseConfig
 import com.iomt.android.entities.DeviceInfo
-import permissions.dispatcher.*
 import java.util.*
 
 /**
  * Displays list of Hexoskin Devices
  */
-@RuntimePermissions
 class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     private var uiHandler: Handler? = null
     private var menuItem: MenuItem? = null
@@ -191,7 +189,7 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.scan) {
-            scanLeDeviceWithPermissionCheck()
+            scanLeDevice()
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -222,13 +220,10 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
 
     /**
      * Start BLE scan
-     *
-     * kapt generates [scanLeDeviceWithPermissionCheck] for [scanLeDevice] processing permission requests
      */
     @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
-    @NeedsPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun scanLeDevice() {
         // Clear devices
         deviceCells.clear()
@@ -249,12 +244,9 @@ class HomeFragment : Fragment(), DeviceAdapter.OnClickListener {
 
     /**
      * Stop BLE scan
-     *
-     * kapt generates [stopScanWithPermissionCheck] for [stopScan] processing permission requests
      */
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_SCAN)
-    @NeedsPermission(Manifest.permission.BLUETOOTH_SCAN)
     fun stopScan() {
         menuItem?.isEnabled = true
         bluetoothLeScanner?.stopScan(leScanCallback)

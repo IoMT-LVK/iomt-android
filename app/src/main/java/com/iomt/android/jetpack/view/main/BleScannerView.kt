@@ -6,12 +6,17 @@ package com.iomt.android.jetpack.view.main
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
+import android.content.Intent
 import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
@@ -45,6 +50,17 @@ fun BleScannerView(navigateBack: () -> Unit, onDeviceClick: (BluetoothDevice) ->
 
     val bluetoothManager: BluetoothManager = LocalContext.getService()
     val bluetoothAdapter = bluetoothManager.adapter
+
+    val enableBluetoothContract = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        if (it.resultCode != Activity.RESULT_OK) {
+            navigateBack()
+        }
+    }
+
+    if (bluetoothAdapter?.isEnabled == false) {
+        enableBluetoothContract.launch(Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE))
+    }
+
     val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
 
     val connectedDevices: List<BluetoothDevice> = bluetoothManager.getConnectedDevices(BluetoothProfile.GATT)
@@ -56,7 +72,7 @@ fun BleScannerView(navigateBack: () -> Unit, onDeviceClick: (BluetoothDevice) ->
         override fun onScanResult(callbackType: Int, result: ScanResult) {
             val device = result.device
             if (device !in connectedDevices && device !in foundDevices) {
-                foundDevices.add(device)
+                device.name?.let { foundDevices.add(device) }
             }
         }
     }

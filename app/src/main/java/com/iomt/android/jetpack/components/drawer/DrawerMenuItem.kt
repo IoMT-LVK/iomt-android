@@ -10,19 +10,22 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import com.iomt.android.R
+import com.iomt.android.jetpack.theme.colorScheme
 
 /**
- * @param iconDrawableId
- * @param text
- * @param isSelected
- * @param onItemClick
+ * @param iconDrawableId icon that should be displayed for [Drawer] menu item
+ * @param text text that should be displayed for [Drawer] menu item
+ * @param isSelected flag that defines if this item is currently selected
+ * @param onItemClick callback invoked on item click
  */
 @Composable
 internal fun DrawerMenuItem(
@@ -37,7 +40,7 @@ internal fun DrawerMenuItem(
             .clickable(true, onClick = onItemClick)
             .apply {
                 if (isSelected) {
-                    background(MaterialTheme.colorScheme.primaryContainer)
+                    background(colorScheme.primaryContainer)
                 }
             },
         verticalAlignment = Alignment.CenterVertically,
@@ -48,5 +51,14 @@ internal fun DrawerMenuItem(
         )
         Spacer(modifier = Modifier.width(16.dp))
         Text(text = text, fontSize = TextUnit(6f, TextUnitType.Em))
+    }
+}
+
+@Preview
+@Composable
+private fun DrawerMenuItemPreview() {
+    var isSelected by remember { mutableStateOf(false) }
+    MaterialTheme(colorScheme) {
+        DrawerMenuItem(R.drawable.ic_menu_home, "Home", false) { isSelected = !isSelected }
     }
 }

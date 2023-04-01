@@ -5,7 +5,8 @@
 package com.iomt.android.jetpack.components
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
@@ -16,11 +17,13 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.iomt.android.entities.AuthInfo
 import com.iomt.android.jetpack.navigation.NavRouter
 import com.iomt.android.jetpack.navigation.NavRouter.Companion.useMainNavHost
+import com.iomt.android.utils.getService
 import com.iomt.android.utils.navigate
 
 /**
@@ -40,7 +43,9 @@ fun Scaffold(
     signOut: () -> Unit,
     onMenuButtonPressed: () -> Unit,
 ) {
-    val knownDevices = remember { mutableStateListOf<BluetoothDevice>() }
+    val bluetoothManager: BluetoothManager = LocalContext.getService()
+
+    val knownDevices = remember { bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).toMutableStateList() }
     val navBackStackEntry by navController.currentBackStackEntryAsState()
 
     Scaffold(
@@ -62,10 +67,11 @@ fun Scaffold(
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
         navController.useMainNavHost(
+            authInfo,
             knownDevices,
             Modifier.padding(paddingValues),
             signOut,
-            { /* navController.navigate(NavRouter.Main.Device) */ },
+            { navController.navigate("${NavRouter.Main.Device}/${knownDevices.indexOf(it)}") },
         ) { knownDevices.add(it) }
     }
 }

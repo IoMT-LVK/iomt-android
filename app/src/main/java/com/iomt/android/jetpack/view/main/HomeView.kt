@@ -22,8 +22,8 @@ import com.iomt.android.jetpack.components.DeviceList
 import com.iomt.android.jetpack.theme.colorScheme
 
 /**
- * @param knownDevices
- * @param onKnownDeviceClick
+ * @param knownDevices [List] of known [BluetoothDevice]
+ * @param onKnownDeviceClick callback invoked on known device click
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)

@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 import com.iomt.android.jetpack.theme.colorScheme
 
 /**
- * @param signOut
+ * @param signOut callback to sign out
  */
 @Composable
 fun SettingsView(signOut: () -> Unit) {
@@ -62,8 +62,8 @@ private fun AccountSection(onAccountExit: () -> Unit) = Section("Account") {
     TextButton(
         onClick = onAccountExit,
         colors = ButtonDefaults.textButtonColors(
-            contentColor = MaterialTheme.colorScheme.error,
-            containerColor = MaterialTheme.colorScheme.background
+            contentColor = colorScheme.error,
+            containerColor = colorScheme.background
         ),
     ) { Text("Exit account") }
 }

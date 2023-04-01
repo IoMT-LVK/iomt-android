@@ -32,7 +32,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun checkPermission() = permissions.all { permission ->
-        ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED
+        ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
     }
 
     companion object {
@@ -40,6 +40,7 @@ class LoginActivity : AppCompatActivity() {
             Manifest.permission.BLUETOOTH,
             Manifest.permission.BLUETOOTH_SCAN,
             Manifest.permission.BLUETOOTH_CONNECT,
+            Manifest.permission.BLUETOOTH_PRIVILEGED,
         )
 
         private const val MASTER_PERMISSION_REQUEST_CODE = 150_601

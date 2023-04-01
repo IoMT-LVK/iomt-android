@@ -16,7 +16,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,8 +26,8 @@ import com.iomt.android.jetpack.components.EditableSection
 import com.iomt.android.jetpack.theme.colorScheme
 
 /**
- * @property prettyName
- * @property tabIndex
+ * @property prettyName human-readable tab name
+ * @property tabIndex tab index
  */
 @Suppress("WRONG_DECLARATIONS_ORDER")
 private enum class AccountViewTabs(val prettyName: String, val tabIndex: Int) {
@@ -41,7 +40,7 @@ private enum class AccountViewTabs(val prettyName: String, val tabIndex: Int) {
 }
 
 /**
- * @param connectedDevices
+ * @param connectedDevices [SnapshotStateList] of connected [BluetoothDevice]
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
@@ -62,7 +61,7 @@ fun AccountView(connectedDevices: SnapshotStateList<BluetoothDevice>) {
                         Tab(
                             selected = tabs.tabIndex == selectedTab.tabIndex,
                             onClick = { selectedTab = tabs },
-                            text = { Text(tabs.prettyName, color = Color.Black) },
+                            text = { Text(tabs.prettyName, color = colorScheme.primaryContainer) },
                         )
                     }
                 }

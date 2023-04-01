@@ -50,14 +50,14 @@ tasks.withType<Test> {
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
 
     implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.compose.ui:ui:1.4.0")
     implementation("androidx.compose.runtime:runtime:1.4.0")
-    implementation("androidx.compose.compiler:compiler:1.4.3")
-    implementation("androidx.compose.material:material:1.3.1")
+    implementation("androidx.compose.compiler:compiler:1.4.4")
+//    implementation("androidx.compose.material:material:1.4.0")
     implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.0")
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.0")
@@ -75,6 +75,7 @@ dependencies {
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
+//    implementation("androidx.credentials:credentials:1.2.0-alpha02")
 
     implementation("com.google.android.material:material:1.9.0-beta01")
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0")
@@ -87,9 +88,6 @@ dependencies {
     implementation("io.ktor:ktor-client-android:2.2.3")
     implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
-
-    implementation("com.github.permissions-dispatcher:permissionsdispatcher:4.9.2")
-    kapt("com.github.permissions-dispatcher:permissionsdispatcher-processor:4.9.2")
 
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

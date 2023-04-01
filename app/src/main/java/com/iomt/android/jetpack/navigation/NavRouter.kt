@@ -10,25 +10,32 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 
 import com.iomt.android.R
+import com.iomt.android.Requests
+import com.iomt.android.config.parseConfig
 import com.iomt.android.entities.AuthInfo
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.EmailConfView
 import com.iomt.android.jetpack.view.login.LoginView
-import com.iomt.android.jetpack.view.main.AccountView
-import com.iomt.android.jetpack.view.main.BleScannerView
-import com.iomt.android.jetpack.view.main.HomeView
-import com.iomt.android.jetpack.view.main.SettingsView
+import com.iomt.android.jetpack.view.main.*
 import com.iomt.android.utils.composable
 import com.iomt.android.utils.navigate
+
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.runBlocking
 
 /**
  * @property iconId id if icon that should be displayed
  * @property path path to view
  */
 sealed class NavRouter(open val iconId: Int, open val path: String) {
+    override fun toString(): String = path
+
     /**
      * Represents post-login part of the app
      * @property iconId
@@ -48,7 +55,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         /**
          * Represents [DeviceView] route
          */
-        object Device : NavRouter(R.drawable.default_device, "Device {id}")
+        object Device : NavRouter(R.drawable.default_device, "Device")
 
         /**
          * Represents [HomeView] route
@@ -125,6 +132,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         }
 
         /**
+         * @param authInfo current [AuthInfo] required for HTTP requests
          * @param knownDevices [SnapshotStateList] of known [BluetoothDevice]
          * @param signOut callback to sign out
          * @param onHomeDeviceClick callback invoked when [BluetoothDevice] was selected on [HomeView]
@@ -135,7 +143,9 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
         @Composable
         @SuppressLint("ComposableNaming")
+        @Suppress("TOO_MANY_PARAMETERS")
         fun NavHostController.useMainNavHost(
+            authInfo: AuthInfo,
             knownDevices: SnapshotStateList<BluetoothDevice>,
             modifier: Modifier = Modifier,
             signOut: () -> Unit,
@@ -145,9 +155,25 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
             NavHost(this, modifier = modifier, startDestination = Main.default.path) {
                 composable(Main.Home) { HomeView(knownDevices, onHomeDeviceClick) }
                 composable(Main.Settings) { SettingsView(signOut) }
-                composable(Main.Device) { /* TODO: DeviceView() */ }
                 composable(Main.Account) { AccountView(knownDevices) }
                 composable(Main.BleScanner) { BleScannerView({ popBackStack() }, onScannerDeviceClick) }
+                composable(
+                    "${Main.Device}/{deviceId}",
+                    arguments = listOf(navArgument("deviceId") { type = NavType.IntType }),
+                ) { navBackStackEntry ->
+                    val deviceId = requireNotNull(navBackStackEntry.arguments?.getInt("deviceId")) {
+                        "deviceId cannot be null on DeviceView"
+                    }
+
+                    val configLines: CompletableDeferred<String> = CompletableDeferred()
+
+                    // todo: replace with config selecting on BleScannerView
+                    Requests(authInfo.jwt, authInfo.userId).getDeviceConfig(1) { configLines.complete(it) }
+
+                    val deviceConfig = parseConfig(runBlocking { configLines.await() })
+
+                    DeviceView(knownDevices[deviceId], deviceConfig)
+                }
             }
         }
     }
