@@ -20,9 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
-import com.iomt.android.jetpack.components.Cell
-import com.iomt.android.jetpack.components.DeviceList
-import com.iomt.android.jetpack.components.EditableSection
+import com.iomt.android.jetpack.components.*
+import com.iomt.android.jetpack.components.textfield.*
 import com.iomt.android.jetpack.theme.colorScheme
 
 /**
@@ -84,15 +83,15 @@ private fun RenderUserInfo() {
 
     Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceAround) {
         EditableSection("Personal data", listOf(
-            Cell(painterResource(R.drawable.weight_scale), weight.toString()) { weight = it.toDouble() },
-            Cell(painterResource(R.drawable.height), height.toString()) { height = it.toDouble() },
-            Cell(painterResource(R.drawable.cake), birthdate) { birthdate = it },
+            weightCell(weight.toString()) { weight = it.toDouble() },
+            heightCell(height.toString()) { height = it.toDouble() },
+            birthdateCell(birthdate) { birthdate = it },
         )) {
             // send personal data update request
         }
         EditableSection("Contact Data", listOf(
-            Cell(painterResource(R.drawable.call), phoneNumber) { phoneNumber = it },
-            Cell(painterResource(R.drawable.mail), email) { email = it },
+            phoneCell(phoneNumber) { phoneNumber = it },
+            emailCell(email) { email = it },
         )) {
             // send contact data update request
         }
