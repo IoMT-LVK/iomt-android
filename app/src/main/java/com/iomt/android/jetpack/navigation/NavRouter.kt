@@ -20,8 +20,7 @@ import com.iomt.android.Requests
 import com.iomt.android.config.parseConfig
 import com.iomt.android.entities.AuthInfo
 import com.iomt.android.jetpack.view.*
-import com.iomt.android.jetpack.view.login.EmailConfView
-import com.iomt.android.jetpack.view.login.LoginView
+import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
 import com.iomt.android.utils.composable
 import com.iomt.android.utils.navigate
@@ -91,7 +90,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         object Login : NavRouter(-1, "Sign in")
 
         /**
-         * Represents [RegisterView] route
+         * Represents [RegistrationView] route
          */
         object Register : NavRouter(-1, "Sign up")
 
@@ -124,9 +123,9 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
             navViewSystemWithDrawer: @Composable () -> Unit,
         ) {
             NavHost(this, modifier = modifier, startDestination = Login.default.path) {
-                composable(Login.Login) { LoginView(onAuthSuccess, { navigate(Main.default) }) { navigate(Login.EmailConf) } }
+                composable(Login.Login) { LoginView(onAuthSuccess, { navigate(Login.Register) }, { navigate(Main.default) }) { navigate(Login.EmailConf) } }
                 composable(Login.EmailConf) { EmailConfView { navigate(Login.Login) } }
-                composable(Login.Register) { /* TODO: RegistrationView() */ }
+                composable(Login.Register) { RegistrationView { navigate(Login.EmailConf) } }
                 composable(Login.Main) { navViewSystemWithDrawer() }
             }
         }

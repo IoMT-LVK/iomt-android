@@ -2,16 +2,13 @@
  * Row with text field with icon
  */
 
-package com.iomt.android.jetpack.components
+package com.iomt.android.jetpack.components.textfield
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TextField
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +20,15 @@ import com.iomt.android.jetpack.theme.colorScheme
 
 /**
  * @param cell [Cell] that should be displayed
+ * @throws IllegalStateException when no icon was passed in [Cell]
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextFieldWithIcon(cell: Cell) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-        Icon(cell.iconPainter, cell.description, Modifier.padding(10.dp).size(24.dp))
+        cell.iconId?.let { id ->
+            Icon(painterResource(id), cell.description, Modifier.padding(10.dp).size(24.dp))
+        } ?: throw IllegalStateException("Could not display null icon")
         TextField(cell.value, onValueChange = cell.onValueChange, Modifier.weight(1f))
     }
 }
@@ -38,6 +38,6 @@ fun TextFieldWithIcon(cell: Cell) {
 private fun TextFieldWithIconPreview() {
     var value by remember { mutableStateOf("15.06.2001") }
     MaterialTheme(colorScheme) {
-        TextFieldWithIcon(Cell(painterResource(R.drawable.cake), value) { value = it })
+        TextFieldWithIcon(Cell(value, R.drawable.cake) { value = it })
     }
 }

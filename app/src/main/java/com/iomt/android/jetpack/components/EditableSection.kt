@@ -1,3 +1,7 @@
+/**
+ * File that contains EditableSection for AccountView
+ */
+
 @file:Suppress("FILE_NAME_MATCH_CLASS")
 
 package com.iomt.android.jetpack.components
@@ -10,27 +14,12 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
+import com.iomt.android.jetpack.components.textfield.Cell
+import com.iomt.android.jetpack.components.textfield.TextFieldWithIcon
 import com.iomt.android.jetpack.theme.colorScheme
-
-/**
- * @property iconPainter
- * @property value
- * @property validator
- * @property onValueChange
- * @property description
- */
-data class Cell(
-    val iconPainter: Painter,
-    val value: String,
-    val description: String? = null,
-    val validator: ((String) -> Boolean)? = null,
-    val onValueChange: (String) -> Unit,
-)
 
 /**
  * @param title name of the section
@@ -67,6 +56,6 @@ fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
 private fun EditableSectionPreview() {
     var value by remember { mutableStateOf("15.06.2001") }
     MaterialTheme(colorScheme) {
-        EditableSection("Section Name", listOf(Cell(painterResource(R.drawable.cake), value) { value = it })) { }
+        EditableSection("Section Name", listOf(Cell(value, R.drawable.cake) { value = it })) { }
     }
 }

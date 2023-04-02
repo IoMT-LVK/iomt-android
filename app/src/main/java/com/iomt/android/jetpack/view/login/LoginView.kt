@@ -4,8 +4,6 @@
 
 package com.iomt.android.jetpack.view.login
 
-import android.app.Activity
-import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -31,13 +29,19 @@ import kotlinx.coroutines.launch
  * Login activity content
  *
  * @param updateAuthInfo callback to update [AuthInfo]
+ * @param navigateToRegistration callback to navigate to RegistrationView
  * @param navigateToMain callback to navigate to after-login part of the app
  * @param navigateToEmailConf callback to navigate to EmailConfView
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
-fun LoginView(updateAuthInfo: (AuthInfo) -> Unit, navigateToMain: () -> Unit, navigateToEmailConf: () -> Unit) {
+fun LoginView(
+    updateAuthInfo: (AuthInfo) -> Unit,
+    navigateToRegistration: () -> Unit,
+    navigateToMain: () -> Unit,
+    navigateToEmailConf: () -> Unit,
+) {
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -108,11 +112,7 @@ fun LoginView(updateAuthInfo: (AuthInfo) -> Unit, navigateToMain: () -> Unit, na
                 Text(stringResource(R.string.login_text))
             }
 
-            OutlinedButton({
-                val intent = Intent(context, SignupActivity::class.java)
-                context.startActivity(intent)
-                (context as? Activity)?.finish()
-            }) {
+            OutlinedButton(navigateToRegistration) {
                 Text(stringResource(R.string.create_account))
             }
         }
@@ -137,5 +137,5 @@ private fun sendLoginRequest(
 @Preview
 @Composable
 private fun LoginViewPreview() {
-    MaterialTheme(colorScheme) { LoginView({ }, { }) { } }
+    MaterialTheme(colorScheme) { LoginView({ }, { }, { }) { } }
 }
