@@ -24,12 +24,14 @@ import kotlinx.coroutines.launch
 class BleGattCallback(
     private val deviceConfig: DeviceConfig,
     private val characteristics: SnapshotStateList<Characteristic>,
-    private val changeStatus: (Int) -> ConnectionStatus
+    private val changeStatus: (Int) -> ConnectionStatus,
+    private val onCharacteristicUpdate: (String, String) -> Unit,
 ) : BluetoothGattCallback() {
     private fun updateCharacteristic(charName: String, newValue: String) {
         val index = characteristics.indexOfFirst { it.name == charName }
         val oldItem = characteristics[index]
         characteristics[index] = oldItem.copy(value = newValue)
+        onCharacteristicUpdate(charName, newValue)
     }
 
     /**
@@ -143,7 +145,6 @@ class BleGattCallback(
                     changeCharacteristicLabel(it, characteristic)
                 }
             }
-
         // TODO: WIP
         // val dfDateAndTime: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
         // val milliseconds: DateFormat = SimpleDateFormat("SSS", Locale.US)
