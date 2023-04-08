@@ -22,10 +22,10 @@ inline fun <reified T : Any> ProvidableCompositionLocal<Context>.getService(): T
 ) { "Could not get ${T::class.java.simpleName}" }
 
 /**
- * @param navRouter
- * @param arguments
- * @param deepLinks
- * @param content
+ * @param navRouter route for the destination
+ * @param arguments list of arguments to associate with destination
+ * @param deepLinks list of deep links to associate with the destinations
+ * @param content [Composable] for the destination
  */
 fun NavGraphBuilder.composable(
     navRouter: NavRouter,
@@ -35,9 +35,10 @@ fun NavGraphBuilder.composable(
 ): Unit = composable(navRouter.path, arguments, deepLinks, content)
 
 /**
- * @param navRouter
- * @param navOptions
- * @param navigatorExtras
+ * @param navRouter route for the destination
+ * @param navOptions special options for this navigation operation
+ * @param navigatorExtras extras to pass to the Navigator
+ * @throws IllegalArgumentException - if the given route is invalid
  */
 fun NavHostController.navigate(
     navRouter: NavRouter,
