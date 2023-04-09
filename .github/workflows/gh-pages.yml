@@ -14,18 +14,17 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
-          persist-credentials: false
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
       - name: Set up JDK
         uses: actions/setup-java@v1
         with:
           java-version: 11
       - name: Build documentation
         run: ./gradlew dokkaHtml
-      - name: Publish documentation
-        uses: JamesIves/github-pages-deploy-action@releases/v3
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: app/build/dokka/html
+          folder: app/build/dokka/html
