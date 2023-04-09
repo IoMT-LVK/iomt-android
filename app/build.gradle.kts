@@ -4,6 +4,7 @@ plugins {
     kotlin("android")
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
     id("kotlin-kapt")
+    id("org.jetbrains.dokka")
 }
 
 android {
@@ -96,7 +97,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.3.0")
 //    implementation("androidx.credentials:credentials:1.2.0-alpha02")
 
-    implementation("com.google.android.material:material:1.10.0-alpha01")
+    implementation("com.google.android.material:material:1.8.0")
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") { exclude("support-v4") }
 
@@ -110,6 +111,7 @@ dependencies {
 
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
+    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.8.10")
 }
 
 configurations.all {
