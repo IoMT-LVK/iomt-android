@@ -1,6 +1,5 @@
-package com.iomt.android
+package com.iomt.android.config
 
-import com.iomt.android.config.parseConfig
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 

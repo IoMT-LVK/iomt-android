@@ -72,13 +72,12 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.4.1")
     implementation("androidx.compose.runtime:runtime:1.4.1")
     implementation("androidx.compose.compiler:compiler:1.4.4")
-//    implementation("androidx.compose.material:material:1.4.0")
     implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.1")
+    implementation("io.ktor:ktor-client-logging-jvm:2.2.4")
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.1")
 
     implementation("androidx.navigation:navigation-compose:2.5.3")
-    implementation("androidx.navigation:navigation-fragment:2.5.3")
     implementation("androidx.navigation:navigation-ui:2.5.3")
 
     implementation("androidx.room:room-runtime:2.5.1")
@@ -87,14 +86,7 @@ dependencies {
     kapt("androidx.room:room-compiler:2.5.1")
 
     implementation("androidx.core:core-ktx:1.10.0")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-extensions:2.2.0")
-    implementation("androidx.legacy:legacy-support-v4:1.0.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
-    implementation("androidx.drawerlayout:drawerlayout:1.2.0")
-    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.recyclerview:recyclerview:1.3.0")
 //    implementation("androidx.credentials:credentials:1.2.0-alpha02")
 
     implementation("com.google.android.material:material:1.8.0")
@@ -105,10 +97,14 @@ dependencies {
     implementation("com.akuleshov7:ktoml-file:0.4.1")
 
     implementation("io.ktor:ktor-client-core:2.2.4")
+    implementation("io.ktor:ktor-client-auth:2.2.4")
     implementation("io.ktor:ktor-client-android:2.2.4")
+    implementation("io.ktor:ktor-client-logging:2.2.4")
     implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
 
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    testImplementation("io.ktor:ktor-client-mock:2.2.4")
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:1.8.10")

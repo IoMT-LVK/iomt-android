@@ -1,26 +1,26 @@
-package com.iomt.android
+package com.iomt.android.http
 
 import android.util.Log
 import com.iomt.android.entities.*
 
-import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.engine.android.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.serialization.kotlinx.json.*
 
 import kotlinx.coroutines.*
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-private val httpClient = HttpClient {
-    install(ContentNegotiation) {
-        json()
-    }
-}
+internal const val BASE_URL = "https://iomt.lvk.cs.msu.ru"
+
 private val scope = CoroutineScope(Dispatchers.IO)
+
+@Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+private val loggerTag = object {}.javaClass.enclosingClass.name
+
+private val httpClient = createHttpClient(Android.create())
 
 /**
  * Class that is used to perform requests.
@@ -294,10 +294,16 @@ class Requests(
             }
         }
     }
+}
 
-    companion object {
-        private const val BASE_URL = "https://iomt.lvk.cs.msu.ru"
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = object {}.javaClass.enclosingClass.name
+/**
+ * @param login
+ * @param password
+ * @param callback callback that will be invoked on success
+ * @return [AuthInfo]
+ */
+fun sendLogin(login: String, password: String, callback: (AuthInfo) -> Unit) {
+    scope.launch {
+        callback(httpClient.authenticate())
     }
 }

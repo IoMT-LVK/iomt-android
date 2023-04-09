@@ -16,9 +16,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
 import com.iomt.android.R
-import com.iomt.android.Requests
 import com.iomt.android.config.parseConfig
 import com.iomt.android.entities.AuthInfo
+import com.iomt.android.http.Requests
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
