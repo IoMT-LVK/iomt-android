@@ -24,7 +24,6 @@ import com.iomt.android.jetpack.theme.colorScheme
 /**
  * Drawer Header implementation
  */
-@Suppress("")
 @Composable
 internal fun DrawerHeader() {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {

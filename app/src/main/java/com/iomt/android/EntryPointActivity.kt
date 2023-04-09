@@ -11,10 +11,10 @@ import androidx.core.app.ActivityCompat
 import com.iomt.android.jetpack.EntryPoint
 
 /**
- * [AppCompatActivity] that is responsible for logging in
+ * [AppCompatActivity] that is used for [EntryPoint] - compose integration into android
  */
 @RequiresApi(Build.VERSION_CODES.S)
-class LoginActivity : AppCompatActivity() {
+class EntryPointActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 

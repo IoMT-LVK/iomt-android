@@ -26,38 +26,20 @@
         android:networkSecurityConfig="@xml/network_security_config"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".EmailConfirmation" />
 
         <service android:name="org.eclipse.paho.android.service.MqttService" />
 
         <activity
-            android:name=".LoginActivity"
+            android:name=".EntryPointActivity"
             android:theme="@style/AppTheme.NoActionBar"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="fullSensor">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".DeviceActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".DeviceListActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity
-            android:name=".SignupActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".BleSearcher"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
