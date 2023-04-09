@@ -1,8 +1,14 @@
 name: Generate GH Pages with Dokka
 on:
-  - workflow_dispatch
-  - push:
+  push:
     branches: [main]
+  workflow_dispatch:
+      inputs:
+        branch:
+          type: string
+          default: main
+          description: Branch to generate Pages with
+          required: false
 
 jobs:
   publish:
