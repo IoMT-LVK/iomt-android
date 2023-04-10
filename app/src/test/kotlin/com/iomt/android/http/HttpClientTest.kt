@@ -20,7 +20,8 @@ class HttpClientTest {
     private val stubAuthInfo = AuthInfo(jwt = stubJwt, userId = "1", true, wasFailed = true)
     private val mockEngine = MockEngine { request ->
         val isAuth = request.url.pathSegments.contains("auth")
-        println(request.headers["Authorization"])
+        val prettyPathSegments = request.url.pathSegments.joinToString("/")
+        println("$prettyPathSegments: Authorization = [${request.headers["Authorization"]}]")
         when {
              isAuth && request.body.toString().contains("\"login\":\"${stubCredentials.login}\"") -> respond(
                  content = Json.encodeToString(stubAuthInfo),
@@ -42,7 +43,7 @@ class HttpClientTest {
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `should authenticate automatically`() = runTest {
-        updateCredentials(stubCredentials)
+        RequestParams.credentials = stubCredentials
         val response = myClient?.get("/test/")
         assertEquals(HttpStatusCode.OK, response?.status)
         assertEquals(3, (myClient?.engine as MockEngine).requestHistory.count())
@@ -51,8 +52,8 @@ class HttpClientTest {
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `should not authenticate automatically on auth`() = runTest {
-        updateCredentials(stubCredentials)
-        val authInfo = myClient?.authenticate("localhost/auth/")
+        RequestParams.credentials = stubCredentials
+        val authInfo = myClient?.authenticate("/auth/")
         assertEquals(stubJwt, authInfo?.jwt)
         assertEquals(1, (myClient?.engine as MockEngine).requestHistory.count())
     }

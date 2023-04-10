@@ -17,8 +17,7 @@ import androidx.navigation.navArgument
 
 import com.iomt.android.R
 import com.iomt.android.config.parseConfig
-import com.iomt.android.entities.AuthInfo
-import com.iomt.android.http.Requests
+import com.iomt.android.http.getDeviceConfig
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
@@ -109,7 +108,6 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
     }
     companion object {
         /**
-         * @param onAuthSuccess callback that should be invoked on successful login
          * @param modifier [Modifier] applied to [NavHost]
          * @param navViewSystemWithDrawer lambda that creates NavViewSystemWithDrawer for later app usage
          */
@@ -119,11 +117,10 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         @SuppressLint("ComposableNaming")
         fun NavHostController.useLoginNavHost(
             modifier: Modifier = Modifier,
-            onAuthSuccess: (AuthInfo) -> Unit,
             navViewSystemWithDrawer: @Composable () -> Unit,
         ) {
             NavHost(this, modifier = modifier, startDestination = Login.default.path) {
-                composable(Login.Login) { LoginView(onAuthSuccess, { navigate(Login.Register) }, { navigate(Main.default) }) { navigate(Login.EmailConf) } }
+                composable(Login.Login) { LoginView({ navigate(Login.Register) }, { navigate(Main.default) }) { navigate(Login.EmailConf) } }
                 composable(Login.EmailConf) { EmailConfView { navigate(Login.Login) } }
                 composable(Login.Register) { RegistrationView { navigate(Login.EmailConf) } }
                 composable(Login.Main) { navViewSystemWithDrawer() }
@@ -131,7 +128,6 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         }
 
         /**
-         * @param authInfo current [AuthInfo] required for HTTP requests
          * @param knownDevices [SnapshotStateList] of known [BluetoothDevice]
          * @param signOut callback to sign out
          * @param onHomeDeviceClick callback invoked when [BluetoothDevice] was selected on [HomeView]
@@ -144,7 +140,6 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         @SuppressLint("ComposableNaming")
         @Suppress("TOO_MANY_PARAMETERS")
         fun NavHostController.useMainNavHost(
-            authInfo: AuthInfo,
             knownDevices: SnapshotStateList<BluetoothDevice>,
             modifier: Modifier = Modifier,
             signOut: () -> Unit,
@@ -167,7 +162,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
                     val configLines: CompletableDeferred<String> = CompletableDeferred()
 
                     // todo: replace with config selecting on BleScannerView
-                    Requests(authInfo.jwt, authInfo.userId).getDeviceConfig(1) { configLines.complete(it) }
+                    getDeviceConfig(1) { configLines.complete(it) }
 
                     val deviceConfig = parseConfig(runBlocking { configLines.await() })
 

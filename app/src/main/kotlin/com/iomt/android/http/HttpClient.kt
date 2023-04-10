@@ -22,9 +22,26 @@ import kotlinx.serialization.json.Json
 
 private const val REFRESH_TOKEN_URL = "$BASE_URL/auth/"
 
-val updateCredentials: (Credentials) -> Unit = { credentials = it }
+object RequestParams {
+    /**
+     * login and password required for jwt token renewal
+     */
+    var credentials: Credentials? = null
 
-private var credentials: Credentials? = null
+    /**
+     * ID of a current user
+     * todo: remove when backend is able to get userId from jwt token
+     */
+    var userId: String? = null
+
+    /**
+     * Forget all the session connected info
+     */
+    fun logout() {
+        credentials = null
+        userId = null
+    }
+}
 
 /**
  * @param url auth url, [REFRESH_TOKEN_URL] by default
@@ -36,7 +53,10 @@ suspend fun HttpClient.authenticate(url: String = REFRESH_TOKEN_URL, additionalR
     val response = post(url) {
         additionalRequestBuilder()
         contentType(ContentType.Application.Json)
-        setBody(Json.encodeToString(credentials))
+        setBody(Json.encodeToString(RequestParams.credentials))
+    }
+    if (!response.status.isSuccess()) {
+        throw ClientRequestException(response, "Authentication failed")
     }
     val authInfo: AuthInfo = response.body()
     if (authInfo.jwt.isNotBlank()) {
@@ -60,7 +80,7 @@ internal fun createHttpClient(engine: HttpClientEngine, authUrl: String = REFRES
     install(Auth) {
         bearer {
             refreshTokens {
-                credentials?.let {
+                RequestParams.credentials?.let {
                     val authInfo = client.authenticate(authUrl) { markAsRefreshTokenRequest() }
                     BearerTokens(authInfo.jwt, "")
                 } ?: throw IllegalStateException("No credentials are provided")
