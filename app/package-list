@@ -39,6 +39,11 @@ $dokka.location:com.iomt.android.config.configs/GeneralConfig/nameRegex/#/Pointi
 $dokka.location:com.iomt.android.config.configs/GeneralConfig/type/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/type.html
 $dokka.location:com.iomt.android.config////PointingToDeclaration/app/com.iomt.android.config/index.html
 $dokka.location:com.iomt.android.config//parseConfig/#kotlin.String/PointingToDeclaration/app/com.iomt.android.config/parse-config.html
+$dokka.location:com.iomt.android.dto////PointingToDeclaration/app/com.iomt.android.dto/index.html
+$dokka.location:com.iomt.android.dto/Credentials///PointingToDeclaration/app/com.iomt.android.dto/-credentials/index.html
+$dokka.location:com.iomt.android.dto/Credentials/Credentials/#kotlin.String#kotlin.String/PointingToDeclaration/app/com.iomt.android.dto/-credentials/-credentials.html
+$dokka.location:com.iomt.android.dto/Credentials/login/#/PointingToDeclaration/app/com.iomt.android.dto/-credentials/login.html
+$dokka.location:com.iomt.android.dto/Credentials/password/#/PointingToDeclaration/app/com.iomt.android.dto/-credentials/password.html
 $dokka.location:com.iomt.android.entities////PointingToDeclaration/app/com.iomt.android.entities/index.html
 $dokka.location:com.iomt.android.entities/AuthInfo.Companion///PointingToDeclaration/app/com.iomt.android.entities/-auth-info/-companion/index.html
 $dokka.location:com.iomt.android.entities/AuthInfo.Companion/empty/#/PointingToDeclaration/app/com.iomt.android.entities/-auth-info/-companion/empty.html
@@ -99,6 +104,20 @@ $dokka.location:com.iomt.android.entities/UserData/patronymic/#/PointingToDeclar
 $dokka.location:com.iomt.android.entities/UserData/phoneNumber/#/PointingToDeclaration/app/com.iomt.android.entities/-user-data/phone-number.html
 $dokka.location:com.iomt.android.entities/UserData/surname/#/PointingToDeclaration/app/com.iomt.android.entities/-user-data/surname.html
 $dokka.location:com.iomt.android.entities/UserData/weight/#/PointingToDeclaration/app/com.iomt.android.entities/-user-data/weight.html
+$dokka.location:com.iomt.android.http////PointingToDeclaration/app/com.iomt.android.http/index.html
+$dokka.location:com.iomt.android.http//authenticate/io.ktor.client.HttpClient#kotlin.String#kotlin.Function1[io.ktor.client.request.HttpRequestBuilder,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/authenticate.html
+$dokka.location:com.iomt.android.http//deleteDevice/#com.iomt.android.entities.DeviceInfo/PointingToDeclaration/app/com.iomt.android.http/delete-device.html
+$dokka.location:com.iomt.android.http//getData/#kotlin.Function1[com.iomt.android.entities.UserData,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/get-data.html
+$dokka.location:com.iomt.android.http//getDeviceConfig/#kotlin.Long#kotlin.Function1[kotlin.String,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/get-device-config.html
+$dokka.location:com.iomt.android.http//getDeviceTypes/#kotlin.Function1[kotlin.collections.List[com.iomt.android.entities.DeviceType],kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/get-device-types.html
+$dokka.location:com.iomt.android.http//sendData/#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.Int#kotlin.Int/PointingToDeclaration/app/com.iomt.android.http/send-data.html
+$dokka.location:com.iomt.android.http//sendDevice/#com.iomt.android.entities.DeviceInfo/PointingToDeclaration/app/com.iomt.android.http/send-device.html
+$dokka.location:com.iomt.android.http//sendLogin/#kotlin.String#kotlin.String#kotlin.Function1[com.iomt.android.entities.AuthInfo,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/send-login.html
+$dokka.location:com.iomt.android.http//sendReg/#com.iomt.android.entities.SignUpInfo#kotlin.Function0[kotlin.Unit]#kotlin.Function1[kotlin.String?,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/send-reg.html
+$dokka.location:com.iomt.android.http/RequestParams///PointingToDeclaration/app/com.iomt.android.http/-request-params/index.html
+$dokka.location:com.iomt.android.http/RequestParams/credentials/#/PointingToDeclaration/app/com.iomt.android.http/-request-params/credentials.html
+$dokka.location:com.iomt.android.http/RequestParams/logout/#/PointingToDeclaration/app/com.iomt.android.http/-request-params/logout.html
+$dokka.location:com.iomt.android.http/RequestParams/userId/#/PointingToDeclaration/app/com.iomt.android.http/-request-params/user-id.html
 $dokka.location:com.iomt.android.jetpack.components.device////PointingToDeclaration/app/com.iomt.android.jetpack.components.device/index.html
 $dokka.location:com.iomt.android.jetpack.components.device//DeviceBodyCard/#kotlin.collections.List[com.iomt.android.entities.Characteristic]/PointingToDeclaration/app/com.iomt.android.jetpack.components.device/-device-body-card.html
 $dokka.location:com.iomt.android.jetpack.components.device//DeviceHeaderCard/#android.bluetooth.BluetoothDevice#com.iomt.android.bluetooth.ConnectionStatus#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components.device/-device-header-card.html
@@ -122,13 +141,13 @@ $dokka.location:com.iomt.android.jetpack.components.textfield/Cell/value/#/Point
 $dokka.location:com.iomt.android.jetpack.components////PointingToDeclaration/app/com.iomt.android.jetpack.components/index.html
 $dokka.location:com.iomt.android.jetpack.components//DeviceList/#kotlin.String#androidx.compose.runtime.snapshots.SnapshotStateList[android.bluetooth.BluetoothDevice]#kotlin.Function1[android.bluetooth.BluetoothDevice,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-device-list.html
 $dokka.location:com.iomt.android.jetpack.components//EditableSection/#kotlin.String#kotlin.collections.List[com.iomt.android.jetpack.components.textfield.Cell]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-editable-section.html
-$dokka.location:com.iomt.android.jetpack.components//NavViewSystemWithDrawer/#com.iomt.android.entities.AuthInfo#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-nav-view-system-with-drawer.html
-$dokka.location:com.iomt.android.jetpack.components//Scaffold/#androidx.navigation.NavHostController#com.iomt.android.entities.AuthInfo#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-scaffold.html
+$dokka.location:com.iomt.android.jetpack.components//NavViewSystemWithDrawer/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-nav-view-system-with-drawer.html
+$dokka.location:com.iomt.android.jetpack.components//Scaffold/#androidx.navigation.NavHostController#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-scaffold.html
 $dokka.location:com.iomt.android.jetpack.components//TopBar/#androidx.navigation.NavController#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.components/-top-bar.html
 $dokka.location:com.iomt.android.jetpack.navigation////PointingToDeclaration/app/com.iomt.android.jetpack.navigation/index.html
 $dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Companion///PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-companion/index.html
-$dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Companion/useLoginNavHost/androidx.navigation.NavHostController#androidx.compose.ui.Modifier#kotlin.Function1[com.iomt.android.entities.AuthInfo,kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-companion/use-login-nav-host.html
-$dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Companion/useMainNavHost/androidx.navigation.NavHostController#com.iomt.android.entities.AuthInfo#androidx.compose.runtime.snapshots.SnapshotStateList[android.bluetooth.BluetoothDevice]#androidx.compose.ui.Modifier#kotlin.Function0[kotlin.Unit]#kotlin.Function1[android.bluetooth.BluetoothDevice,kotlin.Unit]#kotlin.Function1[android.bluetooth.BluetoothDevice,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-companion/use-main-nav-host.html
+$dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Companion/useLoginNavHost/androidx.navigation.NavHostController#androidx.compose.ui.Modifier#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-companion/use-login-nav-host.html
+$dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Companion/useMainNavHost/androidx.navigation.NavHostController#androidx.compose.runtime.snapshots.SnapshotStateList[android.bluetooth.BluetoothDevice]#androidx.compose.ui.Modifier#kotlin.Function0[kotlin.Unit]#kotlin.Function1[android.bluetooth.BluetoothDevice,kotlin.Unit]#kotlin.Function1[android.bluetooth.BluetoothDevice,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-companion/use-main-nav-host.html
 $dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Login.Companion///PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-login/-companion/index.html
 $dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Login.Companion/default/#/PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-login/-companion/default.html
 $dokka.location:com.iomt.android.jetpack.navigation/NavRouter.Login.EmailConf///PointingToDeclaration/app/com.iomt.android.jetpack.navigation/-nav-router/-login/-email-conf/index.html
@@ -158,7 +177,7 @@ $dokka.location:com.iomt.android.jetpack.theme//colorScheme/#/PointingToDeclarat
 $dokka.location:com.iomt.android.jetpack.theme//getPreferredColorScheme/#/PointingToDeclaration/app/com.iomt.android.jetpack.theme/get-preferred-color-scheme.html
 $dokka.location:com.iomt.android.jetpack.view.login////PointingToDeclaration/app/com.iomt.android.jetpack.view.login/index.html
 $dokka.location:com.iomt.android.jetpack.view.login//EmailConfView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.login/-email-conf-view.html
-$dokka.location:com.iomt.android.jetpack.view.login//LoginView/#kotlin.Function1[com.iomt.android.entities.AuthInfo,kotlin.Unit]#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.login/-login-view.html
+$dokka.location:com.iomt.android.jetpack.view.login//LoginView/#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.login/-login-view.html
 $dokka.location:com.iomt.android.jetpack.view.login//RegistrationView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.login/-registration-view.html
 $dokka.location:com.iomt.android.jetpack.view.main////PointingToDeclaration/app/com.iomt.android.jetpack.view.main/index.html
 $dokka.location:com.iomt.android.jetpack.view.main//AccountView/#androidx.compose.runtime.snapshots.SnapshotStateList[android.bluetooth.BluetoothDevice]/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-account-view.html
@@ -274,23 +293,13 @@ $dokka.location:com.iomt.android/EntryPointActivity.Companion///PointingToDeclar
 $dokka.location:com.iomt.android/EntryPointActivity///PointingToDeclaration/app/com.iomt.android/-entry-point-activity/index.html
 $dokka.location:com.iomt.android/EntryPointActivity/EntryPointActivity/#/PointingToDeclaration/app/com.iomt.android/-entry-point-activity/-entry-point-activity.html
 $dokka.location:com.iomt.android/EntryPointActivity/onRequestPermissionsResult/#kotlin.Int#kotlin.Array[kotlin.String]#kotlin.IntArray/PointingToDeclaration/app/com.iomt.android/-entry-point-activity/on-request-permissions-result.html
-$dokka.location:com.iomt.android/Requests.Companion///PointingToDeclaration/app/com.iomt.android/-requests/-companion/index.html
-$dokka.location:com.iomt.android/Requests///PointingToDeclaration/app/com.iomt.android/-requests/index.html
-$dokka.location:com.iomt.android/Requests/Requests/#kotlin.String?#kotlin.String?/PointingToDeclaration/app/com.iomt.android/-requests/-requests.html
-$dokka.location:com.iomt.android/Requests/deleteDevice/#com.iomt.android.entities.DeviceInfo/PointingToDeclaration/app/com.iomt.android/-requests/delete-device.html
-$dokka.location:com.iomt.android/Requests/getData/#kotlin.Function1[com.iomt.android.entities.UserData,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android/-requests/get-data.html
-$dokka.location:com.iomt.android/Requests/getDeviceConfig/#kotlin.Long#kotlin.Function1[kotlin.String,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android/-requests/get-device-config.html
-$dokka.location:com.iomt.android/Requests/getDeviceTypes/#kotlin.Function1[kotlin.collections.List[com.iomt.android.entities.DeviceType],kotlin.Unit]/PointingToDeclaration/app/com.iomt.android/-requests/get-device-types.html
-$dokka.location:com.iomt.android/Requests/getDevices/#kotlin.Function1[kotlin.collections.List[com.iomt.android.entities.DeviceInfo],kotlin.Unit]/PointingToDeclaration/app/com.iomt.android/-requests/get-devices.html
-$dokka.location:com.iomt.android/Requests/sendData/#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.Int#kotlin.Int/PointingToDeclaration/app/com.iomt.android/-requests/send-data.html
-$dokka.location:com.iomt.android/Requests/sendDevice/#com.iomt.android.entities.DeviceInfo/PointingToDeclaration/app/com.iomt.android/-requests/send-device.html
-$dokka.location:com.iomt.android/Requests/sendLogin/#kotlin.String#kotlin.String#kotlin.Function1[com.iomt.android.entities.AuthInfo,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android/-requests/send-login.html
-$dokka.location:com.iomt.android/Requests/sendReg/#com.iomt.android.entities.SignUpInfo#kotlin.Function0[kotlin.Unit]#kotlin.Function1[kotlin.String?,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android/-requests/send-reg.html
 com.iomt.android
 com.iomt.android.bluetooth
 com.iomt.android.config
 com.iomt.android.config.configs
+com.iomt.android.dto
 com.iomt.android.entities
+com.iomt.android.http
 com.iomt.android.jetpack
 com.iomt.android.jetpack.components
 com.iomt.android.jetpack.components.device
