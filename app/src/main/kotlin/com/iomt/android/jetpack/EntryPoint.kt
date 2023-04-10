@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.iomt.android.entities.AuthInfo
+import com.iomt.android.http.RequestParams
 import com.iomt.android.jetpack.components.NavViewSystemWithDrawer
 import com.iomt.android.jetpack.navigation.NavRouter
 import com.iomt.android.jetpack.navigation.NavRouter.Companion.useLoginNavHost
@@ -34,11 +34,9 @@ fun EntryPoint() {
         activity?.window?.statusBarColor = colorScheme.primaryContainer.toArgb()
         val preNavController = rememberNavController()
 
-        var authInfo by remember { mutableStateOf(AuthInfo.empty) }
-
-        preNavController.useLoginNavHost(onAuthSuccess = { authInfo = it }) {
-            NavViewSystemWithDrawer(authInfo) {
-                authInfo = AuthInfo.empty
+        preNavController.useLoginNavHost {
+            NavViewSystemWithDrawer {
+                RequestParams.logout()
                 preNavController.navigate(NavRouter.Login.Login)
             }
         }

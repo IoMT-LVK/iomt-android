@@ -17,9 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.iomt.android.*
 import com.iomt.android.R
 import com.iomt.android.entities.SignUpInfo
+import com.iomt.android.http.sendReg
 import com.iomt.android.jetpack.components.textfield.Cell
 import com.iomt.android.jetpack.components.textfield.TextField
 import com.iomt.android.jetpack.theme.colorScheme
@@ -130,7 +130,7 @@ private fun validateAndSend(
     onSignUpSuccess: (String?) -> Unit,
 ) {
     if (signUpInfo.isValid()) {
-        Requests().sendReg(signUpInfo, onSignUpFailed, onSignUpSuccess)
+        sendReg(signUpInfo, onSignUpFailed, onSignUpSuccess)
     } else {
         onValidationFailed()
     }

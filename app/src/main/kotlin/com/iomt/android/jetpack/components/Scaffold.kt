@@ -20,7 +20,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.iomt.android.entities.AuthInfo
 import com.iomt.android.jetpack.navigation.NavRouter
 import com.iomt.android.jetpack.navigation.NavRouter.Companion.useMainNavHost
 import com.iomt.android.utils.getService
@@ -28,7 +27,6 @@ import com.iomt.android.utils.navigate
 
 /**
  * @param navController post-login [NavHostController]
- * @param authInfo [AuthInfo] of current user
  * @param signOut callback invoked on sign out
  * @param onMenuButtonPressed callback invoked on menu button pressed - this should open drawer
  */
@@ -39,7 +37,6 @@ import com.iomt.android.utils.navigate
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 fun Scaffold(
     navController: NavHostController,
-    authInfo: AuthInfo,
     signOut: () -> Unit,
     onMenuButtonPressed: () -> Unit,
 ) {
@@ -67,7 +64,6 @@ fun Scaffold(
         floatingActionButtonPosition = FabPosition.End,
     ) { paddingValues ->
         navController.useMainNavHost(
-            authInfo,
             knownDevices,
             Modifier.padding(paddingValues),
             signOut,
