@@ -87,7 +87,8 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
-//    implementation("androidx.credentials:credentials:1.2.0-alpha02")
+    implementation("androidx.credentials:credentials:1.2.0-alpha02")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0-alpha02")
 
     implementation("com.google.android.material:material:1.8.0")
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")

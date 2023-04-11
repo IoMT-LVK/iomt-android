@@ -4,6 +4,7 @@
 
 package com.iomt.android.http
 
+import android.util.Log
 import com.iomt.android.dto.Credentials
 import com.iomt.android.entities.AuthInfo
 import io.ktor.client.*
@@ -15,6 +16,7 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
@@ -49,17 +51,22 @@ object RequestParams {
  * @return [AuthInfo]
  * @throws ClientRequestException on failed authorization
  */
-suspend fun HttpClient.authenticate(url: String = REFRESH_TOKEN_URL, additionalRequestBuilder: HttpRequestBuilder.() -> Unit = { }): AuthInfo {
+suspend fun HttpClient.authenticate(
+    url: String = REFRESH_TOKEN_URL,
+    additionalRequestBuilder: HttpRequestBuilder.() -> Unit = { }
+): AuthInfo {
     val response = post(url) {
         additionalRequestBuilder()
         contentType(ContentType.Application.Json)
         setBody(Json.encodeToString(RequestParams.credentials))
     }
+    Log.w("Status", response.status.toString())
     if (!response.status.isSuccess()) {
         throw ClientRequestException(response, "Authentication failed")
     }
     val authInfo: AuthInfo = response.body()
     if (authInfo.jwt.isNotBlank()) {
+        Log.i("Logged in", "Logged in")
         return authInfo
     } else {
         throw ClientRequestException(response, "Authentication failed")
@@ -86,8 +93,13 @@ internal fun createHttpClient(engine: HttpClientEngine, authUrl: String = REFRES
                 } ?: throw IllegalStateException("No credentials are provided")
             }
             sendWithoutRequest { request ->
-                request.url.pathSegments.contains("auth")
+                request.url.pathSegments.contains("auth").also { Log.w("ISAUTH", it.toString()) }
             }
         }
     }
 }
+    .apply {
+        responsePipeline.intercept(HttpResponsePipeline.Receive) {
+            Log.d("HttpClient", context.response.status.toString())
+        }
+    }

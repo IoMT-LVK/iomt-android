@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
+import com.iomt.android.credentialmanager.AppCredentialManager
 import com.iomt.android.entities.AuthInfo
 import com.iomt.android.http.RequestParams
 import com.iomt.android.http.sendLogin
@@ -41,15 +43,15 @@ fun LoginView(
     navigateToMain: () -> Unit,
     navigateToEmailConf: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var credentialManager by remember { mutableStateOf<AppCredentialManager?>(null) }
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var isSignInFailed by remember { mutableStateOf(false) }
 
     var isLoginError by remember { mutableStateOf(false) }
     var isPasswordError by remember { mutableStateOf(false) }
-
-    var isSignInFailed by remember { mutableStateOf(false) }
-
-    val context = LocalContext.current
 
     val onLoginClicked = {
         isLoginError = login.isBlank()
@@ -62,9 +64,23 @@ fun LoginView(
                     MainScope().launch { navigateToEmailConf() }
                 } else {
                     RequestParams.userId = newAuthInfo.userId
+                    scope.launch {
+                        RequestParams.credentials?.let { credentialsToSave ->
+                            credentialManager?.createIfNotPresent(credentialsToSave)
+                        }
+                    }
                     MainScope().launch { navigateToMain() }
                 }
             }
+        }
+    }
+
+    LaunchedEffect(context) {
+        credentialManager = AppCredentialManager(context)
+        credentialManager?.get()?.also {
+            login = it.login
+            password = it.password
+            onLoginClicked()
         }
     }
 
@@ -89,13 +105,13 @@ fun LoginView(
                 }
             }
         )
-
         OutlinedTextField(
             password,
             { password = it },
             isError = isPasswordError,
             singleLine = true,
             label = { Text(stringResource(R.string.password)) },
+            visualTransformation = PasswordVisualTransformation(),
             supportingText = {
                 if (isPasswordError) {
                     Text("Не менее 4 и не более 14 символов")
