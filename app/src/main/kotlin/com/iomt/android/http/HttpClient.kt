@@ -16,7 +16,6 @@ import io.ktor.client.plugins.auth.providers.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
@@ -60,13 +59,11 @@ suspend fun HttpClient.authenticate(
         contentType(ContentType.Application.Json)
         setBody(Json.encodeToString(RequestParams.credentials))
     }
-    Log.w("Status", response.status.toString())
     if (!response.status.isSuccess()) {
         throw ClientRequestException(response, "Authentication failed")
     }
     val authInfo: AuthInfo = response.body()
     if (authInfo.jwt.isNotBlank()) {
-        Log.i("Logged in", "Logged in")
         return authInfo
     } else {
         throw ClientRequestException(response, "Authentication failed")
@@ -81,25 +78,26 @@ suspend fun HttpClient.authenticate(
 internal fun createHttpClient(engine: HttpClientEngine, authUrl: String = REFRESH_TOKEN_URL) = HttpClient(engine) {
     install(ContentNegotiation) { json() }
     install(Logging) {
-        logger = Logger.DEFAULT
         level = LogLevel.HEADERS
+        logger = object : Logger {
+            override fun log(message: String) {
+                Log.d("HttpClient", message)
+            }
+        }
     }
     install(Auth) {
         bearer {
             refreshTokens {
                 RequestParams.credentials?.let {
                     val authInfo = client.authenticate(authUrl) { markAsRefreshTokenRequest() }
+                    // todo: support refresh token
                     BearerTokens(authInfo.jwt, "")
                 } ?: throw IllegalStateException("No credentials are provided")
             }
             sendWithoutRequest { request ->
-                request.url.pathSegments.contains("auth").also { Log.w("ISAUTH", it.toString()) }
+                // should not authorize for `/auth/` and `/register/` endpoints
+                request.url.pathSegments.contains("auth") || request.url.pathSegments.contains("register")
             }
         }
     }
 }
-    .apply {
-        responsePipeline.intercept(HttpResponsePipeline.Receive) {
-            Log.d("HttpClient", context.response.status.toString())
-        }
-    }
