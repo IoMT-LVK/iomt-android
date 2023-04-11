@@ -17,10 +17,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 import com.iomt.android.http.RequestParams
 import com.iomt.android.jetpack.components.NavViewSystemWithDrawer
-import com.iomt.android.jetpack.navigation.NavRouter
 import com.iomt.android.jetpack.navigation.NavRouter.Companion.useLoginNavHost
 import com.iomt.android.jetpack.theme.colorScheme
-import com.iomt.android.utils.navigate
 
 /**
  * Entry point of application
@@ -33,11 +31,10 @@ fun EntryPoint() {
         val activity = LocalView.current.context as? Activity
         activity?.window?.statusBarColor = colorScheme.primaryContainer.toArgb()
         val preNavController = rememberNavController()
-
         preNavController.useLoginNavHost {
             NavViewSystemWithDrawer {
                 RequestParams.logout()
-                preNavController.navigate(NavRouter.Login.Login)
+                preNavController.navigateUp()
             }
         }
     }
