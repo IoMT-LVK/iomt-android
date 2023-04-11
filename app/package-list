@@ -39,7 +39,14 @@ $dokka.location:com.iomt.android.config.configs/GeneralConfig/nameRegex/#/Pointi
 $dokka.location:com.iomt.android.config.configs/GeneralConfig/type/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/type.html
 $dokka.location:com.iomt.android.config////PointingToDeclaration/app/com.iomt.android.config/index.html
 $dokka.location:com.iomt.android.config//parseConfig/#kotlin.String/PointingToDeclaration/app/com.iomt.android.config/parse-config.html
+$dokka.location:com.iomt.android.credentialmanager////PointingToDeclaration/app/com.iomt.android.credentialmanager/index.html
+$dokka.location:com.iomt.android.credentialmanager/AppCredentialManager.Companion///PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/-companion/index.html
+$dokka.location:com.iomt.android.credentialmanager/AppCredentialManager///PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/index.html
+$dokka.location:com.iomt.android.credentialmanager/AppCredentialManager/AppCredentialManager/#android.content.Context/PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/-app-credential-manager.html
+$dokka.location:com.iomt.android.credentialmanager/AppCredentialManager/createIfNotPresent/#com.iomt.android.dto.Credentials/PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/create-if-not-present.html
+$dokka.location:com.iomt.android.credentialmanager/AppCredentialManager/get/#/PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/get.html
 $dokka.location:com.iomt.android.dto////PointingToDeclaration/app/com.iomt.android.dto/index.html
+$dokka.location:com.iomt.android.dto//toCredentials/androidx.credentials.GetCredentialResponse#/PointingToDeclaration/app/com.iomt.android.dto/to-credentials.html
 $dokka.location:com.iomt.android.dto/Credentials///PointingToDeclaration/app/com.iomt.android.dto/-credentials/index.html
 $dokka.location:com.iomt.android.dto/Credentials/Credentials/#kotlin.String#kotlin.String/PointingToDeclaration/app/com.iomt.android.dto/-credentials/-credentials.html
 $dokka.location:com.iomt.android.dto/Credentials/login/#/PointingToDeclaration/app/com.iomt.android.dto/-credentials/login.html
@@ -297,6 +304,7 @@ com.iomt.android
 com.iomt.android.bluetooth
 com.iomt.android.config
 com.iomt.android.config.configs
+com.iomt.android.credentialmanager
 com.iomt.android.dto
 com.iomt.android.entities
 com.iomt.android.http
