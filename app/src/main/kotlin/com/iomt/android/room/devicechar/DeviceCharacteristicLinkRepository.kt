@@ -19,6 +19,14 @@ class DeviceCharacteristicLinkRepository(context: Context) {
     suspend fun insert(deviceCharacteristicLinkEntity: DeviceCharacteristicLinkEntity): Long = dao.insert(deviceCharacteristicLinkEntity)
 
     /**
+     * @param entities [List] of [DeviceCharacteristicLinkEntity] to save
+     * @return [List] of ids generated for [entities]
+     */
+    suspend fun insertAllIfNotPresent(entities: List<DeviceCharacteristicLinkEntity>): List<Long> = entities.map { entity ->
+        dao.getByDeviceIdAndCharacteristicId(entity.deviceId, entity.characteristicId)?.id ?: dao.insert(entity)
+    }
+
+    /**
      * @param deviceCharacteristicLinkEntity [DeviceCharacteristicLinkEntity] to update (should have id not null)
      */
     suspend fun update(deviceCharacteristicLinkEntity: DeviceCharacteristicLinkEntity) = dao.update(deviceCharacteristicLinkEntity)
@@ -29,12 +37,12 @@ class DeviceCharacteristicLinkRepository(context: Context) {
     suspend fun delete(deviceCharacteristicLinkEntity: DeviceCharacteristicLinkEntity) = dao.delete(deviceCharacteristicLinkEntity)
 
     /**
-     * @param deviceId id of device entity
-     * @return [List] of characteristic entities linked with device with [deviceId]
+     * @param macAddress MAC address of device
+     * @return [List] of characteristic entities linked with device with [macAddress]
      */
-    suspend fun getLinksByDeviceId(deviceId: Long): DeviceCharacteristicLink? {
-        val device = deviceDao.getById(deviceId) ?: return null
-        val links = dao.getByDeviceId(deviceId)
+    suspend fun getLinkByDeviceMac(macAddress: String): DeviceCharacteristicLink? {
+        val device = deviceDao.getByMac(macAddress) ?: return null
+        val links = dao.getByDeviceId(device.id!!)
         val characteristics = characteristicDao.getByIdsIn(links.map { it.characteristicId })
         val characteristicMap = characteristics.associateWith { characteristic ->
             links.first { link -> link.characteristicId == characteristic.id }.id!!

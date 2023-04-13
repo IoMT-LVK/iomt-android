@@ -7,25 +7,21 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.iomt.android.EntryPointActivity
 
 import com.iomt.android.R
 import com.iomt.android.config.parseConfig
-import com.iomt.android.http.getDeviceConfig
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
 import com.iomt.android.utils.composable
 import com.iomt.android.utils.navigate
-
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.runBlocking
 
 /**
  * @property iconId id if icon that should be displayed
@@ -128,45 +124,39 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         }
 
         /**
-         * @param knownDevices [SnapshotStateList] of known [BluetoothDevice]
          * @param signOut callback to sign out
          * @param onHomeDeviceClick callback invoked when [BluetoothDevice] was selected on [HomeView]
          * @param modifier [Modifier] applied to [NavHost]
-         * @param onScannerDeviceClick callback invoked when [BluetoothDevice] was selected on [BleScannerView]
          */
-        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
         @Composable
         @SuppressLint("ComposableNaming")
         @Suppress("TOO_MANY_PARAMETERS")
         fun NavHostController.useMainNavHost(
-            knownDevices: SnapshotStateList<BluetoothDevice>,
             modifier: Modifier = Modifier,
             signOut: () -> Unit,
             onHomeDeviceClick: (BluetoothDevice) -> Unit,
-            onScannerDeviceClick: (BluetoothDevice) -> Unit,
         ) {
             NavHost(this, modifier = modifier, startDestination = Main.default.path) {
-                composable(Main.Home) { HomeView(knownDevices, onHomeDeviceClick) }
+                composable(Main.Home) { HomeView(onHomeDeviceClick) }
                 composable(Main.Settings) { SettingsView(signOut) }
-                composable(Main.Account) { AccountView(knownDevices) }
-                composable(Main.BleScanner) { BleScannerView({ popBackStack() }, onScannerDeviceClick) }
+                composable(Main.Account) { AccountView() }
+                composable(Main.BleScanner) { BleScannerView { popBackStack() } }
                 composable(
-                    "${Main.Device}/{deviceId}",
-                    arguments = listOf(navArgument("deviceId") { type = NavType.IntType }),
+                    "${Main.Device}/{macAddress}",
+                    arguments = listOf(navArgument("macAddress") { type = NavType.StringType }),
                 ) { navBackStackEntry ->
-                    val deviceId = requireNotNull(navBackStackEntry.arguments?.getInt("deviceId")) {
-                        "deviceId cannot be null on DeviceView"
+                    val macAddress = requireNotNull(navBackStackEntry.arguments?.getString("macAddress")) {
+                        "mac cannot be null on DeviceView"
                     }
 
-                    val configLines: CompletableDeferred<String> = CompletableDeferred()
-
                     // todo: replace with config selecting on BleScannerView
-                    getDeviceConfig(1) { configLines.complete(it) }
+                    val stubConfig = parseConfig(
+                        EntryPointActivity::class.java.classLoader?.getResource("ConfigParser/band.toml")?.readText()!!
+                    )
 
-                    val deviceConfig = parseConfig(runBlocking { configLines.await() })
-
-                    DeviceView(knownDevices[deviceId], deviceConfig)
+                    DeviceView(macAddress, stubConfig)
                 }
             }
         }

@@ -6,31 +6,33 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import androidx.compose.runtime.snapshots.SnapshotStateList
 
 import com.iomt.android.config.configs.CharacteristicConfig
 import com.iomt.android.config.configs.DeviceConfig
-import com.iomt.android.entities.Characteristic
 
 import java.util.*
 
 import kotlin.experimental.and
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
 
 /**
  * Class that implements [BluetoothGattCallback]
+ *
+ * @property deviceConfig [DeviceConfig] corresponding to device
+ * @property onCharacteristicUpdate callback invoked on characteristic update, receives characteristic name and value
  */
 class BleGattCallback(
     private val deviceConfig: DeviceConfig,
-    private val characteristics: SnapshotStateList<Characteristic>,
-    private val changeStatus: (Int) -> ConnectionStatus,
     private val onCharacteristicUpdate: (String, String) -> Unit,
 ) : BluetoothGattCallback() {
     private fun updateCharacteristic(charName: String, newValue: String) {
-        val index = characteristics.indexOfFirst { it.name == charName }
-        val oldItem = characteristics[index]
-        characteristics[index] = oldItem.copy(value = newValue)
+        /*
+         * Should update characteristic label
+         * val index = characteristics.indexOfFirst { it.name == charName }
+         * val oldItem = characteristics[index]
+         * characteristics[index] = oldItem.copy(value = newValue)
+         * TODO: send data to server using mqtt
+         */
+        Log.d(loggerTag, "$charName: $newValue")
         onCharacteristicUpdate(charName, newValue)
     }
 
@@ -41,9 +43,10 @@ class BleGattCallback(
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
-        MainScope().launch {
-            val newConnectionStatus = changeStatus(newState)
-            Log.d("BleGattCallback", "Changed state to $newConnectionStatus")
+        Log.d(loggerTag, "State changed to ${ConnectionStatus.fromConnectionState(newState)}")
+        if (newState == BluetoothProfile.STATE_CONNECTED) {
+            Log.d(loggerTag, "Discovering services...")
+            gatt.discoverServices()
         }
     }
 
@@ -56,6 +59,7 @@ class BleGattCallback(
         gatt: BluetoothGatt,
         characteristicConfig: CharacteristicConfig,
     ) {
+        Log.d(loggerTag, "Initializing ${characteristicConfig.name}")
         val service = gatt.getService(UUID.fromString(characteristicConfig.serviceUuid))
         service.getCharacteristic(UUID.fromString(characteristicConfig.characteristicUuid)).also { characteristic ->
             gatt.setCharacteristicNotification(characteristic, true)
@@ -76,14 +80,12 @@ class BleGattCallback(
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
-            Log.d("BleGattCallback", "Successfully discovered services")
-            deviceConfig.characteristics.map { (charName, config) ->
-                characteristics.find { it.name == charName }?.apply {
-                    initializeCharacteristic(gatt, config)
-                }
+            Log.d(loggerTag, "Successfully discovered services")
+            deviceConfig.characteristics.map { (_, config) ->
+                initializeCharacteristic(gatt, config)
             }
         } else {
-            Log.d("BleGattCallback", "Failed to discover services")
+            Log.d(loggerTag, "Failed to discover services")
         }
     }
 
@@ -112,7 +114,7 @@ class BleGattCallback(
         val isCadencePresent = flag and 0x04 != 0.toByte()
         if (isStepCountPresent) {
             val stepCount = accelerometerCharacteristic.getIntValue(format, dataIndex)
-            updateCharacteristic("stepCound", stepCount.toString())
+            updateCharacteristic("stepCount", stepCount.toString())
             dataIndex += 2
         }
         if (isActivityPresent) {
@@ -132,7 +134,7 @@ class BleGattCallback(
         gatt: BluetoothGatt,
         characteristic: BluetoothGattCharacteristic
     ) {
-        Log.d("BluetoothGattCharacteristicChanged", characteristic.uuid.toString())
+        Log.d(loggerTag, "Changed characteristic with uuid ${characteristic.uuid}")
         deviceConfig.characteristics.filter { (_, config) ->
             UUID.fromString(config.characteristicUuid) == characteristic.uuid
         }
@@ -145,23 +147,10 @@ class BleGattCallback(
                     changeCharacteristicLabel(it, characteristic)
                 }
             }
-        // TODO: WIP
-        // val dfDateAndTime: DateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
-        // val milliseconds: DateFormat = SimpleDateFormat("SSS", Locale.US)
-        // val now = Date()
-        // val myDate = dfDateAndTime.format(now)
-        // val millis = milliseconds.format(now)
-        // val result = JSONObject().apply {
-        // put("Clitime", myDate)
-        // put("Millisec", Integer.valueOf(millis))
-        // }
-        // characteristics.filter { (_, characteristic) ->
-        // characteristic.isUpdated
-        // }.forEach { (charName, characteristic) ->
-        // result.put(charName, Integer.valueOf(characteristic.textView.text.toString()))
-        // }
     }
     companion object {
         private val clientCharacteristicConfigUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
+        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
+        private val loggerTag = object { }.javaClass.enclosingClass.simpleName
     }
 }

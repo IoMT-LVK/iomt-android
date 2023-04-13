@@ -23,7 +23,7 @@ import com.iomt.android.jetpack.theme.colorScheme
 /**
  * Entry point of application
  */
-@RequiresApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Composable
 fun EntryPoint() {
@@ -40,7 +40,7 @@ fun EntryPoint() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Preview
 @Composable
