@@ -25,7 +25,7 @@ interface CharacteristicDao : BasicDao<CharacteristicEntity> {
      * @return [CharacteristicEntity] with [name] and [characteristicUuid]
      */
     @Query("SELECT * FROM characteristic WHERE name = :name AND char_uuid = :characteristicUuid LIMIT 1")
-    fun getByNameAndCharacteristicUuid(name: String, characteristicUuid: UUID): CharacteristicEntity?
+    suspend fun getByNameAndCharacteristicUuid(name: String, characteristicUuid: UUID): CharacteristicEntity?
 
     /**
      * @param ids [List] of [CharacteristicEntity] IDs

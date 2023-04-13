@@ -12,13 +12,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
+import com.iomt.android.jetpack.Scaffold
 import com.iomt.android.jetpack.components.drawer.Drawer
 import com.iomt.android.jetpack.theme.colorScheme
 
 /**
  * @param signOut callback to sign out
  */
-@RequiresApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Composable
 fun NavViewSystemWithDrawer(signOut: () -> Unit) {
@@ -30,7 +31,7 @@ fun NavViewSystemWithDrawer(signOut: () -> Unit) {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Preview
 @Composable

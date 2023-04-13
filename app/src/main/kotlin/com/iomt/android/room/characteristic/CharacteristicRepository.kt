@@ -6,8 +6,6 @@ import com.iomt.android.room.AppDatabase
 
 import java.util.UUID
 
-import kotlinx.coroutines.flow.Flow
-
 /**
  * Repository for [CharacteristicEntity]
  */
@@ -22,6 +20,14 @@ class CharacteristicRepository(context: Context) {
     suspend fun insert(characteristicEntity: CharacteristicEntity): Long = characteristicDao.insert(characteristicEntity)
 
     /**
+     * @param characteristicEntities [List] of [CharacteristicEntity] to insert
+     * @return [List] of id generated for [characteristicEntities]
+     */
+    suspend fun insertAllIfNotPresent(characteristicEntities: List<CharacteristicEntity>): List<Long> = characteristicEntities.map {
+        characteristicDao.getByNameAndCharacteristicUuid(it.name, it.characteristicUuid)?.id ?: characteristicDao.insert(it)
+    }
+
+    /**
      * @param characteristicEntity [CharacteristicEntity] to update (should have id not null)
      */
     suspend fun update(characteristicEntity: CharacteristicEntity) = characteristicDao.update(characteristicEntity)
@@ -32,16 +38,11 @@ class CharacteristicRepository(context: Context) {
     suspend fun delete(characteristicEntity: CharacteristicEntity) = characteristicDao.delete(characteristicEntity)
 
     /**
-     * @return all [CharacteristicEntity]s as [Flow]
-     */
-    fun getAll(): Flow<CharacteristicEntity> = characteristicDao.getAll()
-
-    /**
      * @param name characteristic name
      * @param characteristicUuid [UUID] of BluetoothGattCharacteristic corresponding to this characteristic
      * @return [CharacteristicEntity] with [name] and [characteristicUuid]
      */
-    fun getByNameAndCharacteristicUuid(
+    suspend fun getByNameAndCharacteristicUuid(
         name: String,
         characteristicUuid: UUID,
     ): CharacteristicEntity? = characteristicDao.getByNameAndCharacteristicUuid(name, characteristicUuid)

@@ -3,7 +3,6 @@
 package com.iomt.android.jetpack.view.main
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
@@ -12,17 +11,19 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
+import com.iomt.android.bluetooth.BleForegroundService
 import com.iomt.android.jetpack.components.*
 import com.iomt.android.jetpack.components.textfield.*
 import com.iomt.android.jetpack.theme.colorScheme
+import com.iomt.android.utils.getService
 
 /**
  * @property prettyName human-readable tab name
@@ -39,12 +40,12 @@ private enum class AccountViewTabs(val prettyName: String, val tabIndex: Int) {
 }
 
 /**
- * @param connectedDevices [SnapshotStateList] of connected [BluetoothDevice]
+ * View for account
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-fun AccountView(connectedDevices: SnapshotStateList<BluetoothDevice>) {
+fun AccountView() {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         var selectedTab by remember { mutableStateOf(AccountViewTabs.default) }
         val avatarPainter = painterResource(id = R.drawable.logo)
@@ -67,7 +68,7 @@ fun AccountView(connectedDevices: SnapshotStateList<BluetoothDevice>) {
             }
             when (selectedTab) {
                 AccountViewTabs.USER -> RenderUserInfo()
-                AccountViewTabs.DEVICES -> RenderConnectedDevices(connectedDevices)
+                AccountViewTabs.DEVICES -> RenderConnectedDevices()
             }
         }
     }
@@ -101,7 +102,9 @@ private fun RenderUserInfo() {
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-private fun RenderConnectedDevices(connectedDevices: SnapshotStateList<BluetoothDevice>) {
+private fun RenderConnectedDevices() {
+    val bleForegroundService: BleForegroundService = LocalContext.getService()
+    val connectedDevices = remember { bleForegroundService.getConnectedDevices().toMutableStateList() }
     DeviceList("Connected devices", connectedDevices) { }
 }
 
@@ -110,6 +113,5 @@ private fun RenderConnectedDevices(connectedDevices: SnapshotStateList<Bluetooth
 @Preview
 @Composable
 private fun AccountViewPreview() {
-    val connectedDevices = remember { mutableStateListOf<BluetoothDevice>() }
-    MaterialTheme(colorScheme) { AccountView(connectedDevices) }
+    MaterialTheme(colorScheme) { AccountView() }
 }

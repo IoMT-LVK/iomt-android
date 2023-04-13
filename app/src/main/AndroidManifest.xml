@@ -16,6 +16,9 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_RUN_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.REQUEST_COMPANION_USE_DATA_IN_BACKGROUND" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
     <application
         android:allowBackup="true"
@@ -28,7 +31,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" tools:targetApi="tiramisu">
 
-        <service android:name="org.eclipse.paho.android.service.MqttService" />
+        <service
+            android:name="org.eclipse.paho.android.service.MqttService"
+            android:foregroundServiceType="dataSync"
+        />
+        <service
+            android:name=".bluetooth.BleForegroundService"
+            android:exported="false"
+            android:enabled="true"
+            android:foregroundServiceType="connectedDevice"
+            android:label="@string/app_name"
+        />
 
         <activity
             android:name=".EntryPointActivity"

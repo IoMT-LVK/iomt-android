@@ -11,7 +11,7 @@ interface BasicDao <E : BasicEntity> {
      * @param entity [BasicEntity] to insert
      * @return [entity]s generated ID
      */
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(entity: E): Long
 
     /**

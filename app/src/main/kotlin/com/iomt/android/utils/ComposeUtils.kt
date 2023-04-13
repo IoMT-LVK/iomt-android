@@ -5,8 +5,13 @@
 package com.iomt.android.utils
 
 import android.content.Context
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ProvidableCompositionLocal
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.iomt.android.jetpack.navigation.NavRouter
@@ -45,3 +50,18 @@ fun NavHostController.navigate(
     navOptions: NavOptions? = null,
     navigatorExtras: Navigator.Extras? = null,
 ): Unit = navigate(navRouter.path, navOptions, navigatorExtras)
+
+/**
+ * Shows [CircularProgressIndicator] if [value] is null, [content] otherwise
+ *
+ * @param value
+ * @param content
+ */
+@Composable
+fun <T : Any> withLoading(value: T?, content: @Composable (T) -> Unit) {
+    value?.let { content(value) } ?: run {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    }
+}
