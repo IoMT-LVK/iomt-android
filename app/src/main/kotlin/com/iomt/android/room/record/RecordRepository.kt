@@ -25,4 +25,9 @@ class RecordRepository(context: Context) {
      * @param recordEntity [RecordEntity] to delete (should have id not null)
      */
     suspend fun delete(recordEntity: RecordEntity) = dao.delete(recordEntity)
+
+    /**
+     * @return get all [RecordEntity] present in database
+     */
+    suspend fun getAll(): List<RecordEntity> = dao.getAll()
 }

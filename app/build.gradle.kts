@@ -12,6 +12,7 @@ android {
         compose = true
     }
     compileSdk = 33
+    compileSdkPreview = "UpsideDownCake"
     defaultConfig {
         multiDexEnabled = true
         applicationId = "com.iomt.android"
@@ -42,8 +43,8 @@ android {
     }
     buildToolsVersion = "33.0.2"
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     dependenciesInfo {
         includeInApk = true
@@ -51,6 +52,9 @@ android {
     }
 
     java {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(17))
+        }
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -59,8 +63,6 @@ android {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
-
-
 
 dependencies {
     implementation(fileTree("dir" to "libs", "include" to listOf("*.jar")))
@@ -71,7 +73,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.compose.ui:ui:1.4.1")
     implementation("androidx.compose.runtime:runtime:1.4.1")
-    implementation("androidx.compose.compiler:compiler:1.4.4")
+    implementation("androidx.compose.compiler:compiler:1.4.5")
     implementation("androidx.compose.material3:material3:1.0.1")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.1")
     implementation("io.ktor:ktor-client-logging-jvm:2.2.4")
@@ -87,10 +89,12 @@ dependencies {
 
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.credentials:credentials:1.2.0-alpha02")
     implementation("androidx.credentials:credentials-play-services-auth:1.2.0-alpha02")
 
     implementation("com.google.android.material:material:1.8.0")
+
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") { exclude("support-v4") }
 
