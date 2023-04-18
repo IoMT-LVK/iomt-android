@@ -221,6 +221,23 @@ $dokka.location:com.iomt.android.jetpack.view.main//SettingsView/#kotlin.Functio
 $dokka.location:com.iomt.android.jetpack////PointingToDeclaration/app/com.iomt.android.jetpack/index.html
 $dokka.location:com.iomt.android.jetpack//EntryPoint/#/PointingToDeclaration/app/com.iomt.android.jetpack/-entry-point.html
 $dokka.location:com.iomt.android.jetpack//Scaffold/#androidx.navigation.NavHostController#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack/-scaffold.html
+$dokka.location:com.iomt.android.mqtt////PointingToDeclaration/app/com.iomt.android.mqtt/index.html
+$dokka.location:com.iomt.android.mqtt/MqttClient.Companion///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/-companion/index.html
+$dokka.location:com.iomt.android.mqtt/MqttClient///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/index.html
+$dokka.location:com.iomt.android.mqtt/MqttClient/MqttClient/#android.content.Context/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/-mqtt-client.html
+$dokka.location:com.iomt.android.mqtt/MqttClient/connect/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/connect.html
+$dokka.location:com.iomt.android.mqtt/MqttClient/disconnect/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/disconnect.html
+$dokka.location:com.iomt.android.mqtt/MqttClient/send/#kotlin.String#kotlin.ByteArray/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/send.html
+$dokka.location:com.iomt.android.mqtt/MqttWorkManager.Companion///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/-companion/index.html
+$dokka.location:com.iomt.android.mqtt/MqttWorkManager.Companion/getInstance/#android.content.Context/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/-companion/get-instance.html
+$dokka.location:com.iomt.android.mqtt/MqttWorkManager///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/index.html
+$dokka.location:com.iomt.android.mqtt/MqttWorkManager/MqttWorkManager/#android.content.Context/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/-mqtt-work-manager.html
+$dokka.location:com.iomt.android.mqtt/MqttWorkManager/start/#kotlin.time.Duration#androidx.work.NetworkType/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/start.html
+$dokka.location:com.iomt.android.mqtt/MqttWorker.Companion///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-worker/-companion/index.html
+$dokka.location:com.iomt.android.mqtt/MqttWorker///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-worker/index.html
+$dokka.location:com.iomt.android.mqtt/MqttWorker/MqttWorker/#android.content.Context#androidx.work.WorkerParameters/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-worker/-mqtt-worker.html
+$dokka.location:com.iomt.android.mqtt/MqttWorker/doWork/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-worker/do-work.html
+$dokka.location:com.iomt.android.mqtt/MqttWorker/getForegroundInfo/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-worker/get-foreground-info.html
 $dokka.location:com.iomt.android.room.basic////PointingToDeclaration/app/com.iomt.android.room.basic/index.html
 $dokka.location:com.iomt.android.room.basic/BasicDao///PointingToDeclaration/app/com.iomt.android.room.basic/-basic-dao/index.html
 $dokka.location:com.iomt.android.room.basic/BasicDao/delete/#TypeParam(bounds=[com.iomt.android.room.basic.BasicEntity])/PointingToDeclaration/app/com.iomt.android.room.basic/-basic-dao/delete.html
@@ -272,6 +289,7 @@ $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLink/getLin
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkDao///PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-dao/index.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkDao/getByDeviceId/#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-dao/get-by-device-id.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkDao/getByDeviceIdAndCharacteristicId/#kotlin.Long#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-dao/get-by-device-id-and-characteristic-id.html
+$dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkDao/getById/#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-dao/get-by-id.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkEntity///PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-entity/index.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkEntity/DeviceCharacteristicLinkEntity/#kotlin.Long#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-entity/-device-characteristic-link-entity.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkEntity/characteristicId/#/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-entity/characteristic-id.html
@@ -279,11 +297,13 @@ $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkEntity/
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository///PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/index.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/DeviceCharacteristicLinkRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/-device-characteristic-link-repository.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/delete/#com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/delete.html
+$dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/getDeviceMacByLinkId/#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/get-device-mac-by-link-id.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/getLinkByDeviceMac/#kotlin.String/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/get-link-by-device-mac.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/insert/#com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/insert.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/insertAllIfNotPresent/#kotlin.collections.List[com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity]/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/insert-all-if-not-present.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/update/#com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/update.html
 $dokka.location:com.iomt.android.room.record////PointingToDeclaration/app/com.iomt.android.room.record/index.html
+$dokka.location:com.iomt.android.room.record/RecordDao.Companion///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/-companion/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/delete.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-all.html
@@ -293,10 +313,12 @@ $dokka.location:com.iomt.android.room.record/RecordEntity///PointingToDeclaratio
 $dokka.location:com.iomt.android.room.record/RecordEntity/RecordEntity/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.String/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/-record-entity.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/deviceCharacteristicLinkId/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/device-characteristic-link-id.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/timestamp/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/timestamp.html
+$dokka.location:com.iomt.android.room.record/RecordEntity/toByteArray/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/to-byte-array.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/value/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/value.html
 $dokka.location:com.iomt.android.room.record/RecordRepository///PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/index.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/RecordRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/-record-repository.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/delete.html
+$dokka.location:com.iomt.android.room.record/RecordRepository/getAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-all.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/insert/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/insert.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/update/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/update.html
 $dokka.location:com.iomt.android.room////PointingToDeclaration/app/com.iomt.android.room/index.html
@@ -327,6 +349,9 @@ $dokka.location:com.iomt.android.utils/BleServiceConnection/BleServiceConnection
 $dokka.location:com.iomt.android.utils/BleServiceConnection/onServiceConnected/#android.content.ComponentName?#android.os.IBinder?/PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/on-service-connected.html
 $dokka.location:com.iomt.android.utils/BleServiceConnection/onServiceDisconnected/#android.content.ComponentName?/PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/on-service-disconnected.html
 $dokka.location:com.iomt.android.utils/BleServiceConnection/service/#/PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/service.html
+$dokka.location:com.iomt.android.utils/SharedPreferencesNames///PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/index.html
+$dokka.location:com.iomt.android.utils/SharedPreferencesNames/mobileNetwork/#/PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/mobile-network.html
+$dokka.location:com.iomt.android.utils/SharedPreferencesNames/mqttWorkerPeriod/#/PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/mqtt-worker-period.html
 $dokka.location:com.iomt.android////PointingToDeclaration/app/com.iomt.android/index.html
 $dokka.location:com.iomt.android/EntryPointActivity.Companion///PointingToDeclaration/app/com.iomt.android/-entry-point-activity/-companion/index.html
 $dokka.location:com.iomt.android/EntryPointActivity///PointingToDeclaration/app/com.iomt.android/-entry-point-activity/index.html
@@ -349,6 +374,7 @@ com.iomt.android.jetpack.navigation
 com.iomt.android.jetpack.theme
 com.iomt.android.jetpack.view.login
 com.iomt.android.jetpack.view.main
+com.iomt.android.mqtt
 com.iomt.android.room
 com.iomt.android.room.basic
 com.iomt.android.room.characteristic
