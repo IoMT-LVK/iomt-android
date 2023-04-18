@@ -103,7 +103,7 @@ class BleForegroundService : Service() {
         val notificationText = getNotificationText()
 
         return NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-            .setContentTitle("BLE Foreground Service")
+            .setContentTitle("IoMT Health Center")
             .setContentText(notificationText)
             /* R.drawable.ic_notification */
             .setSmallIcon(R.drawable.logo)

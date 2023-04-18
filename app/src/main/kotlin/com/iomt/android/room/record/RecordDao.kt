@@ -30,6 +30,10 @@ interface RecordDao {
     /**
      * @return all [RecordEntity] as [Flow]
      */
-    @Query("SELECT * FROM record")
-    fun getAll(): Flow<RecordEntity>
+    @Query("SELECT * FROM record LIMIT $DEFAULT_PAGE_SIZE")
+    suspend fun getAll(): List<RecordEntity>
+
+    companion object {
+        private const val DEFAULT_PAGE_SIZE = 500
+    }
 }

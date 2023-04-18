@@ -17,6 +17,13 @@ interface DeviceCharacteristicLinkDao : BasicDao<DeviceCharacteristicLinkEntity>
     suspend fun getByDeviceId(deviceId: Long): List<DeviceCharacteristicLinkEntity>
 
     /**
+     * @param id id of [DeviceCharacteristicLinkEntity]
+     * @return [DeviceCharacteristicLinkEntity] with [id]
+     */
+    @Query("SELECT * FROM device_characteristic_link WHERE id = :id")
+    suspend fun getById(id: Long): DeviceCharacteristicLinkEntity?
+
+    /**
      * @param deviceId id of device entity
      * @param characteristicId id of characteristic entity
      * @return [DeviceCharacteristicLinkEntity] where device id is [deviceId] and characteristic id is [characteristicId]
