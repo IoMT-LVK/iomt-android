@@ -9,12 +9,16 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 import com.iomt.android.jetpack.navigation.NavRouter
+
+typealias FloatingButtonBuilder = @Composable (NavHostController) -> Unit
+typealias MutableFloatingButtonBuilder = MutableState<FloatingButtonBuilder>
 
 /**
  * Utility method to enable constructions like
@@ -54,8 +58,8 @@ fun NavHostController.navigate(
 /**
  * Shows [CircularProgressIndicator] if [value] is null, [content] otherwise
  *
- * @param value
- * @param content
+ * @param value nullable value that defines the real rendered content
+ * @param content content that should be displayed if [value] is not null
  */
 @Composable
 fun <T : Any> withLoading(value: T?, content: @Composable (T) -> Unit) {

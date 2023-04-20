@@ -14,16 +14,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
-import com.iomt.android.bluetooth.BleForegroundService
 import com.iomt.android.jetpack.components.*
 import com.iomt.android.jetpack.components.textfield.*
 import com.iomt.android.jetpack.theme.colorScheme
-import com.iomt.android.utils.getService
+import com.iomt.android.utils.rememberBoundService
 
 /**
  * @property prettyName human-readable tab name
@@ -103,8 +101,10 @@ private fun RenderUserInfo() {
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 private fun RenderConnectedDevices() {
-    val bleForegroundService: BleForegroundService = LocalContext.getService()
-    val connectedDevices = remember { bleForegroundService.getConnectedDevices().toMutableStateList() }
+    val bleForegroundService by rememberBoundService().collectAsState()
+    val connectedDevices = remember {
+        bleForegroundService?.getConnectedDevices()?.toMutableStateList() ?: mutableStateListOf()
+    }
     DeviceList("Connected devices", connectedDevices) { }
 }
 

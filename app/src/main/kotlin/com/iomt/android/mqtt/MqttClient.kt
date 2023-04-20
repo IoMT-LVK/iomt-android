@@ -19,9 +19,12 @@ class MqttClient(context: Context) {
      * @return [IMqttToken]
      */
     fun connect(): IMqttToken {
+        /**
+         * Server expects token as username
+         * Password is not required
+         */
         val mqttConnectOptions = MqttConnectOptions().apply {
-            userName = MQTT_USERNAME
-            password = getAuthorizationToken()
+            userName = getAuthorizationToken()
         }
         return mqttClient.connect(mqttConnectOptions)
     }
@@ -52,15 +55,13 @@ class MqttClient(context: Context) {
      */
     fun disconnect(): IMqttToken = mqttClient.disconnect()
 
-    private fun getAuthorizationToken(): CharArray = "".toCharArray()
+    /**
+     * TODO: should return JWT token
+     */
+    private fun getAuthorizationToken(): String = ""
 
     companion object {
-        private const val MQTT_BROKER_URL = "tcp://iomt.lvk.cs.msu.ru:8883"
-
-        /**
-         * TODO: ensure there is no need in username for mqtt on server side
-         */
-        private const val MQTT_USERNAME = ""
+        private const val MQTT_BROKER_URL = "tcp://iomt.lvk.cs.msu.ru:1883"
 
         /**
          * TODO: ensure there is no need in user id for mqtt on server side

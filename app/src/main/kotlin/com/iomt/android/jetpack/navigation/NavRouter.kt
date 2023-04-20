@@ -20,6 +20,7 @@ import com.iomt.android.config.parseConfig
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
+import com.iomt.android.utils.MutableFloatingButtonBuilder
 import com.iomt.android.utils.composable
 import com.iomt.android.utils.navigate
 
@@ -124,9 +125,10 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         }
 
         /**
+         * @param modifier [Modifier] applied to [NavHost]
+         * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
          * @param signOut callback to sign out
          * @param onHomeDeviceClick callback invoked when [BluetoothDevice] was selected on [HomeView]
-         * @param modifier [Modifier] applied to [NavHost]
          */
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
@@ -135,14 +137,15 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         @Suppress("TOO_MANY_PARAMETERS")
         fun NavHostController.useMainNavHost(
             modifier: Modifier = Modifier,
+            mutableFloatingButtonBuilder: MutableFloatingButtonBuilder,
             signOut: () -> Unit,
             onHomeDeviceClick: (BluetoothDevice) -> Unit,
         ) {
             NavHost(this, modifier = modifier, startDestination = Main.default.path) {
-                composable(Main.Home) { HomeView(onHomeDeviceClick) }
+                composable(Main.Home) { HomeView(mutableFloatingButtonBuilder, onHomeDeviceClick) }
                 composable(Main.Settings) { SettingsView(signOut) }
                 composable(Main.Account) { AccountView() }
-                composable(Main.BleScanner) { BleScannerView { popBackStack() } }
+                composable(Main.BleScanner) { BleScannerView(mutableFloatingButtonBuilder) { popBackStack() } }
                 composable(
                     "${Main.Device}/{macAddress}",
                     arguments = listOf(navArgument("macAddress") { type = NavType.StringType }),
