@@ -11,14 +11,17 @@ import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.Intent
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,9 +38,7 @@ import com.iomt.android.room.characteristic.CharacteristicRepository
 import com.iomt.android.room.device.DeviceRepository
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
-import com.iomt.android.utils.getService
-import com.iomt.android.utils.rememberBoundService
-import com.iomt.android.utils.withLoading
+import com.iomt.android.utils.*
 
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.MainScope
@@ -47,12 +48,16 @@ import kotlinx.coroutines.launch
 private val scanningPeriod = 30.seconds
 
 /**
+ * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
  * @param navigateBack callback to go to previous view (HomeView)
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
-fun BleScannerView(navigateBack: () -> Unit) {
+fun BleScannerView(
+    mutableFloatingButtonBuilder: MutableFloatingButtonBuilder,
+    navigateBack: () -> Unit,
+) {
     val bluetoothManager: BluetoothManager = LocalContext.getService()
     val bluetoothAdapter = bluetoothManager.adapter
     val enableBluetoothContract = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -79,11 +84,34 @@ fun BleScannerView(navigateBack: () -> Unit) {
         val leScanCallback = BleScanCallback(connectedDevices, foundDevices)
 
         var isScanning by remember { mutableStateOf(false) }
-        bluetoothLeScanner.startScan(leScanCallback).also { isScanning = true }
+        mutableFloatingButtonBuilder.value = {
+            val floatingActionButtonContent: @Composable () -> Unit = {
+                when (isScanning) {
+                    true -> {
+                        Icon(Icons.Default.Clear, "Stop")
+                        Text("Stop scan")
+                    }
+
+                    false -> {
+                        Icon(Icons.Default.Add, "Start")
+                        Text("Start scan")
+                    }
+                }
+            }
+            ExtendedFloatingActionButton(
+                onClick = { isScanning = !isScanning },
+                shape = ShapeDefaults.Medium,
+            ) { floatingActionButtonContent() }
+        }
         LaunchedEffect(isScanning) {
             if (isScanning) {
+                bluetoothLeScanner.startScan(leScanCallback).also {
+                    Log.d("BleScanner", "Scan started")
+                }
                 delay(scanningPeriod)
-                bluetoothLeScanner.stopScan(leScanCallback)
+                bluetoothLeScanner.stopScan(leScanCallback).also {
+                    Log.d("BleScanner", "Scan stopped after $scanningPeriod")
+                }
                 isScanning = false
             }
         }
@@ -122,5 +150,6 @@ fun BleScannerView(navigateBack: () -> Unit) {
 @Preview
 @Composable
 private fun BleScannerViewPreview() {
-    MaterialTheme(colorScheme) { BleScannerView { } }
+    val mutableFloatingButtonBuilder = remember { mutableStateOf<FloatingButtonBuilder>({}) }
+    MaterialTheme(colorScheme) { BleScannerView(mutableFloatingButtonBuilder) { } }
 }

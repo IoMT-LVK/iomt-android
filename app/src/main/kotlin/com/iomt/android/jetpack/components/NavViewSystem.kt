@@ -23,8 +23,6 @@ import com.iomt.android.jetpack.theme.colorScheme
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Composable
 fun NavViewSystemWithDrawer(signOut: () -> Unit) {
-    /* TODO: implement credential saving */
-
     val navController = rememberNavController()
     Drawer(navController) { openDrawer ->
         Scaffold(navController, signOut, openDrawer)
