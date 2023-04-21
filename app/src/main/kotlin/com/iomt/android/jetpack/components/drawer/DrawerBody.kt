@@ -27,7 +27,7 @@ internal fun DrawerBody(navController: NavHostController?, closeNavDrawer: () ->
             onItemClick = {
                 navController?.navigate(route)
                 closeNavDrawer()
-            }
+            },
         )
     }
 }

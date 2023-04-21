@@ -59,7 +59,7 @@ class MqttWorkManager(context: Context) {
                 Constraints(
                     requiredNetworkType = networkType,
                     requiresBatteryNotLow = true,
-                )
+                ),
             )
             .addTag(mqttWorkManagerClassName)
             .build()

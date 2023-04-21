@@ -132,7 +132,7 @@ class BleGattCallback(
     @Deprecated("Deprecated in Java")
     override fun onCharacteristicChanged(
         gatt: BluetoothGatt,
-        characteristic: BluetoothGattCharacteristic
+        characteristic: BluetoothGattCharacteristic,
     ) {
         Log.d(loggerTag, "Changed characteristic with uuid ${characteristic.uuid}")
         deviceConfig.characteristics.filter { (_, config) ->

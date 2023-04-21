@@ -31,7 +31,7 @@ typealias MutableFloatingButtonBuilder = MutableState<FloatingButtonBuilder>
  */
 @Composable
 inline fun <reified T : Any> ProvidableCompositionLocal<Context>.getService(): T = requireNotNull(
-    current.getSystemService(T::class.java)
+    current.getSystemService(T::class.java),
 ) { "Could not get ${T::class.java.simpleName}" }
 
 /**

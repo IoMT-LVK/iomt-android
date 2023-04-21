@@ -20,7 +20,7 @@ import kotlinx.serialization.json.Json
             entity = DeviceCharacteristicLinkEntity::class,
             parentColumns = ["id"],
             childColumns = ["device_char_link_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
     ],
     indices = [

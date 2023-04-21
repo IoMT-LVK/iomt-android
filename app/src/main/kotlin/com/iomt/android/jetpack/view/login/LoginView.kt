@@ -80,7 +80,7 @@ fun LoginView(
     ) {
         Image(
             painter = painterResource(id = R.drawable.logo),
-            contentDescription = null
+            contentDescription = null,
         )
 
         OutlinedTextField(
@@ -93,7 +93,7 @@ fun LoginView(
                 if (isLoginError) {
                     Text("Введите корректный логин")
                 }
-            }
+            },
         )
         OutlinedTextField(
             password,
@@ -106,12 +106,12 @@ fun LoginView(
                 if (isPasswordError) {
                     Text("Не менее 4 и не более 14 символов")
                 }
-            }
+            },
         )
 
         Column(
             modifier = Modifier.padding(vertical = 15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button({ onLoginClicked() }) {
                 Text(stringResource(R.string.login_text))

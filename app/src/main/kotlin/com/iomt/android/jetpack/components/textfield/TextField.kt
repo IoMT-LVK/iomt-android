@@ -27,7 +27,7 @@ fun TextField(cell: Cell, verticalPadding: Dp = 5.dp) {
         onValueChange = cell.onValueChange,
         modifier = Modifier.fillMaxWidth().padding(vertical = verticalPadding),
         label = { cell.description?.let { Text(it) } },
-        isError = cell.validator?.invoke("")?.not() ?: false
+        isError = cell.validator?.invoke("")?.not() ?: false,
     )
 }
 

@@ -37,7 +37,7 @@ class BleForegroundService : Service() {
             startForeground(
                 NOTIFICATION_ID,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MANIFEST,
             )
         } else {
             startForeground(NOTIFICATION_ID, notification)

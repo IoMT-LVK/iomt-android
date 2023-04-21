@@ -114,7 +114,7 @@ fun RegistrationView(navigateToEmailConf: () -> Unit) {
 
         Column(
             modifier = Modifier.padding(vertical = 15.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Button(onSignUpClicked) {
                 Text(stringResource(R.string.create_account))
