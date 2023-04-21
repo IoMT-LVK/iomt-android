@@ -116,7 +116,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
             navViewSystemWithDrawer: @Composable () -> Unit,
         ) {
             NavHost(this, modifier = modifier, startDestination = Login.default.path) {
-                composable(Login.Login) { LoginView({ navigate(Login.Register) }, { navigate(Main.default) }) { navigate(Login.EmailConf) } }
+                composable(Login.Login) { LoginView({ navigate(Login.Register) }) { navigate(Main.default) } }
                 composable(Login.EmailConf) { EmailConfView { navigate(Login.Login) } }
                 composable(Login.Register) { RegistrationView { navigate(Login.EmailConf) } }
                 composable(Login.Main) { navViewSystemWithDrawer() }

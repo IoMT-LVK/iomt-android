@@ -134,7 +134,6 @@ class BleManager(private val context: Context) {
         return BleGattCallback(deviceData.config) { charName, newValue ->
             scope.launch {
                 deviceData.deviceCharacteristicLink.let { link ->
-                    Log.e(loggerTag, link.toString())
                     val linkEntityId = link.getLinkIdByCharacteristicName(charName)
                     val record = RecordEntity(linkEntityId, LocalDateTime.now(), newValue)
                     recordRepository.insert(record)
@@ -144,6 +143,6 @@ class BleManager(private val context: Context) {
     }
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = object { }.javaClass.enclosingClass.simpleName
+        private val loggerTag = BleManager::class.java.simpleName
     }
 }

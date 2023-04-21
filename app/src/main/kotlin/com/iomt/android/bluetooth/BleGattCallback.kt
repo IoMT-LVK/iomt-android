@@ -59,7 +59,7 @@ class BleGattCallback(
         gatt: BluetoothGatt,
         characteristicConfig: CharacteristicConfig,
     ) {
-        Log.d(loggerTag, "Initializing ${characteristicConfig.name}")
+        Log.d(loggerTag, "Initializing ${characteristicConfig.prettyName}")
         val service = gatt.getService(UUID.fromString(characteristicConfig.serviceUuid))
         service.getCharacteristic(UUID.fromString(characteristicConfig.characteristicUuid)).also { characteristic ->
             gatt.setCharacteristicNotification(characteristic, true)
@@ -81,7 +81,7 @@ class BleGattCallback(
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             Log.d(loggerTag, "Successfully discovered services")
-            deviceConfig.characteristics.map { config ->
+            deviceConfig.characteristics.map { (_, config) ->
                 initializeCharacteristic(gatt, config)
             }
         } else {
@@ -135,21 +135,21 @@ class BleGattCallback(
         characteristic: BluetoothGattCharacteristic
     ) {
         Log.d(loggerTag, "Changed characteristic with uuid ${characteristic.uuid}")
-        deviceConfig.characteristics.filter { config ->
+        deviceConfig.characteristics.filter { (_, config) ->
             UUID.fromString(config.characteristicUuid) == characteristic.uuid
         }
+            .map { it.key }
             .firstOrNull()
             ?.let {
-                if (it.name == "accelerometer") {
+                if (it == "accelerometer") {
                     changeAccelerometerLabel(characteristic)
                 } else {
-                    changeCharacteristicLabel(it.name, characteristic)
+                    changeCharacteristicLabel(it, characteristic)
                 }
             }
     }
     companion object {
         private val clientCharacteristicConfigUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = object { }.javaClass.enclosingClass.simpleName
+        private val loggerTag = BleGattCallback::class.java.simpleName
     }
 }

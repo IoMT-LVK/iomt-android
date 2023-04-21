@@ -6,7 +6,7 @@ package com.iomt.android.http
 
 import android.util.Log
 import com.iomt.android.dto.Credentials
-import com.iomt.android.entities.AuthInfo
+import com.iomt.android.entities.TokenInfo
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -21,7 +21,7 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-private const val REFRESH_TOKEN_URL = "$BASE_URL/auth/"
+private const val REFRESH_TOKEN_URL = "$API_V1_URL/auth/user"
 
 object RequestParams {
     /**
@@ -30,58 +30,55 @@ object RequestParams {
     var credentials: Credentials? = null
 
     /**
-     * ID of a current user
-     * todo: remove when backend is able to get userId from jwt token
-     */
-    var userId: String? = null
-
-    /**
      * Forget all the session connected info
      */
     fun logout() {
         credentials = null
-        userId = null
     }
 }
 
 /**
  * @param url auth url, [REFRESH_TOKEN_URL] by default
  * @param additionalRequestBuilder additional [HttpRequestBuilder] lambda
- * @return [AuthInfo]
+ * @return [TokenInfo]
  * @throws ClientRequestException on failed authorization
  */
 suspend fun HttpClient.authenticate(
     url: String = REFRESH_TOKEN_URL,
     additionalRequestBuilder: HttpRequestBuilder.() -> Unit = { }
-): AuthInfo {
+): TokenInfo {
     val response = post(url) {
         additionalRequestBuilder()
         contentType(ContentType.Application.Json)
+        RequestParams.credentials?.let {
+            basicAuth(it.login, it.password)
+        }
         setBody(Json.encodeToString(RequestParams.credentials))
     }
-    if (!response.status.isSuccess()) {
+    return if (!response.status.isSuccess()) {
         throw ClientRequestException(response, "Authentication failed")
-    }
-    val authInfo: AuthInfo = response.body()
-    if (authInfo.jwt.isNotBlank()) {
-        return authInfo
     } else {
-        throw ClientRequestException(response, "Authentication failed")
+        response.body()
     }
 }
 
 /**
  * @param engine [HttpClientEngine] to use
  * @param authUrl url auth url, [REFRESH_TOKEN_URL] by default
+ * @param logMessage method to log the message, [Log.d] by default
  * @return [HttpClient] based on [engine]
  */
-internal fun createHttpClient(engine: HttpClientEngine, authUrl: String = REFRESH_TOKEN_URL) = HttpClient(engine) {
+internal fun createHttpClient(
+    engine: HttpClientEngine,
+    authUrl: String = REFRESH_TOKEN_URL,
+    logMessage: (String) -> Unit = { Log.d("HttpClient", it) },
+) = HttpClient(engine) {
     install(ContentNegotiation) { json() }
     install(Logging) {
         level = LogLevel.HEADERS
         logger = object : Logger {
             override fun log(message: String) {
-                Log.d("HttpClient", message)
+                logMessage(message)
             }
         }
     }
@@ -89,9 +86,9 @@ internal fun createHttpClient(engine: HttpClientEngine, authUrl: String = REFRES
         bearer {
             refreshTokens {
                 RequestParams.credentials?.let {
-                    val authInfo = client.authenticate(authUrl) { markAsRefreshTokenRequest() }
+                    val tokenInfo = client.authenticate(authUrl) { markAsRefreshTokenRequest() }
                     // todo: support refresh token
-                    BearerTokens(authInfo.jwt, "")
+                    BearerTokens(tokenInfo.token, "")
                 } ?: throw IllegalStateException("No credentials are provided")
             }
             sendWithoutRequest { request ->
