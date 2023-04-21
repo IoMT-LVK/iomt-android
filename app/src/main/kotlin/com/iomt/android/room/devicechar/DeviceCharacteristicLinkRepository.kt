@@ -1,7 +1,6 @@
 package com.iomt.android.room.devicechar
 
 import android.content.Context
-import android.util.Log
 import com.iomt.android.room.AppDatabase
 
 /**
@@ -57,7 +56,7 @@ class DeviceCharacteristicLinkRepository(context: Context) {
      *         [DeviceCharacteristicLinkEntity] with [linkEntityId]
      */
     suspend fun getDeviceMacAndCharacteristicNameByLinkId(linkEntityId: Long): Pair<String, String>? {
-        val deviceCharacteristicLinkEntity = dao.getById(linkEntityId).also { Log.d("", "deviceCharLink: ${it?.id}") } ?: return null
+        val deviceCharacteristicLinkEntity = dao.getById(linkEntityId) ?: return null
         val deviceEntity = deviceDao.getById(deviceCharacteristicLinkEntity.id!!) ?: return null
         val characteristicEntity = characteristicDao.getById(deviceCharacteristicLinkEntity.characteristicId) ?: return null
         return deviceEntity.mac to characteristicEntity.name

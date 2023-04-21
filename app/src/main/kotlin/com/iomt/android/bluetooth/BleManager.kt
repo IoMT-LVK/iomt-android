@@ -15,9 +15,32 @@ import com.iomt.android.room.record.RecordEntity
 import com.iomt.android.room.record.RecordRepository
 import com.iomt.android.utils.now
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.LocalDateTime
 
 typealias BluetoothGattWithConfig = Pair<BluetoothGatt, DeviceConfig>
+
+/**
+ * Key is characteristic name
+ *
+ * Value is [MutableStateFlow] of the value
+ */
+private typealias MutableDeviceStateFlow = MutableMap<String, MutableStateFlow<String>>
+
+/**
+ * Key is device MAC address
+ *
+ * Value is [DeviceStateFlow]
+ */
+private typealias DeviceStateFlowMap = MutableMap<String, MutableDeviceStateFlow>
+
+/**
+ * Key is device MAC
+ *
+ * Value is [BluetoothGatt] - connected device with corresponding MAC address
+ */
+private typealias ConnectedDevicesMap = MutableMap<String, BluetoothGatt>
 
 /**
  * Class that encapsulates all the BleGatt interactions
@@ -34,8 +57,9 @@ class BleManager(private val context: Context) {
 
     // Key is MAC address of device
     // Value is [BluetoothGatt] connected with it
-    private val connectedDevices: MutableMap<String, BluetoothGatt> = mutableMapOf()
+    private val connectedDevices: ConnectedDevicesMap = mutableMapOf()
     private val additionalData: MutableMap<String, DeviceAdditionalData> = mutableMapOf()
+    private val stateFlows: DeviceStateFlowMap = mutableMapOf()
 
     private val deviceCharacteristicLinkRepository = DeviceCharacteristicLinkRepository(context)
     private val recordRepository = RecordRepository(context)
@@ -116,18 +140,25 @@ class BleManager(private val context: Context) {
         }
 
         try {
+            val deviceStateFlow: MutableDeviceStateFlow = mutableMapOf()
+            deviceConfig.characteristics.keys.map { deviceStateFlow[it] = MutableStateFlow("- -") }
             additionalData[macAddress] = DeviceAdditionalData(deviceConfig, deviceCharacteristicLink)
-            val bleGattCallback = getBleGattCallbackForDevice(macAddress)
+            val bleGattCallback = getBleGattCallbackForDevice(macAddress, deviceStateFlow)
             val gatt = device.connectGatt(context, true, bleGattCallback)
             connectedDevices[macAddress] = gatt
+            stateFlows[macAddress] = deviceStateFlow
         } catch (exception: Throwable) {
             Log.e(loggerTag, exception.message.toString())
-            additionalData.remove(macAddress)
+            try {
+                additionalData.remove(macAddress)
+            } finally {
+                stateFlows.remove(macAddress)
+            }
         }
     }
 
     /**
-     * @param macAddress
+     * @param macAddress MAC address of Bluetooth LE device
      */
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
@@ -136,7 +167,15 @@ class BleManager(private val context: Context) {
         additionalData.remove(macAddress)
     }
 
-    private fun getBleGattCallbackForDevice(macAddress: String): BleGattCallback {
+    /**
+     * @param deviceMac MAC address of Bluetooth LE device
+     * @return [MutableDeviceStateFlow] corresponding to device with [deviceMac]
+     */
+    internal fun subscribeOn(deviceMac: String): MutableDeviceStateFlow = requireNotNull(stateFlows[deviceMac]) {
+        "No StateFlow created for $deviceMac"
+    }
+
+    private fun getBleGattCallbackForDevice(macAddress: String, deviceStateFlow: MutableDeviceStateFlow): BleGattCallback {
         val deviceData = requireNotNull(additionalData[macAddress]) {
             "Could not find device with mac address $macAddress"
         }
@@ -148,6 +187,7 @@ class BleManager(private val context: Context) {
                     recordRepository.insert(record)
                 }
             }
+            deviceStateFlow[charName]?.let { stateFlow -> stateFlow.update { newValue } }
         }
     }
     companion object {

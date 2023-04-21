@@ -16,6 +16,14 @@ import com.iomt.android.EntryPointActivity
 import com.iomt.android.R
 import com.iomt.android.configs.DeviceConfig
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.StateFlow
+
+/**
+ * Key is characteristic name
+ *
+ * Value is [StateFlow] of the value
+ */
+private typealias DeviceStateFlow = Map<String, StateFlow<String>>
 
 /**
  * Foreground service that stores all the bluetooth data
@@ -67,9 +75,23 @@ class BleForegroundService : Service() {
         .also { updateNotification() }
 
     /**
+     * Method to subscribe on Device's characteristics updates
+     *
+     * @param deviceMac MAC address of Bluetooth LE device
+     * @return [DeviceStateFlow] corresponding to Bluetooth LE device with [deviceMac]
+     */
+    fun subscribeOn(deviceMac: String): DeviceStateFlow = bleManager.subscribeOn(deviceMac)
+
+    /**
      * @return connected [BluetoothDevice]s as [List]
      */
     fun getConnectedDevices() = bleManager.getConnectedDevices().values.map { it.device }
+
+    /**
+     * @param macAddress MAC address of Bluetooth LE device
+     * @return connected [BluetoothDevice] by its [macAddress]
+     */
+    fun getConnectedDevice(macAddress: String) = bleManager.getConnectedDevices()[macAddress]?.device
 
     /**
      * @return [List] of pairs: connected [BluetoothDevice]s and their [DeviceConfig]s
@@ -125,7 +147,7 @@ class BleForegroundService : Service() {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun updateNotification() {
+    private fun updateNotification() {
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.notify(NOTIFICATION_ID, createNotification())
     }
@@ -151,6 +173,6 @@ class BleForegroundService : Service() {
         private const val NOTIFICATION_CHANNEL_ID = "iomt_ble_service_channel"
         private const val NOTIFICATION_ID = 1001
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = object { }.javaClass.enclosingClass.simpleName
+        private val loggerTag = BleForegroundService::class.java.simpleName
     }
 }

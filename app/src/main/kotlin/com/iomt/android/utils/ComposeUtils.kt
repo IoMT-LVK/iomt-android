@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.composable
 
-import com.iomt.android.jetpack.navigation.NavRouter
+import com.iomt.android.compose.navigation.NavRouter
 
 import kotlin.time.Duration
 import kotlinx.coroutines.*
