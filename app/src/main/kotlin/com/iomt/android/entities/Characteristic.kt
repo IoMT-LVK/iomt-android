@@ -1,16 +1,18 @@
 package com.iomt.android.entities
 
 import com.iomt.android.R
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * @property name name of characteristic from config file
  * @property prettyName human-readable name of characteristic
- * @property value current value of characteristic
+ * @property valueStateFlow [StateFlow] of current value
  */
 data class Characteristic(
     val name: String,
     val prettyName: String,
-    val value: String = DEFAULT_VALUE,
+    val valueStateFlow: StateFlow<String>,
 ) {
     /**
      * Get icon for characteristic row depending on [Characteristic.name]
@@ -29,11 +31,11 @@ data class Characteristic(
     }
 
     companion object {
-        private const val DEFAULT_VALUE = "--"
+        private val stubStateFlow = MutableStateFlow("- -")
 
         /**
          * Stub for testing
          */
-        val stub = Characteristic("heartRate", "Heart Rate")
+        val stub = Characteristic("heartRate", "Heart Rate", stubStateFlow)
     }
 }

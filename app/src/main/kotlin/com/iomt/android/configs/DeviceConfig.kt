@@ -1,6 +1,5 @@
 package com.iomt.android.configs
 
-import com.iomt.android.entities.Characteristic
 import com.iomt.android.room.characteristic.CharacteristicEntity
 
 import java.util.*
@@ -21,13 +20,6 @@ data class DeviceConfig(
     companion object {
         val stub = DeviceConfig(-1, GeneralConfig.stub, mapOf("heartRate" to CharacteristicConfig.stub))
     }
-}
-
-/**
- * @return [List] of [Characteristic] created with [DeviceConfig.characteristics]
- */
-fun Map<String, CharacteristicConfig>.toCharacteristics(): List<Characteristic> = map { (name, config) ->
-    Characteristic(name, config.prettyName)
 }
 
 /**

@@ -9,7 +9,7 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.iomt.android.jetpack.EntryPoint
+import com.iomt.android.compose.EntryPoint
 
 /**
  * [AppCompatActivity] that is used for [EntryPoint] - compose integration into android
