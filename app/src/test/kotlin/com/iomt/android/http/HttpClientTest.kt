@@ -1,7 +1,7 @@
 package com.iomt.android.http
 
 import com.iomt.android.dto.Credentials
-import com.iomt.android.entities.AuthInfo
+import com.iomt.android.entities.TokenInfo
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
@@ -17,14 +17,14 @@ import org.junit.jupiter.api.Test
 class HttpClientTest {
     private val stubJwt = "vertolet"
     private val stubCredentials = Credentials("JohnDoe", "pwd")
-    private val stubAuthInfo = AuthInfo(jwt = stubJwt, userId = "1", true, wasFailed = true)
+    private val stubTokenInfo = TokenInfo(token = stubJwt, expires = "")
     private val mockEngine = MockEngine { request ->
         val isAuth = request.url.pathSegments.contains("auth")
         val prettyPathSegments = request.url.pathSegments.joinToString("/")
         println("$prettyPathSegments: Authorization = [${request.headers["Authorization"]}]")
         when {
              isAuth && request.body.toString().contains("\"login\":\"${stubCredentials.login}\"") -> respond(
-                 content = Json.encodeToString(stubAuthInfo),
+                 content = Json.encodeToString(stubTokenInfo),
                  status = HttpStatusCode.OK,
                  headers = headersOf(HttpHeaders.ContentType, "application/json"),
              )
@@ -37,14 +37,16 @@ class HttpClientTest {
 
     @BeforeEach
     fun beforeTest() {
-        myClient = createHttpClient(mockEngine, "/auth/")
+        myClient = createHttpClient(mockEngine, "$API_V1/auth/user") {
+            println(it)
+        }
     }
 
     @Test
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `should authenticate automatically`() = runTest {
         RequestParams.credentials = stubCredentials
-        val response = myClient?.get("/test/")
+        val response = myClient?.get("$API_V1/test")
         assertEquals(HttpStatusCode.OK, response?.status)
         assertEquals(3, (myClient?.engine as MockEngine).requestHistory.count())
     }
@@ -53,8 +55,8 @@ class HttpClientTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun `should not authenticate automatically on auth`() = runTest {
         RequestParams.credentials = stubCredentials
-        val authInfo = myClient?.authenticate("/auth/")
-        assertEquals(stubJwt, authInfo?.jwt)
+        val tokenInfo = myClient?.authenticate("$API_V1/auth/user")
+        assertEquals(stubJwt, tokenInfo?.token)
         assertEquals(1, (myClient?.engine as MockEngine).requestHistory.count())
     }
 }

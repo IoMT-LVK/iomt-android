@@ -21,7 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
 import com.iomt.android.credentialmanager.AppCredentialManager
-import com.iomt.android.entities.AuthInfo
+import com.iomt.android.entities.TokenInfo
 import com.iomt.android.http.RequestParams
 import com.iomt.android.http.sendLogin
 import com.iomt.android.jetpack.theme.colorScheme
@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
  *
  * @param navigateToRegistration callback to navigate to RegistrationView
  * @param navigateToMain callback to navigate to after-login part of the app
- * @param navigateToEmailConf callback to navigate to EmailConfView
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -41,10 +40,8 @@ import kotlinx.coroutines.launch
 fun LoginView(
     navigateToRegistration: () -> Unit,
     navigateToMain: () -> Unit,
-    navigateToEmailConf: () -> Unit,
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     var credentialManager by remember { mutableStateOf<AppCredentialManager?>(null) }
     var login by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -57,20 +54,13 @@ fun LoginView(
         isLoginError = login.isBlank()
         isPasswordError = password.isBlank() || password.length < 4 || password.length > 16
         if (!isLoginError && !isPasswordError) {
-            sendLoginRequest(login, password, { isSignInFailed = it }) { newAuthInfo ->
-                if (newAuthInfo.wasFailed) {
-                    isSignInFailed = true
-                } else if (!newAuthInfo.confirmed) {
-                    MainScope().launch { navigateToEmailConf() }
-                } else {
-                    RequestParams.userId = newAuthInfo.userId
-                    scope.launch {
-                        RequestParams.credentials?.let { credentialsToSave ->
-                            credentialManager?.createIfNotPresent(credentialsToSave)
-                        }
+            sendLoginRequest(login, password, { isSignInFailed = it }) { tokenInfo ->
+                tokenInfo?.let {
+                    RequestParams.credentials?.let { credentialsToSave ->
+                        credentialManager?.createIfNotPresent(credentialsToSave)
                     }
                     MainScope().launch { navigateToMain() }
-                }
+                } ?: run { isSignInFailed = true }
             }
         }
     }
@@ -133,7 +123,8 @@ fun LoginView(
         }
     }
     if (isSignInFailed) {
-        Toast.makeText(context, "Не удалось войти", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "Не удалось войти, возможно вы не подтвердили почту", Toast.LENGTH_LONG).show()
+        isSignInFailed = false
     }
 }
 
@@ -141,7 +132,7 @@ private fun sendLoginRequest(
     login: String,
     password: String,
     updateIsSignupFailed: (Boolean) -> Unit,
-    updateAuthInfo: (AuthInfo) -> Unit,
+    updateAuthInfo: suspend (TokenInfo?) -> Unit,
 ) {
     if (login.isEmpty() || password.isEmpty() || password.length < 4 || password.length > 14) {
         updateIsSignupFailed(true)
@@ -152,5 +143,5 @@ private fun sendLoginRequest(
 @Preview
 @Composable
 private fun LoginViewPreview() {
-    MaterialTheme(colorScheme) { LoginView({ }, { }) { } }
+    MaterialTheme(colorScheme) { LoginView({ }) { } }
 }

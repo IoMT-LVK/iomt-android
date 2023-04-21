@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.iomt.android.bluetooth.BleScanCallback
 import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.configs.toCharacteristicEntities
+import com.iomt.android.http.getDeviceTypes
 import com.iomt.android.jetpack.theme.colorScheme
 import com.iomt.android.room.characteristic.CharacteristicRepository
 import com.iomt.android.room.device.DeviceRepository
@@ -123,22 +124,23 @@ fun BleScannerView(
         var deviceNameSubstring by remember { mutableStateOf("") }
         Column(Modifier.fillMaxSize()) {
             selectedDevice?.let { device ->
-                OutlinedTextField(
-                    value = deviceNameSubstring,
-                    onValueChange = { value -> deviceNameSubstring = value }
-                )
-
                 val configs = remember { mutableStateListOf<DeviceConfig>() }
                 val updateConfigsWithDebounce: (String) -> Unit = withDebounce(200.milliseconds, scope) {
                     with(configs) {
-                        /* TODO: use getDeviceTypes(deviceNameSubstring) when backend is fixed */
-                        val devices = listOf(DeviceConfig.stub)
+                        val devices = getDeviceTypes(it)
                         clear()
                         addAll(devices)
                     }
                 }
 
-                updateConfigsWithDebounce(deviceNameSubstring)
+                OutlinedTextField(
+                    value = deviceNameSubstring,
+                    onValueChange = { value -> deviceNameSubstring = value }
+                )
+
+                LaunchedEffect(deviceNameSubstring) {
+                    updateConfigsWithDebounce(deviceNameSubstring)
+                }
 
                 configs.forEach { config ->
                     Row(
