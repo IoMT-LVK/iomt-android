@@ -5,7 +5,6 @@
 package com.iomt.android.jetpack.components
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
@@ -18,36 +17,40 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 
 /**
- * @param title
- * @param devices
- * @param onItemClicked
+ * @param title label for [DeviceList]
+ * @param deviceWithConfigList [List] of [BluetoothDeviceWithConfig]s
+ * @param onItemClicked callback invoked on Device item click
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-fun DeviceList(title: String, devices: SnapshotStateList<BluetoothDevice>, onItemClicked: (BluetoothDevice) -> Unit) {
+fun DeviceList(
+    title: String,
+    deviceWithConfigList: List<BluetoothDeviceWithConfig>,
+    onItemClicked: (BluetoothDeviceWithConfig) -> Unit,
+) {
     OutlinedCard(Modifier.fillMaxWidth().defaultMinSize(minHeight = 25.dp)) {
-        if (devices.isEmpty()) {
+        if (deviceWithConfigList.isEmpty()) {
             Text("No ${title.lowercase()}", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
         } else {
             Row { Text(title) }
-            devices.map { device ->
+            deviceWithConfigList.map { deviceWithConfig ->
                 Row(
-                    Modifier.height(75.dp).fillMaxWidth().clickable { onItemClicked(device) },
+                    Modifier.height(75.dp).fillMaxWidth().clickable { onItemClicked(deviceWithConfig) },
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    OutlinedButton({ onItemClicked(device) },
+                    OutlinedButton({ onItemClicked(deviceWithConfig) },
                         Modifier.padding(10.dp),
                     ) {
                         Icon(Icons.Filled.Phone, "BLE Device")
-                        Text(device.name, Modifier.weight(1f).padding(start = 10.dp))
+                        Text(deviceWithConfig.device.name, Modifier.weight(1f).padding(start = 10.dp))
                     }
                 }
             }

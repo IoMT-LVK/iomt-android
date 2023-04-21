@@ -14,10 +14,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 import com.iomt.android.jetpack.components.TopBar
 import com.iomt.android.jetpack.navigation.NavRouter
 import com.iomt.android.jetpack.navigation.NavRouter.Companion.useMainNavHost
 import com.iomt.android.utils.FloatingButtonBuilder
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 /**
  * @param navController post-login [NavHostController]
@@ -36,6 +39,10 @@ fun Scaffold(
 ) {
     val mutableFloatingActionButtonBuilder = remember { mutableStateOf<FloatingButtonBuilder>({ }) }
 
+    val navigateToDeviceView: (BluetoothDeviceWithConfig) -> Unit = { (device, config) ->
+        navController.navigate("${NavRouter.Main.Device}/${device.address}/${Json.encodeToString(config)}")
+    }
+
     Scaffold(
         Modifier.fillMaxSize(),
         topBar = { TopBar(navController, onMenuButtonClicked = onMenuButtonPressed) },
@@ -46,6 +53,7 @@ fun Scaffold(
             Modifier.padding(paddingValues),
             mutableFloatingActionButtonBuilder,
             signOut,
-        ) { navController.navigate("${NavRouter.Main.Device}/${it.address}") }
+            navigateToDeviceView,
+        )
     }
 }

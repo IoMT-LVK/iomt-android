@@ -5,7 +5,6 @@
 package com.iomt.android.jetpack.view.main
 
 import android.Manifest
-import android.bluetooth.BluetoothDevice
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
@@ -18,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 
 import com.iomt.android.jetpack.components.DeviceList
 import com.iomt.android.jetpack.navigation.NavRouter
@@ -31,7 +31,7 @@ import com.iomt.android.utils.*
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnownDeviceClick: (BluetoothDevice) -> Unit) {
+fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnownDeviceClick: (BluetoothDeviceWithConfig) -> Unit) {
     mutableFloatingButtonBuilder.value = { navController ->
         ExtendedFloatingActionButton(
             onClick = { navController.navigate(NavRouter.Main.BleScanner) },
@@ -43,9 +43,9 @@ fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnown
     }
     val bleForegroundService by rememberBoundService().collectAsState()
     withLoading(bleForegroundService) { foregroundService ->
-        val knownDevices = remember { foregroundService.getConnectedDevices().toMutableStateList() }
+        val knownDevicesWithConfigs = remember { foregroundService.getConnectedDevicesWithConfigs().toMutableStateList() }
         Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            DeviceList("Known devices", knownDevices) { onKnownDeviceClick(it) }
+            DeviceList("Known devices", knownDevicesWithConfigs) { onKnownDeviceClick(it) }
         }
     }
 }
@@ -56,6 +56,6 @@ fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnown
 @Composable
 private fun HomeViewPreview() {
     val mutableFloatingButtonBuilder = remember { mutableStateOf<FloatingButtonBuilder>({}) }
-    val connectedDevices = remember { mutableStateListOf<BluetoothDevice>() }
+    val connectedDevices = remember { mutableStateListOf<BluetoothDeviceWithConfig>() }
     MaterialTheme(colorScheme) { HomeView(mutableFloatingButtonBuilder) { connectedDevices.add(it) } }
 }

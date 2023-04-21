@@ -67,9 +67,16 @@ class BleForegroundService : Service() {
         .also { updateNotification() }
 
     /**
-     * Connected [BluetoothDevice]s as [List]
+     * @return connected [BluetoothDevice]s as [List]
      */
     fun getConnectedDevices() = bleManager.getConnectedDevices().values.map { it.device }
+
+    /**
+     * @return [List] of pairs: connected [BluetoothDevice]s and their [DeviceConfig]s
+     */
+    fun getConnectedDevicesWithConfigs() = bleManager.getConnectedDevicesWithConfigs().values.map { (gatt, config) ->
+        BluetoothDeviceWithConfig(gatt.device, config)
+    }
 
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
