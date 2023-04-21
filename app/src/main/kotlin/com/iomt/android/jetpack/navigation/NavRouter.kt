@@ -15,13 +15,15 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 
 import com.iomt.android.R
-import com.iomt.android.configs.DeviceConfig
+import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
 import com.iomt.android.utils.MutableFloatingButtonBuilder
 import com.iomt.android.utils.composable
 import com.iomt.android.utils.navigate
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 
 /**
  * @property iconId id if icon that should be displayed
@@ -128,6 +130,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
          * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
          * @param signOut callback to sign out
          * @param onHomeDeviceClick callback invoked when [BluetoothDevice] was selected on [HomeView]
+         * @param onAccountDeviceClick callback invoked when [BluetoothDevice] was selected on [AccountView]
          */
         @RequiresApi(Build.VERSION_CODES.TIRAMISU)
         @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
@@ -138,25 +141,30 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
             modifier: Modifier = Modifier,
             mutableFloatingButtonBuilder: MutableFloatingButtonBuilder,
             signOut: () -> Unit,
-            onHomeDeviceClick: (BluetoothDevice) -> Unit,
+            onHomeDeviceClick: (BluetoothDeviceWithConfig) -> Unit,
+            onAccountDeviceClick: (BluetoothDeviceWithConfig) -> Unit = onHomeDeviceClick,
         ) {
             NavHost(this, modifier = modifier, startDestination = Main.default.path) {
                 composable(Main.Home) { HomeView(mutableFloatingButtonBuilder, onHomeDeviceClick) }
                 composable(Main.Settings) { SettingsView(signOut) }
-                composable(Main.Account) { AccountView() }
+                composable(Main.Account) { AccountView(onAccountDeviceClick) }
                 composable(Main.BleScanner) { BleScannerView(mutableFloatingButtonBuilder) { popBackStack() } }
                 composable(
-                    "${Main.Device}/{macAddress}",
-                    arguments = listOf(navArgument("macAddress") { type = NavType.StringType }),
+                    "${Main.Device}/{macAddress}/{config}",
+                    arguments = listOf(
+                        navArgument("macAddress") { type = NavType.StringType },
+                        navArgument("config") { type = NavType.StringType },
+                    ),
                 ) { navBackStackEntry ->
                     val macAddress = requireNotNull(navBackStackEntry.arguments?.getString("macAddress")) {
                         "MAC-address cannot be null on DeviceView"
                     }
 
-                    // todo: replace with config selecting on BleScannerView
-                    val config = DeviceConfig.stub
+                    val config = requireNotNull(navBackStackEntry.arguments?.getString("config")) {
+                        "Config cannot be null on DeviceView"
+                    }
 
-                    DeviceView(macAddress, config)
+                    DeviceView(macAddress, Json.decodeFromString(config))
                 }
             }
         }

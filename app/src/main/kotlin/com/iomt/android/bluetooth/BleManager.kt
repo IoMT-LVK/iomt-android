@@ -17,6 +17,8 @@ import com.iomt.android.utils.now
 import kotlinx.coroutines.*
 import kotlinx.datetime.LocalDateTime
 
+typealias BluetoothGattWithConfig = Pair<BluetoothGatt, DeviceConfig>
+
 /**
  * Class that encapsulates all the BleGatt interactions
  */
@@ -41,9 +43,16 @@ class BleManager(private val context: Context) {
     private val scope = CoroutineScope(Dispatchers.Default)
 
     /**
-     * @return [connectedDevices]
+     * @return [Map] where keys are MAC addresses and values are [BluetoothGatt]s
      */
     fun getConnectedDevices(): Map<String, BluetoothGatt> = connectedDevices
+
+    /**
+     * @return [Map] where keys are MAC addresses and values are pairs: [BluetoothGatt] and [DeviceConfig]
+     */
+    fun getConnectedDevicesWithConfigs(): Map<String, BluetoothGattWithConfig> = connectedDevices.map { (macAddress, bluetoothGatt) ->
+        macAddress to (bluetoothGatt to additionalData.getValue(macAddress).config)
+    }.toMap()
 
     /**
      * TODO: WIP

@@ -18,10 +18,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
+import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 import com.iomt.android.jetpack.components.*
 import com.iomt.android.jetpack.components.textfield.*
 import com.iomt.android.jetpack.theme.colorScheme
 import com.iomt.android.utils.rememberBoundService
+import com.iomt.android.utils.withLoading
 
 /**
  * @property prettyName human-readable tab name
@@ -39,11 +41,13 @@ private enum class AccountViewTabs(val prettyName: String, val tabIndex: Int) {
 
 /**
  * View for account
+ *
+ * @param onDeviceItemClick callback invoked on device item click
  */
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-fun AccountView() {
+fun AccountView(onDeviceItemClick: (BluetoothDeviceWithConfig) -> Unit) {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         var selectedTab by remember { mutableStateOf(AccountViewTabs.default) }
         val avatarPainter = painterResource(id = R.drawable.logo)
@@ -66,7 +70,7 @@ fun AccountView() {
             }
             when (selectedTab) {
                 AccountViewTabs.USER -> RenderUserInfo()
-                AccountViewTabs.DEVICES -> RenderConnectedDevices()
+                AccountViewTabs.DEVICES -> RenderConnectedDevices(onDeviceItemClick)
             }
         }
     }
@@ -100,12 +104,14 @@ private fun RenderUserInfo() {
 @RequiresApi(Build.VERSION_CODES.S)
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-private fun RenderConnectedDevices() {
+private fun RenderConnectedDevices(onItemClick: (BluetoothDeviceWithConfig) -> Unit) {
     val bleForegroundService by rememberBoundService().collectAsState()
-    val connectedDevices = remember {
-        bleForegroundService?.getConnectedDevices()?.toMutableStateList() ?: mutableStateListOf()
+    withLoading(bleForegroundService) { foregroundService ->
+        val connectedDevices = remember {
+            foregroundService.getConnectedDevicesWithConfigs().toMutableStateList()
+        }
+        DeviceList("Connected devices", connectedDevices, onItemClick)
     }
-    DeviceList("Connected devices", connectedDevices) { }
 }
 
 @RequiresApi(Build.VERSION_CODES.S)
@@ -113,5 +119,5 @@ private fun RenderConnectedDevices() {
 @Preview
 @Composable
 private fun AccountViewPreview() {
-    MaterialTheme(colorScheme) { AccountView() }
+    MaterialTheme(colorScheme) { AccountView { } }
 }
