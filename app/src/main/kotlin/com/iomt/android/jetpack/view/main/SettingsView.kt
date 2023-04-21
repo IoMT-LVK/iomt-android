@@ -68,7 +68,7 @@ private fun DataTransferringSection() = Section("Data transferring") {
                 isMobileNetworkEnabled = !isMobileNetworkEnabled
                 sharedPreferences
                     .edit()
-                    .apply { putBoolean(SharedPreferencesNames.mobileNetwork, true) }
+                    .apply { putBoolean(SharedPreferencesNames.MOBILE_NETWORK, true) }
                     .apply()
                 if (!isMobileNetworkEnabled) {
                     isWifiPreferred = true
@@ -95,7 +95,7 @@ private fun DataTransferringSection() = Section("Data transferring") {
     var mqttWorkerPeriod by remember {
         mutableStateOf(
             sharedPreferences.getLong(
-                SharedPreferencesNames.mqttWorkerPeriod,
+                SharedPreferencesNames.MQTT_WORK_PERIOD,
                 5.minutes.toLong(DurationUnit.MILLISECONDS),
             ).toFloat()
         )
@@ -108,7 +108,7 @@ private fun DataTransferringSection() = Section("Data transferring") {
                 onValueChange = { mqttWorkerPeriod = it },
                 onValueChangeFinished = {
                     sharedPreferences.edit()
-                        .apply { putLong(SharedPreferencesNames.mqttWorkerPeriod, mqttWorkerPeriod.toLong()) }
+                        .apply { putLong(SharedPreferencesNames.MQTT_WORK_PERIOD, mqttWorkerPeriod.toLong()) }
                         .apply()
                 },
                 valueRange = getMqttWorkPeriodRange(1.minutes, 30.minutes),

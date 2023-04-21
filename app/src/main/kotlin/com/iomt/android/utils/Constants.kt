@@ -1,7 +1,7 @@
 package com.iomt.android.utils
 
 object SharedPreferencesNames {
-    val mobileNetwork = "isMobileNetworkEnabled"
+    const val MOBILE_NETWORK = "isMobileNetworkEnabled"
 
-    val mqttWorkerPeriod = "mqttWorkerPeriodMillis"
+    const val MQTT_WORK_PERIOD = "mqttWorkerPeriodMillis"
 }

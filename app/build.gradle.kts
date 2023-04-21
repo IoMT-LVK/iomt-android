@@ -69,6 +69,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
     implementation("androidx.activity:activity-compose:1.7.0")
     implementation("androidx.compose.ui:ui:1.4.1")
@@ -90,16 +91,13 @@ dependencies {
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
-    implementation("androidx.credentials:credentials:1.2.0-alpha02")
-    implementation("androidx.credentials:credentials-play-services-auth:1.2.0-alpha02")
+    implementation("androidx.credentials:credentials:1.2.0-alpha03")
+    implementation("androidx.credentials:credentials-play-services-auth:1.2.0-alpha03")
 
     implementation("com.google.android.material:material:1.8.0")
 
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") { exclude("support-v4") }
-
-    implementation("com.akuleshov7:ktoml-core:0.4.1")
-    implementation("com.akuleshov7:ktoml-file:0.4.1")
 
     implementation("io.ktor:ktor-client-core:2.2.4")
     implementation("io.ktor:ktor-client-auth:2.2.4")

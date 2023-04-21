@@ -7,6 +7,7 @@ package com.iomt.android.jetpack.view.main
 import android.Manifest
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
 import android.content.Intent
@@ -29,10 +30,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-import com.iomt.android.EntryPointActivity
 import com.iomt.android.bluetooth.BleScanCallback
-import com.iomt.android.config.configs.toCharacteristicEntities
-import com.iomt.android.config.parseConfig
+import com.iomt.android.configs.DeviceConfig
+import com.iomt.android.configs.toCharacteristicEntities
 import com.iomt.android.jetpack.theme.colorScheme
 import com.iomt.android.room.characteristic.CharacteristicRepository
 import com.iomt.android.room.device.DeviceRepository
@@ -40,7 +40,9 @@ import com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
 import com.iomt.android.utils.*
 
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,6 +53,7 @@ private val scanningPeriod = 30.seconds
  * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
  * @param navigateBack callback to go to previous view (HomeView)
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
@@ -116,29 +119,58 @@ fun BleScannerView(
             }
         }
 
+        var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
+        var deviceNameSubstring by remember { mutableStateOf("") }
         Column(Modifier.fillMaxSize()) {
-            foundDevices.map { device ->
-                Row(
-                    Modifier.fillMaxWidth()
-                        .clickable {
-                            scope.launch {
+            selectedDevice?.let { device ->
+                OutlinedTextField(
+                    value = deviceNameSubstring,
+                    onValueChange = { value -> deviceNameSubstring = value }
+                )
+
+                val configs = remember { mutableStateListOf<DeviceConfig>() }
+                val updateConfigsWithDebounce: (String) -> Unit = withDebounce(200.milliseconds, scope) {
+                    with(configs) {
+                        /* TODO: use getDeviceTypes(deviceNameSubstring) when backend is fixed */
+                        val devices = listOf(DeviceConfig.stub)
+                        clear()
+                        addAll(devices)
+                    }
+                }
+
+                updateConfigsWithDebounce(deviceNameSubstring)
+
+                configs.forEach { config ->
+                    Row(
+                        Modifier.fillMaxWidth().clickable {
+                            scope.launch(Dispatchers.Default) {
                                 val deviceId = deviceRepository.getByMacOrSave(device.name, device.address).id!!
-                                val stubConfig = parseConfig(
-                                    EntryPointActivity::class.java.classLoader?.getResource("ConfigParser/band.toml")?.readText()!!
-                                )
-                                val charEntities = stubConfig.characteristics.toCharacteristicEntities()
-                                characteristicRepository.insertAllIfNotPresent(charEntities)
+
+                                config.characteristics.toCharacteristicEntities()
+                                    .let { characteristicRepository.insertAllIfNotPresent(it) }
                                     .map { charId -> DeviceCharacteristicLinkEntity(deviceId, charId) }
                                     .let { deviceCharacteristicRepository.insertAllIfNotPresent(it) }
 
-                                bleService.connectDevice(device, stubConfig).also { MainScope().launch { navigateBack() } }
+                                bleService.connectDevice(device, config).also { MainScope().launch { navigateBack() } }
                             }
                         },
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(device.name)
-                    Spacer(Modifier.padding(10.dp))
-                    Text(device.address)
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(config.general.name)
+                        Spacer(Modifier.padding(10.dp))
+                        Text(config.general.type ?: "UNKNOWN TYPE")
+                    }
+                }
+            } ?: run {
+                foundDevices.map { device ->
+                    Row(
+                        Modifier.fillMaxWidth().clickable { selectedDevice = device },
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(device.name)
+                        Spacer(Modifier.padding(10.dp))
+                        Text(device.address)
+                    }
                 }
             }
         }

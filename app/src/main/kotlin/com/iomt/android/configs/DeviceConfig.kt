@@ -1,10 +1,11 @@
-package com.iomt.android.config.configs
+package com.iomt.android.configs
 
 import com.iomt.android.entities.Characteristic
 import com.iomt.android.room.characteristic.CharacteristicEntity
 
 import java.util.*
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
@@ -14,21 +15,25 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class DeviceConfig(
     val general: GeneralConfig,
-    val characteristics: Map<String, CharacteristicConfig>,
-)
+    @SerialName("sensors") val characteristics: List<CharacteristicConfig>,
+) {
+    companion object {
+        val stub = DeviceConfig(GeneralConfig.stub, listOf(CharacteristicConfig.stub))
+    }
+}
 
 /**
  * @return [List] of [Characteristic] created with [DeviceConfig.characteristics]
  */
-fun Map<String, CharacteristicConfig>.toCharacteristics(): List<Characteristic> = map { (charName, charConfig) ->
-    Characteristic(charName, charConfig.name)
+fun List<CharacteristicConfig>.toCharacteristics(): List<Characteristic> = map {
+    Characteristic(it.name, it.prettyName)
 }
 
 /**
  * @return [List] of [CharacteristicEntity]s created with [DeviceConfig.characteristics]
  */
-fun Map<String, CharacteristicConfig>.toCharacteristicEntities() = map { (charName, charConfig) ->
+fun List<CharacteristicConfig>.toCharacteristicEntities() = map {
     CharacteristicEntity(
-        charName, charConfig.name, UUID.fromString(charConfig.serviceUuid), UUID.fromString(charConfig.characteristicUuid),
+        it.name, it.prettyName, UUID.fromString(it.serviceUuid), UUID.fromString(it.characteristicUuid),
     )
 }

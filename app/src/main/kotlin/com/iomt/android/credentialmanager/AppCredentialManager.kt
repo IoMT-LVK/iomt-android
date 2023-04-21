@@ -30,7 +30,7 @@ class AppCredentialManager(private val context: Context) {
         try {
             credentialManager.createCredential(
                 request = CreatePasswordRequest(credentials.login, credentials.password),
-                activity = activity
+                activity = activity,
             )
             Log.i(loggerTag, "Credentials successfully created.")
         } catch (exception: CreateCredentialCancellationException) {

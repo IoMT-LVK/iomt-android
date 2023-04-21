@@ -16,8 +16,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.iomt.android.bluetooth.ConnectionStatus
-import com.iomt.android.config.configs.DeviceConfig
-import com.iomt.android.config.configs.toCharacteristics
+import com.iomt.android.configs.DeviceConfig
+import com.iomt.android.configs.toCharacteristics
 import com.iomt.android.entities.Characteristic
 import com.iomt.android.jetpack.components.device.DeviceBodyCard
 import com.iomt.android.jetpack.components.device.DeviceHeaderCard

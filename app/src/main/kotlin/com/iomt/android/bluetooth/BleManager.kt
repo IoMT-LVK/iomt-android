@@ -8,7 +8,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.room.devicechar.DeviceCharacteristicLink
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
 import com.iomt.android.room.record.RecordEntity
