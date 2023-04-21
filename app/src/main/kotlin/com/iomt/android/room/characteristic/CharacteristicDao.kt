@@ -33,4 +33,11 @@ interface CharacteristicDao : BasicDao<CharacteristicEntity> {
      */
     @Query("SELECT * FROM characteristic WHERE id IN (:ids)")
     suspend fun getByIdsIn(ids: List<Long>): List<CharacteristicEntity>
+
+    /**
+     * @param id ID of [CharacteristicEntity]
+     * @return [CharacteristicEntity] with [id]
+     */
+    @Query("SELECT * FROM characteristic WHERE id = :id")
+    suspend fun getById(id: Long): CharacteristicEntity?
 }

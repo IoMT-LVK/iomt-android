@@ -32,14 +32,14 @@ import kotlinx.coroutines.launch
  * Login activity content
  *
  * @param navigateToRegistration callback to navigate to RegistrationView
- * @param navigateToMain callback to navigate to after-login part of the app
+ * @param onLoginSuccess callback to navigate to after-login part of the app
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 fun LoginView(
     navigateToRegistration: () -> Unit,
-    navigateToMain: () -> Unit,
+    onLoginSuccess: () -> Unit,
 ) {
     val context = LocalContext.current
     var credentialManager by remember { mutableStateOf<AppCredentialManager?>(null) }
@@ -59,7 +59,7 @@ fun LoginView(
                     RequestParams.credentials?.let { credentialsToSave ->
                         credentialManager?.createIfNotPresent(credentialsToSave)
                     }
-                    MainScope().launch { navigateToMain() }
+                    MainScope().launch { onLoginSuccess() }
                 } ?: run { isSignInFailed = true }
             }
         }
