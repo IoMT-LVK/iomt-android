@@ -39,6 +39,13 @@ suspend fun getDeviceTypes(substring: String): List<DeviceConfig> = httpClient.g
 ).body()
 
 /**
+ * @return [UserData] corresponding to currently logged-in user
+ */
+suspend fun getUserData(): UserData = httpClient.get("$BASE_URL$API_V1/user").body<UserData>().also {
+    RequestParams.userData = it
+}
+
+/**
  * @param signUpInfo
  * @param errorAction
  * @param successAction

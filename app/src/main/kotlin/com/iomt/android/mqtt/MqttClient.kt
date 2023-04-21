@@ -1,48 +1,64 @@
 package com.iomt.android.mqtt
 
 import android.content.Context
+import android.util.Log
+
+import com.iomt.android.http.authenticate
+import com.iomt.android.utils.ExpiringValueWrapper
+
+import io.ktor.client.*
+import io.ktor.client.engine.android.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
 import org.eclipse.paho.android.service.MqttAndroidClient
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.IMqttToken
+import org.eclipse.paho.client.mqttv3.MqttClient
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 import org.eclipse.paho.client.mqttv3.MqttMessage
+
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * Class that wraps [MqttAndroidClient] in order to initialize MQTT connection and send data
  */
 class MqttClient(context: Context) {
     private val mqttClient = MqttAndroidClient(context, MQTT_BROKER_URL, MQTT_USER_ID)
+    private val token = ExpiringValueWrapper { getAuthorizationToken() }
 
     /**
      * Connect to MQTT broker
      *
      * @return [IMqttToken]
      */
-    fun connect(): IMqttToken {
+    suspend fun connect(): IMqttToken {
         /**
          * Server expects token as username
          * Password is not required
          */
         val mqttConnectOptions = MqttConnectOptions().apply {
-            userName = getAuthorizationToken()
+            userName = token.getValue()
         }
         return mqttClient.connect(mqttConnectOptions)
     }
 
     /**
-     * @param topicName name of a topic to send data
+     * @param topic [Topic] to send data
      * @param message message to publish
      * @return [IMqttDeliveryToken]
      * @throws IllegalStateException on no [mqttClient] connection
      */
-    fun send(topicName: String, message: ByteArray): IMqttDeliveryToken {
+    fun send(topic: Topic, message: ByteArray): IMqttDeliveryToken {
         val mqttMessage = MqttMessage(message).apply {
             qos = 2
             isRetained = false
         }
 
         return if (mqttClient.isConnected) {
-            mqttClient.publish(topicName, mqttMessage)
+            mqttClient.publish(topic.toTopicName(), mqttMessage)
         } else {
             throw IllegalStateException("MqttClient is not connected")
         }
@@ -53,14 +69,21 @@ class MqttClient(context: Context) {
      *
      * @return [IMqttToken]
      */
-    fun disconnect(): IMqttToken = mqttClient.disconnect()
+    fun disconnect(): IMqttToken = mqttClient.disconnect().also {
+        it.waitForCompletion()
+        Log.d(loggerTag, "Disconnected")
+    }
 
-    /**
-     * TODO: should return JWT token
-     */
-    private fun getAuthorizationToken(): String = ""
+    private suspend fun getAuthorizationToken(): Pair<String, LocalDateTime> = simpleHttpClient.authenticate().run {
+        token to expires.toInstant().toLocalDateTime(TimeZone.UTC)
+    }
 
     companion object {
+        private val simpleHttpClient = HttpClient(Android) {
+            install(ContentNegotiation) { json() }
+        }
+        private val loggerTag = MqttClient::class.java.simpleName
+
         private const val MQTT_BROKER_URL = "tcp://iomt.lvk.cs.msu.ru:1883"
 
         /**

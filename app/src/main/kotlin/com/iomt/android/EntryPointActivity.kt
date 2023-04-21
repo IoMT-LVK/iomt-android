@@ -1,7 +1,6 @@
 package com.iomt.android
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -10,27 +9,15 @@ import androidx.activity.compose.setContent
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import com.iomt.android.bluetooth.BleForegroundService
 import com.iomt.android.jetpack.EntryPoint
-import com.iomt.android.mqtt.MqttWorkManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 /**
  * [AppCompatActivity] that is used for [EntryPoint] - compose integration into android
  */
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class EntryPointActivity : AppCompatActivity() {
-    private val scope = CoroutineScope(Dispatchers.Default)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val bleForegroundServiceIntent = Intent(this, BleForegroundService::class.java)
-        startForegroundService(bleForegroundServiceIntent)
-
-        val mqttWorkManager = MqttWorkManager.getInstance(this)
-        scope.launch { mqttWorkManager.start() }
 
         if (!checkPermission()) {
             requestPermissions(permissions.toTypedArray(), MASTER_PERMISSION_REQUEST_CODE)

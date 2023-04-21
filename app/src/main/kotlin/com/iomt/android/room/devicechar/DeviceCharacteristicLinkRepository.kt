@@ -53,10 +53,13 @@ class DeviceCharacteristicLinkRepository(context: Context) {
 
     /**
      * @param linkEntityId id of [DeviceCharacteristicLinkEntity]
-     * @return mac address of device mentioned in [DeviceCharacteristicLinkEntity] with [linkEntityId]
+     * @return mac address of device and characteristic name of characteristic mentioned in
+     *         [DeviceCharacteristicLinkEntity] with [linkEntityId]
      */
-    suspend fun getDeviceMacByLinkId(linkEntityId: Long): String? {
+    suspend fun getDeviceMacAndCharacteristicNameByLinkId(linkEntityId: Long): Pair<String, String>? {
         val deviceCharacteristicLinkEntity = dao.getById(linkEntityId).also { Log.d("", "deviceCharLink: ${it?.id}") } ?: return null
-        return deviceDao.getById(deviceCharacteristicLinkEntity.id!!)?.mac.also { Log.d("", "deviceMac: $it") }
+        val deviceEntity = deviceDao.getById(deviceCharacteristicLinkEntity.id!!) ?: return null
+        val characteristicEntity = characteristicDao.getById(deviceCharacteristicLinkEntity.characteristicId) ?: return null
+        return deviceEntity.mac to characteristicEntity.name
     }
 }

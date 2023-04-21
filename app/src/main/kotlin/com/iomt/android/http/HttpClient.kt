@@ -7,6 +7,7 @@ package com.iomt.android.http
 import android.util.Log
 import com.iomt.android.dto.Credentials
 import com.iomt.android.entities.TokenInfo
+import com.iomt.android.entities.UserData
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -30,10 +31,16 @@ object RequestParams {
     var credentials: Credentials? = null
 
     /**
+     * [UserData] corresponding to currently logged-in user
+     */
+    var userData: UserData? = null
+
+    /**
      * Forget all the session connected info
      */
     fun logout() {
         credentials = null
+        userData = null
     }
 }
 

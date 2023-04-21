@@ -49,14 +49,15 @@ class MqttWorker(
         val recordsToSend = try {
             recordRepository.getAll().map { recordEntity ->
                 Log.d(loggerTag, Json.encodeToString(recordEntity))
-                requireNotNull(deviceCharacteristicLinkRepository.getDeviceMacByLinkId(recordEntity.id!!)) {
-                    "Could not find device mac in database"
-                } to recordEntity
+                deviceCharacteristicLinkRepository
+                    .getDeviceMacAndCharacteristicNameByLinkId(recordEntity.deviceCharacteristicLinkId)
+                    ?.let { macAndCharName -> recordEntity to macAndCharName }
             }
         } catch (exception: IllegalArgumentException) {
             Log.e(loggerTag, "Error while fetching records from database", exception)
             return Result.failure()
         }
+            .filterNotNull()
 
         try {
             mqttClient.connect().also {
@@ -67,21 +68,24 @@ class MqttWorker(
             return Result.failure()
         }
 
-        recordsToSend.map { (macAddress, recordEntity) ->
-            val topicName = getTopicName(macAddress)
+        val userId = inputData.getLong("userId", -1)
+        require(userId != -1L) { "Could not get userId" }
+
+        recordsToSend.map { (recordEntity, recordInfo) ->
+            val (macAddress, characteristicName) = recordInfo
+            val topic = Topic(userId, macAddress, characteristicName)
             try {
-                mqttClient.send(topicName, recordEntity.toByteArray())
+                mqttClient.send(topic, recordEntity.toByteArray())
                     .also { it.waitForCompletion(transmissionTimeoutDuration.toLong(DurationUnit.MILLISECONDS)) }
                 recordRepository.delete(recordEntity)
             } catch (mqttException: MqttException) {
-                Log.e(loggerTag, "Could not send data with topic $topicName", mqttException)
+                Log.e(loggerTag, "Could not send data with topic ${topic.toTopicName()}", mqttException)
                 return Result.failure()
             }
         }
 
-        return Result.success().also {
-            Log.d(loggerTag, "Synchronization has successfully finished")
-        }
+        Log.d(loggerTag, "Synchronization has successfully finished")
+        return Result.success().also { mqttClient.disconnect() }
     }
 
     @RequiresApi(Build.VERSION_CODES.S)
@@ -120,7 +124,5 @@ class MqttWorker(
         private const val NOTIFICATION_ID = 1002
         private val connectionTimeoutDuration = 1.minutes
         private val transmissionTimeoutDuration = 1.minutes
-        private fun getTopicName(macAddress: String?): String = macAddress
-            ?: throw IllegalArgumentException("Could not construct topic name: macAddress is null")
     }
 }

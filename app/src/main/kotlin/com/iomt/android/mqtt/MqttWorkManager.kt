@@ -17,21 +17,32 @@ class MqttWorkManager(context: Context) {
     /**
      * TODO: support changing [repeatIntervalDuration]
      *
+     * @param userId id of currently logged-in user
      * @param repeatIntervalDuration period for [PeriodicWorkRequest] as [Duration]
      * @param networkType required network to use
      * @return initialized [Operation]
      */
     suspend fun start(
+        userId: Long,
         repeatIntervalDuration: Duration = 5.minutes,
         networkType: NetworkType = NetworkType.UNMETERED,
     ) = worker.enqueueUniquePeriodicWork(
         mqttWorkManagerClassName,
         ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
-        getWorkRequest(repeatIntervalDuration, networkType),
+        getWorkRequest(userId, repeatIntervalDuration, networkType),
     ).also {
         Log.i(mqttWorkManagerClassName, "Starting work...")
         it.await()
         Log.i(mqttWorkManagerClassName, "Successfully sent start request")
+    }
+
+    /**
+     * @return stopped [Operation]
+     */
+    suspend fun stop() = worker.cancelUniqueWork(mqttWorkManagerClassName).also {
+        Log.i(mqttWorkManagerClassName, "Stopping...")
+        it.await()
+        Log.i(mqttWorkManagerClassName, "Successfully stopped")
     }
 
     companion object {
@@ -52,6 +63,7 @@ class MqttWorkManager(context: Context) {
         }
 
         private fun getWorkRequest(
+            userId: Long,
             repeatIntervalDuration: Duration,
             networkType: NetworkType = NetworkType.UNMETERED,
         ) = PeriodicWorkRequestBuilder<MqttWorker>(repeatIntervalDuration.toLong(DurationUnit.MINUTES), TimeUnit.MINUTES)
@@ -61,6 +73,7 @@ class MqttWorkManager(context: Context) {
                     requiresBatteryNotLow = true,
                 ),
             )
+            .setInputData(Data.Builder().putLong("userId", userId).build())
             .addTag(mqttWorkManagerClassName)
             .build()
     }
