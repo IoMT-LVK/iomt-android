@@ -4,6 +4,7 @@ package com.iomt.android.compose.view.main
 
 import android.Manifest
 import android.os.Build
+import android.util.Patterns
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.Image
@@ -22,17 +23,20 @@ import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 import com.iomt.android.compose.components.*
 import com.iomt.android.compose.components.textfield.*
 import com.iomt.android.compose.theme.colorScheme
+import com.iomt.android.http.RequestParams
+import com.iomt.android.http.sendUserData
 import com.iomt.android.utils.rememberBoundService
 import com.iomt.android.utils.withLoading
+import kotlinx.coroutines.launch
 
 /**
  * @property prettyName human-readable tab name
  * @property tabIndex tab index
  */
 @Suppress("WRONG_DECLARATIONS_ORDER")
-private enum class AccountViewTabs(val prettyName: String, val tabIndex: Int) {
-    USER("User info", 0),
-    DEVICES("Devices", 1),
+private enum class AccountViewTabs(val prettyName: String) {
+    USER("User info"),
+    DEVICES("Devices"),
     ;
     companion object {
         val default = USER
@@ -58,10 +62,10 @@ fun AccountView(onDeviceItemClick: (BluetoothDeviceWithConfig) -> Unit) {
                     contentDescription = "Avatar",
                     Modifier.scale(0.85f).clickable { /* TODO: change avatar */ })
 
-                TabRow(selectedTab.tabIndex) {
+                TabRow(selectedTab.ordinal) {
                     AccountViewTabs.values().map { tabs ->
                         Tab(
-                            selected = tabs.tabIndex == selectedTab.tabIndex,
+                            selected = tabs.ordinal == selectedTab.ordinal,
                             onClick = { selectedTab = tabs },
                             text = { Text(tabs.prettyName, color = colorScheme.primaryContainer) },
                         )
@@ -78,25 +82,70 @@ fun AccountView(onDeviceItemClick: (BluetoothDeviceWithConfig) -> Unit) {
 
 @Composable
 private fun RenderUserInfo() {
-    var weight by remember { mutableStateOf(0.0) }
-    var height by remember { mutableStateOf(0.0) }
+    var currentUserData by remember {
+        mutableStateOf(requireNotNull(RequestParams.userData) { "No user data is fetched" }.toUserData())
+    }
+    var weight by remember { mutableStateOf(currentUserData.weight?.toString().orEmpty()) }
+    var height by remember { mutableStateOf(currentUserData.height?.toString().orEmpty()) }
     var birthdate by remember { mutableStateOf("dd.mm.yyyy") }
-    var email by remember { mutableStateOf("example@iomt.com") }
-    var phoneNumber by remember { mutableStateOf("+78005553535") }
+    var email by remember { mutableStateOf(currentUserData.email) }
 
+    var isWeightValid by remember { mutableStateOf(true) }
+    var isHeightValid by remember { mutableStateOf(true) }
+    var isBirthdateValid by remember { mutableStateOf(true) }
+
+    var isEmailValid by remember { mutableStateOf(true) }
+
+    val getUpdatedPersonalData = {
+        val newWeight = try {
+            weight.toDouble().also { isWeightValid = true }
+        } catch (exception: NumberFormatException) {
+            currentUserData.weight.also { isWeightValid = false }
+        }
+
+        val newHeight = try {
+            height.toDouble().also { isHeightValid = true }
+        } catch (exception: NumberFormatException) {
+            currentUserData.height.also { isHeightValid = false }
+        }
+
+        currentUserData.copy(
+            weight = newWeight,
+            height = newHeight,
+            /* birthdate = birthdate.toInstant(), */
+        )
+    }
+
+    val scope = rememberCoroutineScope()
     Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceAround) {
         EditableSection("Personal data", listOf(
-            weightCell(weight.toString()) { weight = it.toDouble() },
-            heightCell(height.toString()) { height = it.toDouble() },
+            weightCell(weight, { isWeightValid }) { weight = it },
+            heightCell(height, { isHeightValid }) { height = it },
             birthdateCell(birthdate) { birthdate = it },
         )) {
-            // send personal data update request
+            val updatedUserData = getUpdatedPersonalData()
+            if (isWeightValid && isHeightValid) {
+                scope.launch { sendUserData(updatedUserData) }.invokeOnCompletion {
+                    it ?: { currentUserData = RequestParams.userData?.toUserData()!! }
+                }
+            }
         }
-        EditableSection("Contact Data", listOf(
-            phoneCell(phoneNumber) { phoneNumber = it },
-            emailCell(email) { email = it },
-        )) {
-            // send contact data update request
+
+        val getUpdatedContactData = {
+            if(email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                currentUserData.copy(email = email)
+            } else {
+                isEmailValid = false
+                null
+            }
+        }
+
+        EditableSection("Contact Data", listOf(emailCell(email) { email = it })) {
+            getUpdatedContactData()?.let { validUserData ->
+                scope.launch { sendUserData(validUserData) }.invokeOnCompletion {
+                    it ?: { currentUserData = RequestParams.userData?.toUserData()!! }
+                }
+            }
         }
     }
 }

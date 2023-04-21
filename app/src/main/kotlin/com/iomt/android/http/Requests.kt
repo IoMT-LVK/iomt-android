@@ -7,6 +7,8 @@ package com.iomt.android.http
 import android.util.Log
 import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.dto.Credentials
+import com.iomt.android.dto.UserData
+import com.iomt.android.dto.UserDataWithId
 import com.iomt.android.entities.*
 
 import io.ktor.client.call.*
@@ -41,9 +43,34 @@ suspend fun getDeviceTypes(substring: String): List<DeviceConfig> = httpClient.g
 /**
  * @return [UserData] corresponding to currently logged-in user
  */
-suspend fun getUserData(): UserData = httpClient.get("$BASE_URL$API_V1/user").body<UserData>().also {
+suspend fun getUserData(): UserDataWithId = httpClient.get("$BASE_URL$API_V1/user").body<UserDataWithId>().also {
     RequestParams.userData = it
 }
+
+/**
+ * @param userData [UserData] that should update the [UserData] stored on backend
+ *
+ * @return [Unit]
+ */
+suspend fun sendUserData(userData: UserData): Unit = httpClient.put("$BASE_URL$API_V1/user") {
+    contentType(ContentType.Application.Json)
+    setBody(userData)
+}.let {
+    if (it.status.isSuccess()) {
+        val userId = RequestParams.userData?.id
+        RequestParams.userData = userData.toUserDataWithId(userId!!)
+    }
+}
+
+/**
+ * @param userData registration [UserData]
+ *
+ * @return true if Sign Up was successful, false otherwise
+ */
+suspend fun sendSignUpRequest(userData: UserData): Boolean = httpClient.post("$BASE_URL$API_V1/user") {
+    contentType(ContentType.Application.Json)
+    setBody(userData)
+}.status.isSuccess()
 
 /**
  * @param signUpInfo
