@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>BleManager</title>
+    <title>DeviceConfig</title>
     <link href="../../../images/logo-icon.svg" rel="icon" type="image/svg">
     <script>var pathToRoot = "../../../";</script>
     <script>const storage = localStorage.getItem("dokka-dark-mode")
@@ -54,28 +54,28 @@
         <div id="sideMenu"></div>
     </div>
     <div id="main">
-<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.iomt.android.bluetooth/BleManager///PointingToDeclaration//492899073">
-  <div class="breadcrumbs"><a href="../../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.iomt.android.bluetooth</a><span class="delimiter">/</span><span class="current">BleManager</span></div>
+<div class="main-content" data-page-type="classlike" id="content" pageIds="app::com.iomt.android.configs/DeviceConfig///PointingToDeclaration//492899073">
+  <div class="breadcrumbs"><a href="../../../index.html">app</a><span class="delimiter">/</span><a href="../index.html">com.iomt.android.configs</a><span class="delimiter">/</span><span class="current">DeviceConfig</span></div>
   <div class="cover ">
-    <h1 class="cover"><span>Ble</span><wbr></wbr><span><span>Manager</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">class </span><a href="index.html">BleManager</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div><p class="paragraph">Class that encapsulates all the BleGatt interactions</p></div></div>
+    <h1 class="cover"><span>Device</span><wbr></wbr><span><span>Config</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="kotlinx.serialization/Serializable///PointingToDeclaration/"><span class="token annotation builtin">Serializable</span></span></div></div><span class="token keyword">data </span><span class="token keyword">class </span><a href="index.html">DeviceConfig</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>general<span class="token operator">: </span><a href="../-general-config/index.html">GeneralConfig</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>characteristics<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-characteristic-config/index.html">CharacteristicConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,FUNCTION,PROPERTY">Members</button></div>
     <div class="tabs-section-body">
       <div data-togglable="CONSTRUCTOR">
         <h2 class="">Constructors</h2>
-        <div class="table"><a data-name="-1246518107%2FConstructors%2F492899073" anchor-label="BleManager" id="-1246518107%2FConstructors%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+        <div class="table"><a data-name="-931588493%2FConstructors%2F492899073" anchor-label="DeviceConfig" id="-931588493%2FConstructors%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
           <div class="table-row" data-togglable="CONSTRUCTOR" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-ble-manager.html"><span>Ble</span><wbr></wbr><span><span>Manager</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1246518107%2FConstructors%2F492899073"></span>
+                  <div><a href="-device-config.html"><span>Device</span><wbr></wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-931588493%2FConstructors%2F492899073"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">context<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/content/Context.html">Context</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">constructor</span><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">general<span class="token operator">: </span><a href="../-general-config/index.html">GeneralConfig</a><span class="token punctuation">, </span></span><span class="parameter ">characteristics<span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-characteristic-config/index.html">CharacteristicConfig</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -84,12 +84,12 @@
       </div>
       <div data-togglable="TYPE">
         <h2 class="">Types</h2>
-        <div class="table"><a data-name="1071516109%2FClasslikes%2F492899073" anchor-label="Companion" id="1071516109%2FClasslikes%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+        <div class="table"><a data-name="-1612347990%2FClasslikes%2F492899073" anchor-label="Companion" id="-1612347990%2FClasslikes%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
           <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
                   <div><a href="-companion/index.html"><span><span>Companion</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1071516109%2FClasslikes%2F492899073"></span>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1612347990%2FClasslikes%2F492899073"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
@@ -99,36 +99,36 @@
               </div>
             </div>
           </div>
-<a data-name="-187227774%2FClasslikes%2F492899073" anchor-label="DeviceAdditionalData" id="-187227774%2FClasslikes%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="">Properties</h2>
+        <div class="table"><a data-name="-1084040021%2FProperties%2F492899073" anchor-label="characteristics" id="-1084040021%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
           <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="-device-additional-data/index.html"><span>Device</span><wbr></wbr><span>Additional</span><wbr></wbr><span><span>Data</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-187227774%2FClasslikes%2F492899073"></span>
+                  <div><a href="characteristics.html"><span><span>characteristics</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1084040021%2FProperties%2F492899073"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword">data </span><span class="token keyword">class </span><a href="-device-additional-data/index.html">DeviceAdditionalData</a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span class="token keyword">val </span>config<span class="token operator">: </span><a href="../../com.iomt.android.configs/-device-config/index.html">DeviceConfig</a><span class="token punctuation">, </span></span><span class="parameter "><span class="token keyword">val </span>deviceCharacteristicLink<span class="token operator">: </span><a href="../../com.iomt.android.room.devicechar/-device-characteristic-link/index.html">DeviceCharacteristicLink</a></span></span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="characteristics.html">characteristics</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html">List</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="../-characteristic-config/index.html">CharacteristicConfig</a><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph"><a href="../-characteristic-config/index.html">CharacteristicConfig</a>s that define a set of characteristics</p></div></div></div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div data-togglable="FUNCTION">
-        <h2 class="">Functions</h2>
-        <div class="table"><a data-name="315065212%2FFunctions%2F492899073" anchor-label="getConnectedDevices" id="315065212%2FFunctions%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
+<a data-name="1142157819%2FProperties%2F492899073" anchor-label="general" id="1142157819%2FProperties%2F492899073" data-filterable-set=":app:dokkaHtml/release"></a>
           <div class="table-row" data-filterable-current=":app:dokkaHtml/release" data-filterable-set=":app:dokkaHtml/release">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="get-connected-devices.html"><span>get</span><wbr></wbr><span>Connected</span><wbr></wbr><span><span>Devices</span></span></a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="315065212%2FFunctions%2F492899073"></span>
+                  <div><a href="general.html"><span><span>general</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1142157819%2FProperties%2F492899073"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">fun </span><a href="get-connected-devices.html"><span class="token function">getConnectedDevices</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html">Map</a><span class="token operator">&lt;</span><span class="token keyword"></span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html">String</a><span class="token punctuation">, </span><span class="token keyword"></span><a href="https://developer.android.com/reference/kotlin/android/bluetooth/BluetoothGatt.html">BluetoothGatt</a><span class="token operator">&gt;</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app:dokkaHtml/release"><div class="symbol monospace"><span class="token keyword"></span><span class="token keyword">val </span><a href="general.html">general</a><span class="token operator">: </span><a href="../-general-config/index.html">GeneralConfig</a></div><div class="brief "><p class="paragraph"><a href="../-general-config/index.html">GeneralConfig</a> of device</p></div></div></div>
                 </div>
               </div>
             </div>

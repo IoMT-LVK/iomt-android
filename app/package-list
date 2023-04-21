@@ -7,7 +7,7 @@ $dokka.location:com.iomt.android.bluetooth/BleForegroundService.BleBinder/getSer
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/-companion/index.html
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/index.html
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService/BleForegroundService/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/-ble-foreground-service.html
-$dokka.location:com.iomt.android.bluetooth/BleForegroundService/connectDevice/#android.bluetooth.BluetoothDevice#com.iomt.android.config.configs.DeviceConfig/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/connect-device.html
+$dokka.location:com.iomt.android.bluetooth/BleForegroundService/connectDevice/#android.bluetooth.BluetoothDevice#com.iomt.android.configs.DeviceConfig/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/connect-device.html
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService/disconnectDevice/#android.bluetooth.BluetoothDevice/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/disconnect-device.html
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService/getConnectedDevices/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/get-connected-devices.html
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService/onBind/#android.content.Intent/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/on-bind.html
@@ -16,13 +16,13 @@ $dokka.location:com.iomt.android.bluetooth/BleForegroundService/onStartCommand/#
 $dokka.location:com.iomt.android.bluetooth/BleForegroundService/updateNotification/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-foreground-service/update-notification.html
 $dokka.location:com.iomt.android.bluetooth/BleGattCallback.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/-companion/index.html
 $dokka.location:com.iomt.android.bluetooth/BleGattCallback///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/index.html
-$dokka.location:com.iomt.android.bluetooth/BleGattCallback/BleGattCallback/#com.iomt.android.config.configs.DeviceConfig#kotlin.Function2[kotlin.String,kotlin.String,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/-ble-gatt-callback.html
+$dokka.location:com.iomt.android.bluetooth/BleGattCallback/BleGattCallback/#com.iomt.android.configs.DeviceConfig#kotlin.Function2[kotlin.String,kotlin.String,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/-ble-gatt-callback.html
 $dokka.location:com.iomt.android.bluetooth/BleGattCallback/onCharacteristicChanged/#android.bluetooth.BluetoothGatt#android.bluetooth.BluetoothGattCharacteristic/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/on-characteristic-changed.html
 $dokka.location:com.iomt.android.bluetooth/BleGattCallback/onConnectionStateChange/#android.bluetooth.BluetoothGatt#kotlin.Int#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/on-connection-state-change.html
 $dokka.location:com.iomt.android.bluetooth/BleGattCallback/onServicesDiscovered/#android.bluetooth.BluetoothGatt#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-gatt-callback/on-services-discovered.html
 $dokka.location:com.iomt.android.bluetooth/BleManager.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/-companion/index.html
 $dokka.location:com.iomt.android.bluetooth/BleManager.DeviceAdditionalData///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/-device-additional-data/index.html
-$dokka.location:com.iomt.android.bluetooth/BleManager.DeviceAdditionalData/DeviceAdditionalData/#com.iomt.android.config.configs.DeviceConfig#com.iomt.android.room.devicechar.DeviceCharacteristicLink/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/-device-additional-data/-device-additional-data.html
+$dokka.location:com.iomt.android.bluetooth/BleManager.DeviceAdditionalData/DeviceAdditionalData/#com.iomt.android.configs.DeviceConfig#com.iomt.android.room.devicechar.DeviceCharacteristicLink/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/-device-additional-data/-device-additional-data.html
 $dokka.location:com.iomt.android.bluetooth/BleManager.DeviceAdditionalData/config/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/-device-additional-data/config.html
 $dokka.location:com.iomt.android.bluetooth/BleManager.DeviceAdditionalData/deviceCharacteristicLink/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/-device-additional-data/device-characteristic-link.html
 $dokka.location:com.iomt.android.bluetooth/BleManager///PointingToDeclaration/app/com.iomt.android.bluetooth/-ble-manager/index.html
@@ -41,31 +41,30 @@ $dokka.location:com.iomt.android.bluetooth/ConnectionStatus.DISCONNECTED///Point
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus///PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/index.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus/valueOf/#kotlin.String/PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/value-of.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus/values/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/values.html
-$dokka.location:com.iomt.android.config.configs////PointingToDeclaration/app/com.iomt.android.config.configs/index.html
-$dokka.location:com.iomt.android.config.configs//toCharacteristicEntities/kotlin.collections.Map[kotlin.String,com.iomt.android.config.configs.CharacteristicConfig]#/PointingToDeclaration/app/com.iomt.android.config.configs/to-characteristic-entities.html
-$dokka.location:com.iomt.android.config.configs//toCharacteristics/kotlin.collections.Map[kotlin.String,com.iomt.android.config.configs.CharacteristicConfig]#/PointingToDeclaration/app/com.iomt.android.config.configs/to-characteristics.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig.Companion///PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/-companion/index.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig.Companion/stub/#/PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/-companion/stub.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig///PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/index.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig/CharacteristicConfig/#kotlin.String#kotlin.String?#kotlin.String?#kotlin.String?/PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/-characteristic-config.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig/characteristicUuid/#/PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/characteristic-uuid.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig/descriptorUuid/#/PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/descriptor-uuid.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig/name/#/PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/name.html
-$dokka.location:com.iomt.android.config.configs/CharacteristicConfig/serviceUuid/#/PointingToDeclaration/app/com.iomt.android.config.configs/-characteristic-config/service-uuid.html
-$dokka.location:com.iomt.android.config.configs/DeviceConfig///PointingToDeclaration/app/com.iomt.android.config.configs/-device-config/index.html
-$dokka.location:com.iomt.android.config.configs/DeviceConfig/DeviceConfig/#com.iomt.android.config.configs.GeneralConfig#kotlin.collections.Map[kotlin.String,com.iomt.android.config.configs.CharacteristicConfig]/PointingToDeclaration/app/com.iomt.android.config.configs/-device-config/-device-config.html
-$dokka.location:com.iomt.android.config.configs/DeviceConfig/characteristics/#/PointingToDeclaration/app/com.iomt.android.config.configs/-device-config/characteristics.html
-$dokka.location:com.iomt.android.config.configs/DeviceConfig/general/#/PointingToDeclaration/app/com.iomt.android.config.configs/-device-config/general.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig.Companion///PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/-companion/index.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig.Companion/stub/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/-companion/stub.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig///PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/index.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig/GeneralConfig/#kotlin.String#kotlin.String#kotlin.collections.List[kotlin.String]#kotlin.String?/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/-general-config.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig/characteristicNames/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/characteristic-names.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig/name/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/name.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig/nameRegex/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/name-regex.html
-$dokka.location:com.iomt.android.config.configs/GeneralConfig/type/#/PointingToDeclaration/app/com.iomt.android.config.configs/-general-config/type.html
-$dokka.location:com.iomt.android.config////PointingToDeclaration/app/com.iomt.android.config/index.html
-$dokka.location:com.iomt.android.config//parseConfig/#kotlin.String/PointingToDeclaration/app/com.iomt.android.config/parse-config.html
+$dokka.location:com.iomt.android.configs////PointingToDeclaration/app/com.iomt.android.configs/index.html
+$dokka.location:com.iomt.android.configs//toCharacteristicEntities/kotlin.collections.List[com.iomt.android.configs.CharacteristicConfig]#/PointingToDeclaration/app/com.iomt.android.configs/to-characteristic-entities.html
+$dokka.location:com.iomt.android.configs//toCharacteristics/kotlin.collections.List[com.iomt.android.configs.CharacteristicConfig]#/PointingToDeclaration/app/com.iomt.android.configs/to-characteristics.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig.Companion///PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/-companion/index.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig.Companion/stub/#/PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/-companion/stub.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig///PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/index.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig/CharacteristicConfig/#kotlin.String#kotlin.String#kotlin.String?#kotlin.String?/PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/-characteristic-config.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig/characteristicUuid/#/PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/characteristic-uuid.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig/name/#/PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/name.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig/prettyName/#/PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/pretty-name.html
+$dokka.location:com.iomt.android.configs/CharacteristicConfig/serviceUuid/#/PointingToDeclaration/app/com.iomt.android.configs/-characteristic-config/service-uuid.html
+$dokka.location:com.iomt.android.configs/DeviceConfig.Companion///PointingToDeclaration/app/com.iomt.android.configs/-device-config/-companion/index.html
+$dokka.location:com.iomt.android.configs/DeviceConfig.Companion/stub/#/PointingToDeclaration/app/com.iomt.android.configs/-device-config/-companion/stub.html
+$dokka.location:com.iomt.android.configs/DeviceConfig///PointingToDeclaration/app/com.iomt.android.configs/-device-config/index.html
+$dokka.location:com.iomt.android.configs/DeviceConfig/DeviceConfig/#com.iomt.android.configs.GeneralConfig#kotlin.collections.List[com.iomt.android.configs.CharacteristicConfig]/PointingToDeclaration/app/com.iomt.android.configs/-device-config/-device-config.html
+$dokka.location:com.iomt.android.configs/DeviceConfig/characteristics/#/PointingToDeclaration/app/com.iomt.android.configs/-device-config/characteristics.html
+$dokka.location:com.iomt.android.configs/DeviceConfig/general/#/PointingToDeclaration/app/com.iomt.android.configs/-device-config/general.html
+$dokka.location:com.iomt.android.configs/GeneralConfig.Companion///PointingToDeclaration/app/com.iomt.android.configs/-general-config/-companion/index.html
+$dokka.location:com.iomt.android.configs/GeneralConfig.Companion/stub/#/PointingToDeclaration/app/com.iomt.android.configs/-general-config/-companion/stub.html
+$dokka.location:com.iomt.android.configs/GeneralConfig///PointingToDeclaration/app/com.iomt.android.configs/-general-config/index.html
+$dokka.location:com.iomt.android.configs/GeneralConfig/GeneralConfig/#kotlin.String#kotlin.String#kotlin.String?/PointingToDeclaration/app/com.iomt.android.configs/-general-config/-general-config.html
+$dokka.location:com.iomt.android.configs/GeneralConfig/name/#/PointingToDeclaration/app/com.iomt.android.configs/-general-config/name.html
+$dokka.location:com.iomt.android.configs/GeneralConfig/nameRegex/#/PointingToDeclaration/app/com.iomt.android.configs/-general-config/name-regex.html
+$dokka.location:com.iomt.android.configs/GeneralConfig/type/#/PointingToDeclaration/app/com.iomt.android.configs/-general-config/type.html
 $dokka.location:com.iomt.android.credentialmanager////PointingToDeclaration/app/com.iomt.android.credentialmanager/index.html
 $dokka.location:com.iomt.android.credentialmanager/AppCredentialManager.Companion///PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/-companion/index.html
 $dokka.location:com.iomt.android.credentialmanager/AppCredentialManager///PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/index.html
@@ -144,6 +143,7 @@ $dokka.location:com.iomt.android.http//deleteDevice/#com.iomt.android.entities.D
 $dokka.location:com.iomt.android.http//getData/#kotlin.Function1[com.iomt.android.entities.UserData,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/get-data.html
 $dokka.location:com.iomt.android.http//getDeviceConfig/#kotlin.Long#kotlin.Function1[kotlin.String,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/get-device-config.html
 $dokka.location:com.iomt.android.http//getDeviceTypes/#kotlin.Function1[kotlin.collections.List[com.iomt.android.entities.DeviceType],kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/get-device-types.html
+$dokka.location:com.iomt.android.http//getDeviceTypes/#kotlin.String/PointingToDeclaration/app/com.iomt.android.http/get-device-types.html
 $dokka.location:com.iomt.android.http//sendData/#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.String?#kotlin.Int#kotlin.Int/PointingToDeclaration/app/com.iomt.android.http/send-data.html
 $dokka.location:com.iomt.android.http//sendDevice/#com.iomt.android.entities.DeviceInfo/PointingToDeclaration/app/com.iomt.android.http/send-device.html
 $dokka.location:com.iomt.android.http//sendLogin/#kotlin.String#kotlin.String#kotlin.Function1[com.iomt.android.entities.AuthInfo,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/send-login.html
@@ -215,7 +215,7 @@ $dokka.location:com.iomt.android.jetpack.view.login//RegistrationView/#kotlin.Fu
 $dokka.location:com.iomt.android.jetpack.view.main////PointingToDeclaration/app/com.iomt.android.jetpack.view.main/index.html
 $dokka.location:com.iomt.android.jetpack.view.main//AccountView/#/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-account-view.html
 $dokka.location:com.iomt.android.jetpack.view.main//BleScannerView/#androidx.compose.runtime.MutableState[kotlin.Function1[androidx.navigation.NavHostController,kotlin.Unit]]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-ble-scanner-view.html
-$dokka.location:com.iomt.android.jetpack.view.main//DeviceView/#kotlin.String#com.iomt.android.config.configs.DeviceConfig/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-device-view.html
+$dokka.location:com.iomt.android.jetpack.view.main//DeviceView/#kotlin.String#com.iomt.android.configs.DeviceConfig/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-device-view.html
 $dokka.location:com.iomt.android.jetpack.view.main//HomeView/#androidx.compose.runtime.MutableState[kotlin.Function1[androidx.navigation.NavHostController,kotlin.Unit]]#kotlin.Function1[android.bluetooth.BluetoothDevice,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-home-view.html
 $dokka.location:com.iomt.android.jetpack.view.main//SettingsView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.jetpack.view.main/-settings-view.html
 $dokka.location:com.iomt.android.jetpack////PointingToDeclaration/app/com.iomt.android.jetpack/index.html
@@ -343,6 +343,7 @@ $dokka.location:com.iomt.android.utils//isLetters/kotlin.String#/PointingToDecla
 $dokka.location:com.iomt.android.utils//navigate/androidx.navigation.NavHostController#com.iomt.android.jetpack.navigation.NavRouter#androidx.navigation.NavOptions?#androidx.navigation.Navigator.Extras?/PointingToDeclaration/app/com.iomt.android.utils/navigate.html
 $dokka.location:com.iomt.android.utils//now/kotlinx.datetime.LocalDateTime.Companion#/PointingToDeclaration/app/com.iomt.android.utils/now.html
 $dokka.location:com.iomt.android.utils//rememberBoundService/#/PointingToDeclaration/app/com.iomt.android.utils/remember-bound-service.html
+$dokka.location:com.iomt.android.utils//withDebounce/#kotlin.time.Duration#kotlinx.coroutines.CoroutineScope#kotlin.coroutines.SuspendFunction1[TypeParam(bounds=[kotlin.Any]),kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.utils/with-debounce.html
 $dokka.location:com.iomt.android.utils//withLoading/#TypeParam(bounds=[kotlin.Any])?#kotlin.Function1[TypeParam(bounds=[kotlin.Any]),kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.utils/with-loading.html
 $dokka.location:com.iomt.android.utils/BleServiceConnection///PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/index.html
 $dokka.location:com.iomt.android.utils/BleServiceConnection/BleServiceConnection/#/PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/-ble-service-connection.html
@@ -350,8 +351,8 @@ $dokka.location:com.iomt.android.utils/BleServiceConnection/onServiceConnected/#
 $dokka.location:com.iomt.android.utils/BleServiceConnection/onServiceDisconnected/#android.content.ComponentName?/PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/on-service-disconnected.html
 $dokka.location:com.iomt.android.utils/BleServiceConnection/service/#/PointingToDeclaration/app/com.iomt.android.utils/-ble-service-connection/service.html
 $dokka.location:com.iomt.android.utils/SharedPreferencesNames///PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/index.html
-$dokka.location:com.iomt.android.utils/SharedPreferencesNames/mobileNetwork/#/PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/mobile-network.html
-$dokka.location:com.iomt.android.utils/SharedPreferencesNames/mqttWorkerPeriod/#/PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/mqtt-worker-period.html
+$dokka.location:com.iomt.android.utils/SharedPreferencesNames/MOBILE_NETWORK/#/PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/-m-o-b-i-l-e_-n-e-t-w-o-r-k.html
+$dokka.location:com.iomt.android.utils/SharedPreferencesNames/MQTT_WORK_PERIOD/#/PointingToDeclaration/app/com.iomt.android.utils/-shared-preferences-names/-m-q-t-t_-w-o-r-k_-p-e-r-i-o-d.html
 $dokka.location:com.iomt.android////PointingToDeclaration/app/com.iomt.android/index.html
 $dokka.location:com.iomt.android/EntryPointActivity.Companion///PointingToDeclaration/app/com.iomt.android/-entry-point-activity/-companion/index.html
 $dokka.location:com.iomt.android/EntryPointActivity///PointingToDeclaration/app/com.iomt.android/-entry-point-activity/index.html
@@ -359,8 +360,7 @@ $dokka.location:com.iomt.android/EntryPointActivity/EntryPointActivity/#/Pointin
 $dokka.location:com.iomt.android/EntryPointActivity/onRequestPermissionsResult/#kotlin.Int#kotlin.Array[kotlin.String]#kotlin.IntArray/PointingToDeclaration/app/com.iomt.android/-entry-point-activity/on-request-permissions-result.html
 com.iomt.android
 com.iomt.android.bluetooth
-com.iomt.android.config
-com.iomt.android.config.configs
+com.iomt.android.configs
 com.iomt.android.credentialmanager
 com.iomt.android.dto
 com.iomt.android.entities
