@@ -14,7 +14,7 @@ import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import com.iomt.android.EntryPointActivity
 import com.iomt.android.R
-import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.configs.DeviceConfig
 import kotlinx.coroutines.*
 
 /**

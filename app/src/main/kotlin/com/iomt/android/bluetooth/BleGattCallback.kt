@@ -7,8 +7,8 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 
-import com.iomt.android.config.configs.CharacteristicConfig
-import com.iomt.android.config.configs.DeviceConfig
+import com.iomt.android.configs.CharacteristicConfig
+import com.iomt.android.configs.DeviceConfig
 
 import java.util.*
 
@@ -81,7 +81,7 @@ class BleGattCallback(
     override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
         if (status == BluetoothGatt.GATT_SUCCESS) {
             Log.d(loggerTag, "Successfully discovered services")
-            deviceConfig.characteristics.map { (_, config) ->
+            deviceConfig.characteristics.map { config ->
                 initializeCharacteristic(gatt, config)
             }
         } else {
@@ -135,16 +135,15 @@ class BleGattCallback(
         characteristic: BluetoothGattCharacteristic
     ) {
         Log.d(loggerTag, "Changed characteristic with uuid ${characteristic.uuid}")
-        deviceConfig.characteristics.filter { (_, config) ->
+        deviceConfig.characteristics.filter { config ->
             UUID.fromString(config.characteristicUuid) == characteristic.uuid
         }
-            .map { it.key }
             .firstOrNull()
             ?.let {
-                if (it == "accelerometer") {
+                if (it.name == "accelerometer") {
                     changeAccelerometerLabel(characteristic)
                 } else {
-                    changeCharacteristicLabel(it, characteristic)
+                    changeCharacteristicLabel(it.name, characteristic)
                 }
             }
     }

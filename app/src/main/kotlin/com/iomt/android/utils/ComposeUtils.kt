@@ -15,7 +15,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.navigation.*
 import androidx.navigation.compose.composable
+
 import com.iomt.android.jetpack.navigation.NavRouter
+
+import kotlin.time.Duration
+import kotlinx.coroutines.*
 
 typealias FloatingButtonBuilder = @Composable (NavHostController) -> Unit
 typealias MutableFloatingButtonBuilder = MutableState<FloatingButtonBuilder>
@@ -66,6 +70,30 @@ fun <T : Any> withLoading(value: T?, content: @Composable (T) -> Unit) {
     value?.let { content(value) } ?: run {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
+        }
+    }
+}
+
+/**
+ * @param delayDuration debounce period as [Duration]
+ * @param scope [CoroutineScope] for async task processing
+ * @param destinationFunction suspend function to debounce
+ * @return [destinationFunction] wrapped with param value tracking for debouncing
+ */
+fun <T : Any> withDebounce(
+    delayDuration: Duration,
+    scope: CoroutineScope,
+    destinationFunction: suspend (T) -> Unit,
+): (T) -> Unit {
+    var throttleJob: Job? = null
+    var latestParam: T
+    return { param: T ->
+        latestParam = param
+        if (throttleJob?.isCompleted != false) {
+            throttleJob = scope.launch {
+                delay(delayDuration)
+                destinationFunction(latestParam)
+            }
         }
     }
 }

@@ -13,10 +13,9 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.iomt.android.EntryPointActivity
 
 import com.iomt.android.R
-import com.iomt.android.config.parseConfig
+import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.jetpack.view.*
 import com.iomt.android.jetpack.view.login.*
 import com.iomt.android.jetpack.view.main.*
@@ -151,15 +150,13 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
                     arguments = listOf(navArgument("macAddress") { type = NavType.StringType }),
                 ) { navBackStackEntry ->
                     val macAddress = requireNotNull(navBackStackEntry.arguments?.getString("macAddress")) {
-                        "mac cannot be null on DeviceView"
+                        "MAC-address cannot be null on DeviceView"
                     }
 
                     // todo: replace with config selecting on BleScannerView
-                    val stubConfig = parseConfig(
-                        EntryPointActivity::class.java.classLoader?.getResource("ConfigParser/band.toml")?.readText()!!
-                    )
+                    val config = DeviceConfig.stub
 
-                    DeviceView(macAddress, stubConfig)
+                    DeviceView(macAddress, config)
                 }
             }
         }

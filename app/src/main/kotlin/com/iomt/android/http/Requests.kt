@@ -5,6 +5,7 @@
 package com.iomt.android.http
 
 import android.util.Log
+import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.dto.Credentials
 import com.iomt.android.entities.*
 
@@ -20,13 +21,23 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 internal const val BASE_URL = "https://iomt.lvk.cs.msu.ru"
-
+internal const val API_V1 = "/api/v1"
 private val scope = CoroutineScope(Dispatchers.IO)
 
 @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
 private val loggerTag = object {}.javaClass.enclosingClass.name
 
 private val httpClient = createHttpClient(Android.create())
+
+/**
+ * @param substring substring to search
+ * @return [List] of [DeviceConfig]s that contain [substring] in human-readable name from [DeviceConfig.general]'s
+ */
+suspend fun getDeviceTypes(substring: String): List<DeviceConfig> = httpClient.get(
+    URLBuilder("$BASE_URL$API_V1/device_types").apply {
+        parametersOf("name", substring)
+    }.build()
+).body()
 
 /**
  * @param device [DeviceInfo] that will be sent

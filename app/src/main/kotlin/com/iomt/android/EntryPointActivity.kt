@@ -60,6 +60,9 @@ class EntryPointActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
                 add(Manifest.permission.POST_NOTIFICATIONS)
             }
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                add(Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE)
+            }
         }
 
         private const val MASTER_PERMISSION_REQUEST_CODE = 150_601
