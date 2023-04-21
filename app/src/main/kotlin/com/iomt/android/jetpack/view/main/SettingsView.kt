@@ -74,7 +74,7 @@ private fun DataTransferringSection() = Section("Data transferring") {
                     isWifiPreferred = true
                 }
             },
-            Modifier.padding(horizontal = 10.dp)
+            Modifier.padding(horizontal = 10.dp),
         )
     }
     Divider()
@@ -97,7 +97,7 @@ private fun DataTransferringSection() = Section("Data transferring") {
             sharedPreferences.getLong(
                 SharedPreferencesNames.MQTT_WORK_PERIOD,
                 5.minutes.toLong(DurationUnit.MILLISECONDS),
-            ).toFloat()
+            ).toFloat(),
         )
     }
     Column(Modifier.padding(10.dp)) {
@@ -126,7 +126,7 @@ private fun AccountSection(onAccountExit: () -> Unit) = Section("Account") {
         onClick = onAccountExit,
         colors = ButtonDefaults.textButtonColors(
             contentColor = colorScheme.error,
-            containerColor = colorScheme.background
+            containerColor = colorScheme.background,
         ),
     ) { Text("Exit account") }
 }

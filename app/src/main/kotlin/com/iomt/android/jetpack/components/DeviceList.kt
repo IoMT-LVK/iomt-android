@@ -44,7 +44,7 @@ fun DeviceList(title: String, devices: SnapshotStateList<BluetoothDevice>, onIte
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     OutlinedButton({ onItemClicked(device) },
-                        Modifier.padding(10.dp)
+                        Modifier.padding(10.dp),
                     ) {
                         Icon(Icons.Filled.Phone, "BLE Device")
                         Text(device.name, Modifier.weight(1f).padding(start = 10.dp))

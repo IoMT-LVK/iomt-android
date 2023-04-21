@@ -46,7 +46,7 @@ class AppCredentialManager(private val context: Context) {
      */
     suspend fun get(): Credentials? {
         val getCredentialsRequest = GetCredentialRequest(
-            listOf(GetPasswordOption())
+            listOf(GetPasswordOption()),
         )
 
         return try {

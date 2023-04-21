@@ -45,7 +45,7 @@ object RequestParams {
  */
 suspend fun HttpClient.authenticate(
     url: String = REFRESH_TOKEN_URL,
-    additionalRequestBuilder: HttpRequestBuilder.() -> Unit = { }
+    additionalRequestBuilder: HttpRequestBuilder.() -> Unit = { },
 ): TokenInfo {
     val response = post(url) {
         additionalRequestBuilder()

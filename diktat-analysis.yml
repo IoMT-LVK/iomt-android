@@ -106,7 +106,7 @@
   configuration:
     maxNestedBlockQuantity: 4
 - name: TRAILING_COMMA
-  enabled: false
+  enabled: true
   configuration:
     valueArgument: true
     valueParameter: true

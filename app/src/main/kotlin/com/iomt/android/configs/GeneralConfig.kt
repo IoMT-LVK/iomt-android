@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializable
 data class GeneralConfig(
     var name: String,
     @SerialName("name_regex") var nameRegex: String,
-    var type: String? = null,
+    var type: DeviceType,
 ) {
     companion object {
-        val stub = GeneralConfig("Mi Band", ".*", "band")
+        val stub = GeneralConfig("Mi Band", ".*", DeviceType.VEST)
     }
 }

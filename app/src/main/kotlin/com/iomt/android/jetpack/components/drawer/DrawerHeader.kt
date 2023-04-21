@@ -33,7 +33,7 @@ internal fun DrawerHeader() {
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             fontFamily = FontFamily.Monospace,
-            fontSize = TextUnit(5f, TextUnitType.Em)
+            fontSize = TextUnit(5f, TextUnitType.Em),
         )
     }
 }

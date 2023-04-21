@@ -17,14 +17,14 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +34,8 @@ import com.iomt.android.bluetooth.BleScanCallback
 import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.configs.toCharacteristicEntities
 import com.iomt.android.http.getDeviceTypes
+import com.iomt.android.jetpack.components.ConfigItem
+import com.iomt.android.jetpack.components.DeviceItem
 import com.iomt.android.jetpack.theme.colorScheme
 import com.iomt.android.room.characteristic.CharacteristicRepository
 import com.iomt.android.room.device.DeviceRepository
@@ -122,7 +124,7 @@ fun BleScannerView(
 
         var selectedDevice by remember { mutableStateOf<BluetoothDevice?>(null) }
         var deviceNameSubstring by remember { mutableStateOf("") }
-        Column(Modifier.fillMaxSize()) {
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
             selectedDevice?.let { device ->
                 val configs = remember { mutableStateListOf<DeviceConfig>() }
                 val updateConfigsWithDebounce: (String) -> Unit = withDebounce(200.milliseconds, scope) {
@@ -132,47 +134,37 @@ fun BleScannerView(
                         addAll(devices)
                     }
                 }
+                Row(Modifier.fillMaxWidth().padding(vertical = 20.dp), horizontalArrangement = Arrangement.Center) {
+                    OutlinedTextField(
+                        value = deviceNameSubstring,
+                        onValueChange = { value -> deviceNameSubstring = value },
+                        label = { Text("Search") },
+                    )
+                }
 
-                OutlinedTextField(
-                    value = deviceNameSubstring,
-                    onValueChange = { value -> deviceNameSubstring = value }
-                )
+                Divider()
 
                 LaunchedEffect(deviceNameSubstring) {
                     updateConfigsWithDebounce(deviceNameSubstring)
                 }
 
                 configs.forEach { config ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable {
-                            scope.launch(Dispatchers.Default) {
-                                val deviceId = deviceRepository.getByMacOrSave(device.name, device.address).id!!
+                    ConfigItem(config) {
+                        scope.launch(Dispatchers.Default) {
+                            val deviceId = deviceRepository.getByMacOrSave(device.name, device.address).id!!
 
-                                config.characteristics.toCharacteristicEntities()
-                                    .let { characteristicRepository.insertAllIfNotPresent(it) }
-                                    .map { charId -> DeviceCharacteristicLinkEntity(deviceId, charId) }
-                                    .let { deviceCharacteristicRepository.insertAllIfNotPresent(it) }
+                            config.characteristics.toCharacteristicEntities()
+                                .let { characteristicRepository.insertAllIfNotPresent(it) }
+                                .map { charId -> DeviceCharacteristicLinkEntity(deviceId, charId) }
+                                .let { deviceCharacteristicRepository.insertAllIfNotPresent(it) }
 
-                                bleService.connectDevice(device, config).also { MainScope().launch { navigateBack() } }
-                            }
-                        },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(config.general.name)
-                        Spacer(Modifier.padding(10.dp))
-                        Text(config.general.type ?: "UNKNOWN TYPE")
+                            bleService.connectDevice(device, config).also { MainScope().launch { navigateBack() } }
+                        }
                     }
                 }
             } ?: run {
-                foundDevices.map { device ->
-                    Row(
-                        Modifier.fillMaxWidth().clickable { selectedDevice = device },
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(device.name)
-                        Spacer(Modifier.padding(10.dp))
-                        Text(device.address)
-                    }
+                foundDevices.forEach { device ->
+                    DeviceItem(device.name, device.address) { selectedDevice = device }
                 }
             }
         }
