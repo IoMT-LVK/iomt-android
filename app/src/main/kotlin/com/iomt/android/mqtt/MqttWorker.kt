@@ -72,7 +72,7 @@ class MqttWorker(
             val topic = Topic(userId, macAddress, characteristicName)
             try {
                 mqttClient.send(topic, recordEntity.toMqttRecordMessage())
-                recordRepository.delete(recordEntity)
+                recordRepository.update(recordEntity.apply { isSynchronized = true })
             } catch (mqttException: RuntimeException) {
                 Log.e(loggerTag, "Could not send data with topic ${topic.toTopicName()}", mqttException)
                 return Result.failure()

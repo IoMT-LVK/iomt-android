@@ -2,6 +2,7 @@ package com.iomt.android.room.record
 
 import android.content.Context
 import com.iomt.android.room.AppDatabase
+import kotlinx.datetime.LocalDateTime
 
 /**
  * Repository for [RecordEntity]
@@ -30,4 +31,11 @@ class RecordRepository(context: Context) {
      * @return get all [RecordEntity] present in database
      */
     suspend fun getAll(): List<RecordEntity> = dao.getAll()
+
+    /**
+     * @param localDateTime
+     */
+    suspend fun cleanSynchronizedRecordsOlderThen(
+        localDateTime: LocalDateTime,
+    ): Unit = dao.cleanSynchronizedRecordsOlderThen(localDateTime)
 }

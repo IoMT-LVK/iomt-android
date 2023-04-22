@@ -2,6 +2,7 @@ package com.iomt.android.room.record
 
 import androidx.room.*
 import kotlinx.coroutines.flow.Flow
+import kotlinx.datetime.LocalDateTime
 
 /**
  * Data Access Object of [RecordEntity]
@@ -32,6 +33,12 @@ interface RecordDao {
      */
     @Query("SELECT * FROM record LIMIT $DEFAULT_PAGE_SIZE")
     suspend fun getAll(): List<RecordEntity>
+
+    /**
+     * @param localDateTime
+     */
+    @Query("DELETE FROM record WHERE isSynchronized = 1 AND timestamp < :localDateTime")
+    suspend fun cleanSynchronizedRecordsOlderThen(localDateTime: LocalDateTime)
 
     companion object {
         private const val DEFAULT_PAGE_SIZE = 500

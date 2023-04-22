@@ -19,7 +19,7 @@ import com.iomt.android.room.record.RecordEntity
  */
 @Database(
     entities = [CharacteristicEntity::class, DeviceEntity::class, DeviceCharacteristicLinkEntity::class, RecordEntity::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
