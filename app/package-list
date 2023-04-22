@@ -155,6 +155,18 @@ $dokka.location:com.iomt.android.credentialmanager/AppCredentialManager///Pointi
 $dokka.location:com.iomt.android.credentialmanager/AppCredentialManager/AppCredentialManager/#android.content.Context/PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/-app-credential-manager.html
 $dokka.location:com.iomt.android.credentialmanager/AppCredentialManager/createIfNotPresent/#com.iomt.android.dto.Credentials/PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/create-if-not-present.html
 $dokka.location:com.iomt.android.credentialmanager/AppCredentialManager/get/#/PointingToDeclaration/app/com.iomt.android.credentialmanager/-app-credential-manager/get.html
+$dokka.location:com.iomt.android.dbcleaner////PointingToDeclaration/app/com.iomt.android.dbcleaner/index.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorkManager.Companion///PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-work-manager/-companion/index.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorkManager.Companion/getInstance/#android.content.Context/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-work-manager/-companion/get-instance.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorkManager///PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-work-manager/index.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorkManager/CleanerWorkManager/#android.content.Context/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-work-manager/-cleaner-work-manager.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorkManager/start/#kotlin.time.Duration#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-work-manager/start.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorkManager/stop/#/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-work-manager/stop.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorker.Companion///PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-worker/-companion/index.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorker///PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-worker/index.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorker/CleanerWorker/#android.content.Context#androidx.work.WorkerParameters/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-worker/-cleaner-worker.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorker/doWork/#/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-worker/do-work.html
+$dokka.location:com.iomt.android.dbcleaner/CleanerWorker/getForegroundInfo/#/PointingToDeclaration/app/com.iomt.android.dbcleaner/-cleaner-worker/get-foreground-info.html
 $dokka.location:com.iomt.android.dto////PointingToDeclaration/app/com.iomt.android.dto/index.html
 $dokka.location:com.iomt.android.dto//toCredentials/androidx.credentials.GetCredentialResponse#/PointingToDeclaration/app/com.iomt.android.dto/to-credentials.html
 $dokka.location:com.iomt.android.dto/Credentials///PointingToDeclaration/app/com.iomt.android.dto/-credentials/index.html
@@ -315,18 +327,21 @@ $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkReposit
 $dokka.location:com.iomt.android.room.record////PointingToDeclaration/app/com.iomt.android.room.record/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao.Companion///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/-companion/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/index.html
+$dokka.location:com.iomt.android.room.record/RecordDao/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/clean-synchronized-records-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordDao/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/delete.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-all.html
 $dokka.location:com.iomt.android.room.record/RecordDao/insert/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/insert.html
 $dokka.location:com.iomt.android.room.record/RecordDao/update/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/update.html
 $dokka.location:com.iomt.android.room.record/RecordEntity///PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/index.html
-$dokka.location:com.iomt.android.room.record/RecordEntity/RecordEntity/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.String/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/-record-entity.html
+$dokka.location:com.iomt.android.room.record/RecordEntity/RecordEntity/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.String#kotlin.Boolean/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/-record-entity.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/deviceCharacteristicLinkId/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/device-characteristic-link-id.html
+$dokka.location:com.iomt.android.room.record/RecordEntity/isSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/is-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/timestamp/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/timestamp.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/toMqttRecordMessage/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/to-mqtt-record-message.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/value/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/value.html
 $dokka.location:com.iomt.android.room.record/RecordRepository///PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/index.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/RecordRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/-record-repository.html
+$dokka.location:com.iomt.android.room.record/RecordRepository/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/clean-synchronized-records-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/delete.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/getAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-all.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/insert/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/insert.html
@@ -384,6 +399,7 @@ com.iomt.android.compose.view.login
 com.iomt.android.compose.view.main
 com.iomt.android.configs
 com.iomt.android.credentialmanager
+com.iomt.android.dbcleaner
 com.iomt.android.dto
 com.iomt.android.entities
 com.iomt.android.http
