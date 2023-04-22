@@ -16,5 +16,5 @@ data class Topic(
      *
      * @return topic name
      */
-    fun toTopicName() = "/$userId/$deviceMac/$characteristicName"
+    fun toTopicName() = "c/$userId/$deviceMac/$characteristicName"
 }

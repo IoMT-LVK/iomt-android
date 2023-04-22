@@ -56,7 +56,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
                 }
             }
             Spacer(Modifier.padding(20.dp))
-            DeviceBodyCard(characteristics)
+            DeviceBodyCard(macAddress, characteristics)
         }
     }
 }

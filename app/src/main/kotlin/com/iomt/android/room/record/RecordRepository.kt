@@ -2,6 +2,7 @@ package com.iomt.android.room.record
 
 import android.content.Context
 import com.iomt.android.room.AppDatabase
+import kotlinx.datetime.LocalDateTime
 
 /**
  * Repository for [RecordEntity]
@@ -27,7 +28,23 @@ class RecordRepository(context: Context) {
     suspend fun delete(recordEntity: RecordEntity) = dao.delete(recordEntity)
 
     /**
-     * @return get all [RecordEntity] present in database
+     * @return all [RecordEntity] where [RecordEntity.isSynchronized] is false
      */
-    suspend fun getAll(): List<RecordEntity> = dao.getAll()
+    suspend fun getNotSynchronized(): List<RecordEntity> = dao.getNotSynchronized()
+
+    /**
+     * @param localDateTime
+     */
+    suspend fun cleanSynchronizedRecordsOlderThen(
+        localDateTime: LocalDateTime,
+    ): Unit = dao.cleanSynchronizedRecordsOlderThen(localDateTime)
+
+    /**
+     * @param deviceCharacteristicLinkId
+     * @param localDateTime
+     */
+    suspend fun getRecordsByLinkIdNotOlderThen(
+        deviceCharacteristicLinkId: Long,
+        localDateTime: LocalDateTime,
+    ) = dao.getRecordsByLinkIdNotOlderThen(deviceCharacteristicLinkId, localDateTime)
 }

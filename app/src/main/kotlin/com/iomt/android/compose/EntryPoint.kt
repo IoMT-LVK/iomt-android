@@ -21,6 +21,7 @@ import com.iomt.android.bluetooth.BleForegroundService
 import com.iomt.android.compose.components.NavViewSystemWithDrawer
 import com.iomt.android.compose.navigation.NavRouter.Companion.useLoginNavHost
 import com.iomt.android.compose.theme.colorScheme
+import com.iomt.android.dbcleaner.CleanerWorkManager
 import com.iomt.android.http.RequestParams
 import com.iomt.android.http.getUserData
 import com.iomt.android.mqtt.MqttWorkManager
@@ -48,16 +49,22 @@ fun EntryPoint() {
             context.startForegroundService(bleForegroundServiceIntent)
 
             val mqttWorkManager = MqttWorkManager.getInstance(context)
+            val cleanerWorkManager = CleanerWorkManager.getInstance(context)
 
             scope.launch {
                 val userData = getUserData()
                 mqttWorkManager.start(userData.id)
+                cleanerWorkManager.start()
             }
         }
 
         val onLogOut = {
+            val cleanerWorkManager = CleanerWorkManager.getInstance(context)
             val mqttWorkManager = MqttWorkManager.getInstance(context)
-            scope.launch { mqttWorkManager.stop() }
+            scope.launch {
+                mqttWorkManager.stop()
+                cleanerWorkManager.stop()
+            }
             scope.launch(Dispatchers.IO) { AppDatabase.getInstance(context).clearAllTables() }
         }
 
