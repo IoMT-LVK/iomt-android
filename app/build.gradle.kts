@@ -58,6 +58,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    packagingOptions {
+        resources {
+            excludes.addAll(listOf("META-INF/INDEX.LIST", "META-INF/io.netty.versions.properties"))
+        }
+    }
 }
 
 tasks.withType<Test> {
@@ -96,8 +101,7 @@ dependencies {
 
     implementation("com.google.android.material:material:1.8.0")
 
-    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
-    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1") { exclude("support-v4") }
+    implementation("com.hivemq:hivemq-mqtt-client:1.3.0")
 
     implementation("io.ktor:ktor-client-core:2.2.4")
     implementation("io.ktor:ktor-client-auth:2.2.4")

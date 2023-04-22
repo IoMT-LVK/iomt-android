@@ -1,12 +1,11 @@
 package com.iomt.android.room.record
 
 import androidx.room.*
+import com.iomt.android.mqtt.MqttRecordMessage
 import com.iomt.android.room.basic.BasicEntity
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity
 import kotlinx.datetime.LocalDateTime
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 
 /**
  * @property deviceCharacteristicLinkId id of [DeviceCharacteristicLinkEntity]
@@ -34,7 +33,7 @@ data class RecordEntity(
     val value: String,
 ) : BasicEntity() {
     /**
-     * @return [ByteArray] from [RecordEntity]
+     * @return [MqttRecordMessage] from this [RecordEntity]
      */
-    fun toByteArray() = Json.encodeToString(this).toByteArray()
+    fun toMqttRecordMessage() = MqttRecordMessage(value, timestamp)
 }
