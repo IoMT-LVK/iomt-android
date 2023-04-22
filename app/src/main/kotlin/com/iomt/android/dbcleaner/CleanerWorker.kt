@@ -17,6 +17,7 @@ import androidx.work.WorkerParameters
 import com.iomt.android.EntryPointActivity
 import com.iomt.android.R
 import com.iomt.android.room.record.RecordRepository
+import com.iomt.android.utils.beforeNow
 
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.datetime.*
@@ -42,7 +43,7 @@ class CleanerWorker(
 
         val ttlDuration = inputData.getLong("dataTtlMinutes", 1440).minutes
 
-        val localDateTime = (Clock.System.now() - ttlDuration).toLocalDateTime(TimeZone.currentSystemDefault())
+        val localDateTime = LocalDateTime.beforeNow(ttlDuration)
         Log.d(loggerTag, "Deleting synchronized records older then $ttlDuration")
         recordRepository.cleanSynchronizedRecordsOlderThen(localDateTime)
         Log.d(loggerTag, "Cleanup has successfully finished")

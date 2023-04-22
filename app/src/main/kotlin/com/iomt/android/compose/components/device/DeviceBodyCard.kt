@@ -15,14 +15,15 @@ import com.iomt.android.compose.theme.colorScheme
 import com.iomt.android.entities.Characteristic
 
 /**
+ * @param deviceMac MAC address of Bluetooth LE device
  * @param characteristics list of [Characteristic]s that should be displayed in body card of device
  */
 @Composable
-fun DeviceBodyCard(characteristics: List<Characteristic>) {
+fun DeviceBodyCard(deviceMac: String, characteristics: List<Characteristic>) {
     OutlinedCard(Modifier.fillMaxWidth()) {
         characteristics.toList()
             .sortedBy { characteristic -> characteristic.name }
-            .map { characteristic -> DeviceCharacteristicRow(characteristic) }
+            .map { characteristic -> DeviceCharacteristicRow(deviceMac, characteristic) }
     }
 }
 
@@ -30,5 +31,5 @@ fun DeviceBodyCard(characteristics: List<Characteristic>) {
 @Composable
 private fun DeviceBodyCardPreview() {
     val characteristics by remember { mutableStateOf(listOf(Characteristic.stub)) }
-    MaterialTheme(colorScheme) { DeviceBodyCard(characteristics) }
+    MaterialTheme(colorScheme) { DeviceBodyCard("", characteristics) }
 }
