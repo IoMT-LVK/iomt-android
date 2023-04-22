@@ -103,6 +103,10 @@ dependencies {
 
     implementation("com.hivemq:hivemq-mqtt-client:1.3.0")
 
+    implementation("com.patrykandpatrick.vico:core:1.6.5")
+    implementation("com.patrykandpatrick.vico:compose:1.6.5")
+    implementation("com.patrykandpatrick.vico:compose-m3:1.6.5")
+
     implementation("io.ktor:ktor-client-core:2.2.4")
     implementation("io.ktor:ktor-client-auth:2.2.4")
     implementation("io.ktor:ktor-client-android:2.2.4")

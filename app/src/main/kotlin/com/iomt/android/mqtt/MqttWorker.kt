@@ -45,7 +45,7 @@ class MqttWorker(
     override suspend fun doWork(): Result {
         setForeground(getForegroundInfo())
         val recordsToSend = try {
-            recordRepository.getAll().map { recordEntity ->
+            recordRepository.getNotSynchronized().map { recordEntity ->
                 Log.d(loggerTag, Json.encodeToString(recordEntity))
                 deviceCharacteristicLinkRepository
                     .getDeviceMacAndCharacteristicNameByLinkId(recordEntity.deviceCharacteristicLinkId)

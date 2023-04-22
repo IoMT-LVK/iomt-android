@@ -1,7 +1,6 @@
 package com.iomt.android.room.record
 
 import androidx.room.*
-import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -29,16 +28,24 @@ interface RecordDao {
     suspend fun delete(recordEntity: RecordEntity)
 
     /**
-     * @return all [RecordEntity] as [Flow]
+     * @return all [RecordEntity] where [RecordEntity.isSynchronized] is false
      */
-    @Query("SELECT * FROM record LIMIT $DEFAULT_PAGE_SIZE")
-    suspend fun getAll(): List<RecordEntity>
+    @Query("SELECT * FROM record WHERE isSynchronized = 0")
+    suspend fun getNotSynchronized(): List<RecordEntity>
 
     /**
      * @param localDateTime
      */
     @Query("DELETE FROM record WHERE isSynchronized = 1 AND timestamp < :localDateTime")
     suspend fun cleanSynchronizedRecordsOlderThen(localDateTime: LocalDateTime)
+
+    /**
+     * @param deviceCharacteristicLinkId [RecordEntity.deviceCharacteristicLinkId]
+     * @param localDateTime [LocalDateTime] that should be the bottom border of filtering
+     * @return [List] of [RecordEntity]s by [deviceCharacteristicLinkId] that are younger than [localDateTime]
+     */
+    @Query("SELECT * FROM record WHERE device_char_link_id = :deviceCharacteristicLinkId AND timestamp >= :localDateTime LIMIT $DEFAULT_PAGE_SIZE")
+    suspend fun getRecordsByLinkIdNotOlderThen(deviceCharacteristicLinkId: Long, localDateTime: LocalDateTime): List<RecordEntity>
 
     companion object {
         private const val DEFAULT_PAGE_SIZE = 500
