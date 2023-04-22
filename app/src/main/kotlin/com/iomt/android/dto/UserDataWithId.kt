@@ -31,4 +31,8 @@ data class UserDataWithId(
     val allowed: List<Long>,
 ) {
     fun toUserData() = UserData(login, name, surname, patronymic, email, birthdate, height, weight, allowed)
+
+    companion object {
+        val empty = UserDataWithId(-1, "", "", "", "", "", null, null, null, emptyList())
+    }
 }

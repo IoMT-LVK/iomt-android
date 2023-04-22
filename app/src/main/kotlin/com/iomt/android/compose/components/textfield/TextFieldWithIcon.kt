@@ -24,12 +24,17 @@ import com.iomt.android.compose.theme.colorScheme
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TextFieldWithIcon(cell: Cell) {
+fun TextFieldWithIcon(cell: Cell, enabled: Boolean) {
     Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
         cell.iconId?.let { id ->
-            Icon(painterResource(id), cell.description, Modifier.padding(10.dp).size(24.dp))
+            Icon(
+                painterResource(id),
+                cell.description,
+                Modifier.padding(10.dp).size(24.dp),
+                tint = colorScheme.onSurfaceVariant,
+            )
         } ?: throw IllegalStateException("Could not display null icon")
-        TextField(cell.value, onValueChange = cell.onValueChange, Modifier.weight(1f))
+        TextField(cell.value, onValueChange = cell.onValueChange, Modifier.weight(1f), enabled = enabled)
     }
 }
 
@@ -38,6 +43,6 @@ fun TextFieldWithIcon(cell: Cell) {
 private fun TextFieldWithIconPreview() {
     var value by remember { mutableStateOf("15.06.2001") }
     MaterialTheme(colorScheme) {
-        TextFieldWithIcon(Cell(value, R.drawable.cake) { value = it })
+        TextFieldWithIcon(Cell(value, R.drawable.cake) { value = it },true)
     }
 }

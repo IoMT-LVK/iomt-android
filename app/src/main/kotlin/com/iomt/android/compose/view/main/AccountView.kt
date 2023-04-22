@@ -28,10 +28,13 @@ import com.iomt.android.http.sendUserData
 import com.iomt.android.utils.rememberBoundService
 import com.iomt.android.utils.withLoading
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.toLocalDate
+import kotlinx.datetime.toLocalDateTime
 
 /**
  * @property prettyName human-readable tab name
- * @property tabIndex tab index
  */
 @Suppress("WRONG_DECLARATIONS_ORDER")
 private enum class AccountViewTabs(val prettyName: String) {
@@ -67,7 +70,7 @@ fun AccountView(onDeviceItemClick: (BluetoothDeviceWithConfig) -> Unit) {
                         Tab(
                             selected = tabs.ordinal == selectedTab.ordinal,
                             onClick = { selectedTab = tabs },
-                            text = { Text(tabs.prettyName, color = colorScheme.primaryContainer) },
+                            text = { Text(tabs.prettyName, color = TabRowDefaults.contentColor) },
                         )
                     }
                 }
@@ -112,7 +115,7 @@ private fun RenderUserInfo() {
         currentUserData.copy(
             weight = newWeight,
             height = newHeight,
-            /* birthdate = birthdate.toInstant(), */
+            birthdate = birthdate.toLocalDateTime().toInstant(TimeZone.currentSystemDefault()),
         )
     }
 
@@ -121,7 +124,6 @@ private fun RenderUserInfo() {
         EditableSection("Personal data", listOf(
             weightCell(weight, { isWeightValid }) { weight = it },
             heightCell(height, { isHeightValid }) { height = it },
-            birthdateCell(birthdate) { birthdate = it },
         )) {
             val updatedUserData = getUpdatedPersonalData()
             if (isWeightValid && isHeightValid) {
@@ -130,6 +132,8 @@ private fun RenderUserInfo() {
                 }
             }
         }
+
+        DatePickerTextField(birthdate) { birthdate = it }
 
         val getUpdatedContactData = {
             if(email.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(email).matches()) {

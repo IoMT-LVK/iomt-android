@@ -27,7 +27,12 @@ import com.iomt.android.compose.theme.colorScheme
  * @param onSave callback invoked on save button pressed
  */
 @Composable
-fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
+fun EditableSection(
+    title: String,
+    fields: List<Cell>,
+    additionalContent: @Composable () -> Unit = { },
+    onSave: () -> Unit,
+) {
     var isEdit by remember { mutableStateOf(false) }
     OutlinedCard {
         Column {
@@ -46,7 +51,8 @@ fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
                     Text(if (isEdit) "Save" else "Edit")
                 }
             }
-            fields.map { TextFieldWithIcon(it) }
+            fields.map { TextFieldWithIcon(it, isEdit) }
+            additionalContent()
         }
     }
 }
