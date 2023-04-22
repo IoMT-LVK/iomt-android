@@ -221,10 +221,15 @@ $dokka.location:com.iomt.android.http/RequestParams/userData/#/PointingToDeclara
 $dokka.location:com.iomt.android.mqtt////PointingToDeclaration/app/com.iomt.android.mqtt/index.html
 $dokka.location:com.iomt.android.mqtt/MqttClient.Companion///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/-companion/index.html
 $dokka.location:com.iomt.android.mqtt/MqttClient///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/index.html
-$dokka.location:com.iomt.android.mqtt/MqttClient/MqttClient/#android.content.Context/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/-mqtt-client.html
+$dokka.location:com.iomt.android.mqtt/MqttClient/MqttClient/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/-mqtt-client.html
 $dokka.location:com.iomt.android.mqtt/MqttClient/connect/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/connect.html
 $dokka.location:com.iomt.android.mqtt/MqttClient/disconnect/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/disconnect.html
-$dokka.location:com.iomt.android.mqtt/MqttClient/send/#com.iomt.android.mqtt.Topic#kotlin.ByteArray/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/send.html
+$dokka.location:com.iomt.android.mqtt/MqttClient/send/#com.iomt.android.mqtt.Topic#com.iomt.android.mqtt.MqttRecordMessage/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-client/send.html
+$dokka.location:com.iomt.android.mqtt/MqttRecordMessage///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-record-message/index.html
+$dokka.location:com.iomt.android.mqtt/MqttRecordMessage/MqttRecordMessage/#kotlin.String#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-record-message/-mqtt-record-message.html
+$dokka.location:com.iomt.android.mqtt/MqttRecordMessage/timestamp/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-record-message/timestamp.html
+$dokka.location:com.iomt.android.mqtt/MqttRecordMessage/toByteArray/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-record-message/to-byte-array.html
+$dokka.location:com.iomt.android.mqtt/MqttRecordMessage/value/#/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-record-message/value.html
 $dokka.location:com.iomt.android.mqtt/MqttWorkManager.Companion///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/-companion/index.html
 $dokka.location:com.iomt.android.mqtt/MqttWorkManager.Companion/getInstance/#android.content.Context/PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/-companion/get-instance.html
 $dokka.location:com.iomt.android.mqtt/MqttWorkManager///PointingToDeclaration/app/com.iomt.android.mqtt/-mqtt-work-manager/index.html
@@ -318,7 +323,7 @@ $dokka.location:com.iomt.android.room.record/RecordEntity///PointingToDeclaratio
 $dokka.location:com.iomt.android.room.record/RecordEntity/RecordEntity/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.String/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/-record-entity.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/deviceCharacteristicLinkId/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/device-characteristic-link-id.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/timestamp/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/timestamp.html
-$dokka.location:com.iomt.android.room.record/RecordEntity/toByteArray/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/to-byte-array.html
+$dokka.location:com.iomt.android.room.record/RecordEntity/toMqttRecordMessage/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/to-mqtt-record-message.html
 $dokka.location:com.iomt.android.room.record/RecordEntity/value/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/value.html
 $dokka.location:com.iomt.android.room.record/RecordRepository///PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/index.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/RecordRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/-record-repository.html
