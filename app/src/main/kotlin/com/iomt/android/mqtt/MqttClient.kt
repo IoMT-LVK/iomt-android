@@ -1,21 +1,19 @@
 package com.iomt.android.mqtt
 
-import android.content.Context
 import android.util.Log
 
 import com.iomt.android.http.authenticate
 import com.iomt.android.utils.ExpiringValueWrapper
 
+import com.hivemq.client.mqtt.datatypes.MqttQos
+import com.hivemq.client.mqtt.mqtt3.message.connect.connack.Mqtt3ConnAck
+import com.hivemq.client.mqtt.mqtt3.message.publish.Mqtt3Publish
 import io.ktor.client.*
 import io.ktor.client.engine.android.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
-import org.eclipse.paho.android.service.MqttAndroidClient
-import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
-import org.eclipse.paho.client.mqttv3.IMqttToken
-import org.eclipse.paho.client.mqttv3.MqttClient
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions
-import org.eclipse.paho.client.mqttv3.MqttMessage
+
+import java.util.UUID
 
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
@@ -23,54 +21,77 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toLocalDateTime
 
 /**
- * Class that wraps [MqttAndroidClient] in order to initialize MQTT connection and send data
+ * Class that wraps [com.hivemq.client.mqtt.MqttClient] in order to initialize MQTT connection and send data
  */
-class MqttClient(context: Context) {
-    private val mqttClient = MqttAndroidClient(context, MQTT_BROKER_URL, MQTT_USER_ID)
+class MqttClient {
+    private val mqttClient = try {
+        com.hivemq.client.mqtt.MqttClient.builder()
+            .useMqttVersion3()
+            .identifier(UUID.randomUUID().toString())
+            .serverHost(MQTT_BROKER_HOST)
+            .serverPort(MQTT_BROKER_PORT)
+            .build()
+            .toBlocking()
+    } catch (exception: Exception) {
+        Log.e(loggerTag, "Error occurred", exception)
+        throw exception
+    }
     private val token = ExpiringValueWrapper { getAuthorizationToken() }
 
     /**
      * Connect to MQTT broker
      *
-     * @return [IMqttToken]
+     * @return [Mqtt3ConnAck]
+     * @throws Exception
      */
-    suspend fun connect(): IMqttToken {
-        /**
-         * Server expects token as username
-         * Password is not required
-         */
-        val mqttConnectOptions = MqttConnectOptions().apply {
-            userName = token.getValue()
+    suspend fun connect(): Mqtt3ConnAck {
+        val tokenValue = token.getValue()
+        return try {
+            mqttClient.connectWith()
+                .simpleAuth()
+                .username(tokenValue)
+                .password(tokenValue.toByteArray())
+                .applySimpleAuth()
+                .send()
+        } catch (exception: Exception) {
+            Log.e(loggerTag, "Error occurred", exception)
+            exception.printStackTrace()
+            throw exception
         }
-        return mqttClient.connect(mqttConnectOptions)
     }
 
     /**
      * @param topic [Topic] to send data
      * @param message message to publish
-     * @return [IMqttDeliveryToken]
      * @throws IllegalStateException on no [mqttClient] connection
+     * @throws Exception
      */
-    fun send(topic: Topic, message: ByteArray): IMqttDeliveryToken {
-        val mqttMessage = MqttMessage(message).apply {
-            qos = 2
-            isRetained = false
-        }
-
-        return if (mqttClient.isConnected) {
-            mqttClient.publish(topic.toTopicName(), mqttMessage)
-        } else {
-            throw IllegalStateException("MqttClient is not connected")
+    fun send(topic: Topic, message: MqttRecordMessage) {
+        val publishMessage = Mqtt3Publish.builder()
+            .topic(topic.toTopicName())
+            .payload(message.toByteArray())
+            .qos(MqttQos.EXACTLY_ONCE)
+            .retain(false)
+            .build()
+        return try {
+            if (mqttClient.state.isConnected) {
+                mqttClient.publish(publishMessage)
+            } else {
+                throw IllegalStateException("MqttClient is not connected")
+            }
+        } catch (exception: Exception) {
+            Log.e(loggerTag, "Error occurred", exception)
+            exception.printStackTrace()
+            throw exception
         }
     }
 
     /**
      * Disconnect [mqttClient]
      *
-     * @return [IMqttToken]
+     * @return [Unit]
      */
-    fun disconnect(): IMqttToken = mqttClient.disconnect().also {
-        it.waitForCompletion()
+    fun disconnect(): Unit = mqttClient.disconnect().also {
         Log.d(loggerTag, "Disconnected")
     }
 
@@ -84,11 +105,7 @@ class MqttClient(context: Context) {
         }
         private val loggerTag = MqttClient::class.java.simpleName
 
-        private const val MQTT_BROKER_URL = "tcp://iomt.lvk.cs.msu.ru:1883"
-
-        /**
-         * TODO: ensure there is no need in user id for mqtt on server side
-         */
-        private const val MQTT_USER_ID = ""
+        private const val MQTT_BROKER_HOST = "iomt.lvk.cs.msu.ru"
+        private const val MQTT_BROKER_PORT = 1883
     }
 }

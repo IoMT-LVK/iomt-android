@@ -19,10 +19,8 @@ import com.iomt.android.R
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
 import com.iomt.android.room.record.RecordRepository
 
-import org.eclipse.paho.client.mqttv3.MqttException
+import com.hivemq.client.mqtt.mqtt3.exceptions.Mqtt3ConnAckException
 
-import kotlin.time.Duration.Companion.minutes
-import kotlin.time.DurationUnit
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -35,7 +33,7 @@ class MqttWorker(
 ) : CoroutineWorker(context, workerParameters) {
     private val deviceCharacteristicLinkRepository = DeviceCharacteristicLinkRepository(context)
     private val recordRepository = RecordRepository(context)
-    private val mqttClient = MqttClient(context)
+    private val mqttClient = MqttClient()
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override suspend fun getForegroundInfo(): ForegroundInfo {
@@ -60,10 +58,8 @@ class MqttWorker(
             .filterNotNull()
 
         try {
-            mqttClient.connect().also {
-                it.waitForCompletion(connectionTimeoutDuration.toLong(DurationUnit.MILLISECONDS))
-            }
-        } catch (mqttException: MqttException) {
+            mqttClient.connect()
+        } catch (mqttException: Mqtt3ConnAckException) {
             Log.e(loggerTag, "Could not connect to MQTT broker", mqttException)
             return Result.failure()
         }
@@ -75,10 +71,9 @@ class MqttWorker(
             val (macAddress, characteristicName) = recordInfo
             val topic = Topic(userId, macAddress, characteristicName)
             try {
-                mqttClient.send(topic, recordEntity.toByteArray())
-                    .also { it.waitForCompletion(transmissionTimeoutDuration.toLong(DurationUnit.MILLISECONDS)) }
+                mqttClient.send(topic, recordEntity.toMqttRecordMessage())
                 recordRepository.delete(recordEntity)
-            } catch (mqttException: MqttException) {
+            } catch (mqttException: RuntimeException) {
                 Log.e(loggerTag, "Could not send data with topic ${topic.toTopicName()}", mqttException)
                 return Result.failure()
             }
@@ -105,7 +100,7 @@ class MqttWorker(
             context,
             0,
             notificationIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
         return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
@@ -122,7 +117,5 @@ class MqttWorker(
         private val loggerTag = MqttWorker::class.java.simpleName
         private const val NOTIFICATION_CHANNEL_ID = "mqtt-worker-notification"
         private const val NOTIFICATION_ID = 1002
-        private val connectionTimeoutDuration = 1.minutes
-        private val transmissionTimeoutDuration = 1.minutes
     }
 }

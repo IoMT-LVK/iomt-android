@@ -33,10 +33,6 @@
         android:theme="@style/AppTheme" tools:targetApi="tiramisu">
 
         <service
-            android:name="org.eclipse.paho.android.service.MqttService"
-            android:foregroundServiceType="dataSync"
-        />
-        <service
             android:name=".bluetooth.BleForegroundService"
             android:exported="false"
             android:enabled="true"
