@@ -11,7 +11,7 @@ import kotlinx.serialization.Serializable
  * @property deviceCharacteristicLinkId id of [DeviceCharacteristicLinkEntity]
  * @property timestamp [LocalDateTime] of record
  * @property value received value
- * @property isSynchronized
+ * @property isSynchronized flag that defines if the data was sent to MQTT broker or not
  */
 @Entity(
     tableName = "record",
@@ -32,7 +32,7 @@ data class RecordEntity(
     @ColumnInfo(name = "device_char_link_id") val deviceCharacteristicLinkId: Long,
     val timestamp: LocalDateTime,
     val value: String,
-    var isSynchronized: Boolean = false,
+    @ColumnInfo(name = "is_sync", defaultValue = "0") var isSynchronized: Boolean = false,
 ) : BasicEntity() {
     /**
      * @return [MqttRecordMessage] from this [RecordEntity]
