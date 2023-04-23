@@ -186,6 +186,10 @@ $dokka.location:com.iomt.android.dto/Credentials///PointingToDeclaration/app/co
 $dokka.location:com.iomt.android.dto/Credentials/Credentials/#kotlin.String#kotlin.String/PointingToDeclaration/app/com.iomt.android.dto/-credentials/-credentials.html
 $dokka.location:com.iomt.android.dto/Credentials/login/#/PointingToDeclaration/app/com.iomt.android.dto/-credentials/login.html
 $dokka.location:com.iomt.android.dto/Credentials/password/#/PointingToDeclaration/app/com.iomt.android.dto/-credentials/password.html
+$dokka.location:com.iomt.android.dto/TokenInfo///PointingToDeclaration/app/com.iomt.android.dto/-token-info/index.html
+$dokka.location:com.iomt.android.dto/TokenInfo/TokenInfo/#kotlin.String#kotlin.String/PointingToDeclaration/app/com.iomt.android.dto/-token-info/-token-info.html
+$dokka.location:com.iomt.android.dto/TokenInfo/expires/#/PointingToDeclaration/app/com.iomt.android.dto/-token-info/expires.html
+$dokka.location:com.iomt.android.dto/TokenInfo/token/#/PointingToDeclaration/app/com.iomt.android.dto/-token-info/token.html
 $dokka.location:com.iomt.android.entities////PointingToDeclaration/app/com.iomt.android.entities/index.html
 $dokka.location:com.iomt.android.entities/Characteristic.Companion///PointingToDeclaration/app/com.iomt.android.entities/-characteristic/-companion/index.html
 $dokka.location:com.iomt.android.entities/Characteristic.Companion/stub/#/PointingToDeclaration/app/com.iomt.android.entities/-characteristic/-companion/stub.html
@@ -217,10 +221,6 @@ $dokka.location:com.iomt.android.entities/SignUpInfo/password/#/PointingToDeclar
 $dokka.location:com.iomt.android.entities/SignUpInfo/patronymic/#/PointingToDeclaration/app/com.iomt.android.entities/-sign-up-info/patronymic.html
 $dokka.location:com.iomt.android.entities/SignUpInfo/phoneNumber/#/PointingToDeclaration/app/com.iomt.android.entities/-sign-up-info/phone-number.html
 $dokka.location:com.iomt.android.entities/SignUpInfo/surname/#/PointingToDeclaration/app/com.iomt.android.entities/-sign-up-info/surname.html
-$dokka.location:com.iomt.android.entities/TokenInfo///PointingToDeclaration/app/com.iomt.android.entities/-token-info/index.html
-$dokka.location:com.iomt.android.entities/TokenInfo/TokenInfo/#kotlin.String#kotlin.String/PointingToDeclaration/app/com.iomt.android.entities/-token-info/-token-info.html
-$dokka.location:com.iomt.android.entities/TokenInfo/expires/#/PointingToDeclaration/app/com.iomt.android.entities/-token-info/expires.html
-$dokka.location:com.iomt.android.entities/TokenInfo/token/#/PointingToDeclaration/app/com.iomt.android.entities/-token-info/token.html
 $dokka.location:com.iomt.android.entities/UserData///PointingToDeclaration/app/com.iomt.android.entities/-user-data/index.html
 $dokka.location:com.iomt.android.entities/UserData/UserData/#kotlin.Long#kotlin.String#kotlin.String#kotlin.String#kotlin.String?#kotlin.String#kotlinx.datetime.LocalDate?#kotlin.Int?#kotlin.Int?#kotlin.collections.List[kotlin.Long]/PointingToDeclaration/app/com.iomt.android.entities/-user-data/-user-data.html
 $dokka.location:com.iomt.android.entities/UserData/allowed/#/PointingToDeclaration/app/com.iomt.android.entities/-user-data/allowed.html
@@ -237,7 +237,7 @@ $dokka.location:com.iomt.android.http////PointingToDeclaration/app/com.iomt.and
 $dokka.location:com.iomt.android.http//authenticate/io.ktor.client.HttpClient#kotlin.String#kotlin.Function1[io.ktor.client.request.HttpRequestBuilder,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/authenticate.html
 $dokka.location:com.iomt.android.http//getDeviceTypes/#kotlin.String/PointingToDeclaration/app/com.iomt.android.http/get-device-types.html
 $dokka.location:com.iomt.android.http//getUserData/#/PointingToDeclaration/app/com.iomt.android.http/get-user-data.html
-$dokka.location:com.iomt.android.http//sendLogin/#kotlin.String#kotlin.String#kotlin.coroutines.SuspendFunction1[com.iomt.android.entities.TokenInfo?,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/send-login.html
+$dokka.location:com.iomt.android.http//sendLogin/#kotlin.String#kotlin.String#kotlin.coroutines.SuspendFunction1[com.iomt.android.dto.TokenInfo?,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/send-login.html
 $dokka.location:com.iomt.android.http//sendReg/#com.iomt.android.entities.SignUpInfo#kotlin.Function0[kotlin.Unit]#kotlin.Function1[kotlin.String?,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.http/send-reg.html
 $dokka.location:com.iomt.android.http/RequestParams///PointingToDeclaration/app/com.iomt.android.http/-request-params/index.html
 $dokka.location:com.iomt.android.http/RequestParams/credentials/#/PointingToDeclaration/app/com.iomt.android.http/-request-params/credentials.html
