@@ -1,4 +1,7 @@
+
 // Top-level build file where you can add configuration options common to all subprojects/modules.
+
+group = "com.iomt"
 
 buildscript {
     repositories {
@@ -20,7 +23,6 @@ buildscript {
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle.kts files
     }
-
 }
 
 allprojects {
@@ -32,4 +34,17 @@ allprojects {
 
 tasks.register("clean", Delete::class) {
     delete(rootProject.buildDir)
+}
+
+plugins {
+    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
+}
+
+diktat {
+    diktatConfigFile = rootProject.file("diktat-analysis.yml")
+    githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
+    inputs {
+        include("src/**/*.kt", "*.kts", "src/**/*.kts")
+        exclude("build/**", "src/test/**", "src/androidTest/**")
+    }
 }

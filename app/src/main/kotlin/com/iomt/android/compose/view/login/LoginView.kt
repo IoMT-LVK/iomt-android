@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.iomt.android.R
 import com.iomt.android.compose.theme.colorScheme
 import com.iomt.android.credentialmanager.AppCredentialManager
-import com.iomt.android.entities.TokenInfo
+import com.iomt.android.dto.TokenInfo
 import com.iomt.android.http.RequestParams
 import com.iomt.android.http.sendLogin
 

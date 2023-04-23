@@ -1,8 +1,10 @@
+
+
 plugins {
     kotlin("plugin.serialization") version "1.8.10"
     id("com.android.application")
     kotlin("android")
-    id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
+    id("org.cqfn.diktat.diktat-gradle-plugin")
     id("kotlin-kapt")
     id("org.jetbrains.dokka")
 }
@@ -32,7 +34,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             multiDexEnabled = true
         }
@@ -127,11 +129,11 @@ configurations.all {
 
 diktat {
     diktatConfigFile = rootProject.file("diktat-analysis.yml")
+    githubActions = findProperty("diktat.githubActions")?.toString()?.toBoolean() ?: false
     inputs {
-        include("src/**/*.kt")
-        exclude("src/test/**", "src/androidTest/**")
+        include("src/**/*.kt", "*.kts", "src/**/*.kts")
+        exclude("build/**", "src/test/**", "src/androidTest/**")
     }
-    debug = false
 }
 
 kapt {
