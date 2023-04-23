@@ -50,6 +50,11 @@ $dokka.location:com.iomt.android.bluetooth/ConnectionStatus/valueOf/#kotlin.Stri
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus/values/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/values.html
 $dokka.location:com.iomt.android.compose.components.charts////PointingToDeclaration/app/com.iomt.android.compose.components.charts/index.html
 $dokka.location:com.iomt.android.compose.components.charts//LineChart/#kotlin.String#com.iomt.android.entities.Characteristic#kotlin.Boolean/PointingToDeclaration/app/com.iomt.android.compose.components.charts/-line-chart.html
+$dokka.location:com.iomt.android.compose.components.charts/ChartDataLoader.Companion///PointingToDeclaration/app/com.iomt.android.compose.components.charts/-chart-data-loader/-companion/index.html
+$dokka.location:com.iomt.android.compose.components.charts/ChartDataLoader///PointingToDeclaration/app/com.iomt.android.compose.components.charts/-chart-data-loader/index.html
+$dokka.location:com.iomt.android.compose.components.charts/ChartDataLoader/ChartDataLoader/#android.content.Context/PointingToDeclaration/app/com.iomt.android.compose.components.charts/-chart-data-loader/-chart-data-loader.html
+$dokka.location:com.iomt.android.compose.components.charts/ChartDataLoader/axisValueFormatterForDate/#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.compose.components.charts/-chart-data-loader/axis-value-formatter-for-date.html
+$dokka.location:com.iomt.android.compose.components.charts/ChartDataLoader/loadData/#kotlin.String#com.iomt.android.entities.Characteristic#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.compose.components.charts/-chart-data-loader/load-data.html
 $dokka.location:com.iomt.android.compose.components.charts/Entry///PointingToDeclaration/app/com.iomt.android.compose.components.charts/-entry/index.html
 $dokka.location:com.iomt.android.compose.components.charts/Entry/Entry/#kotlinx.datetime.LocalTime#kotlin.Float#kotlin.Float/PointingToDeclaration/app/com.iomt.android.compose.components.charts/-entry/-entry.html
 $dokka.location:com.iomt.android.compose.components.charts/Entry/localTime/#/PointingToDeclaration/app/com.iomt.android.compose.components.charts/-entry/local-time.html
@@ -333,12 +338,11 @@ $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkReposit
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/insertAllIfNotPresent/#kotlin.collections.List[com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity]/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/insert-all-if-not-present.html
 $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkRepository/update/#com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity/PointingToDeclaration/app/com.iomt.android.room.devicechar/-device-characteristic-link-repository/update.html
 $dokka.location:com.iomt.android.room.record////PointingToDeclaration/app/com.iomt.android.room.record/index.html
-$dokka.location:com.iomt.android.room.record/RecordDao.Companion///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/-companion/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/clean-synchronized-records-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordDao/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/delete.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getNotSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-not-synchronized.html
-$dokka.location:com.iomt.android.room.record/RecordDao/getRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-records-by-link-id-not-older-then.html
+$dokka.location:com.iomt.android.room.record/RecordDao/getPeriodicalRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-periodical-records-by-link-id-not-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordDao/insert/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/insert.html
 $dokka.location:com.iomt.android.room.record/RecordDao/update/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/update.html
 $dokka.location:com.iomt.android.room.record/RecordEntity///PointingToDeclaration/app/com.iomt.android.room.record/-record-entity/index.html
@@ -353,7 +357,7 @@ $dokka.location:com.iomt.android.room.record/RecordRepository/RecordRepository/#
 $dokka.location:com.iomt.android.room.record/RecordRepository/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/clean-synchronized-records-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/delete.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/getNotSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-not-synchronized.html
-$dokka.location:com.iomt.android.room.record/RecordRepository/getRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-records-by-link-id-not-older-then.html
+$dokka.location:com.iomt.android.room.record/RecordRepository/getPeriodicalRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-periodical-records-by-link-id-not-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/insert/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/insert.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/update/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/update.html
 $dokka.location:com.iomt.android.room////PointingToDeclaration/app/com.iomt.android.room/index.html
