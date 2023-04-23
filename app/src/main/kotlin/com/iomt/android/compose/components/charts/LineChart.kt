@@ -7,18 +7,17 @@ package com.iomt.android.compose.components.charts
 import android.graphics.Typeface
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 import com.iomt.android.compose.theme.colorScheme
 import com.iomt.android.entities.Characteristic
-import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
-import com.iomt.android.room.record.RecordRepository
-import com.iomt.android.utils.beforeNow
-import com.iomt.android.utils.toNumberOrNull
 
 import com.patrykandpatrick.vico.compose.axis.horizontal.bottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.startAxis
@@ -32,8 +31,21 @@ import com.patrykandpatrick.vico.core.component.shape.Shapes
 import com.patrykandpatrick.vico.core.dimensions.MutableDimensions
 import com.patrykandpatrick.vico.core.entry.ChartEntryModelProducer
 
+import kotlin.math.roundToInt
 import kotlin.time.Duration.Companion.hours
-import kotlinx.datetime.LocalDateTime
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+private val valuePeriodicityMapper = listOf(
+    1.seconds, 10.seconds, 15.seconds, 30.seconds,
+    1.minutes,
+    10.minutes, 15.minutes, 30.minutes, 1.hours,
+)
+
+private val valueLabelMapper = valuePeriodicityMapper.map { it.toString() }
 
 /**
  * @param deviceMac MAC address of Bluetooth LE device
@@ -42,33 +54,28 @@ import kotlinx.datetime.LocalDateTime
  */
 @Composable
 fun LineChart(deviceMac: String, characteristic: Characteristic, expanded: Boolean) {
-    val context = LocalContext.current
-    val deviceCharacteristicLinkRepository = DeviceCharacteristicLinkRepository(context)
-    val recordRepository = RecordRepository(context)
+    val chartDataLoader = ChartDataLoader(LocalContext.current)
     var chartEntryModelProducer by remember { mutableStateOf<ChartEntryModelProducer?>(null) }
     var axisValueFormatter by remember { mutableStateOf<AxisValueFormatter<AxisPosition.Horizontal.Bottom>?>(null) }
+    var sliderValue by remember { mutableStateOf(5f) }
 
-    LaunchedEffect(expanded) {
+    val updateData: suspend () -> Unit = {
         if (expanded) {
-            val linkId = requireNotNull(
-                deviceCharacteristicLinkRepository
-                    .getLinkByDeviceMac(deviceMac)
-                    ?.getLinkIdByCharacteristicName(characteristic.name),
-            )
-            chartEntryModelProducer = recordRepository.getRecordsByLinkIdNotOlderThen(linkId, LocalDateTime.beforeNow(24.hours))
-                .mapNotNull { record -> record.value.toNumberOrNull()?.let { it to record.timestamp.time } }
-                .mapIndexed { index, (number, time) -> Entry(time, index.toFloat(), number.toFloat()) }
-                .let { ChartEntryModelProducer(it) }
-            axisValueFormatter = AxisValueFormatter { value, chartValues ->
-                (chartValues.chartEntryModel.entries.firstOrNull()?.getOrNull(value.toInt()) as? Entry)
-                    ?.localTime
-                    ?.run { " $hour:$minute:$second" }
-                    .orEmpty()
+            withContext(Dispatchers.IO) {
+                chartEntryModelProducer = chartDataLoader.loadData(
+                    deviceMac,
+                    characteristic,
+                    valuePeriodicityMapper[sliderValue.roundToInt()],
+                )
+                axisValueFormatter = chartDataLoader.axisValueFormatterForDate()
             }
         } else {
             chartEntryModelProducer = null
+            axisValueFormatter = null
         }
     }
+
+    LaunchedEffect(expanded) { updateData() }
 
     val fallback: @Composable () -> Unit = { Text("No information") }
     val marker = rememberMarker()
@@ -79,7 +86,11 @@ fun LineChart(deviceMac: String, characteristic: Characteristic, expanded: Boole
         typeface = Typeface.MONOSPACE,
         margins = MutableDimensions(5f, 5f),
     )
-    Column(Modifier.padding(bottom = 5.dp)) {
+    val scope = rememberCoroutineScope()
+    Column(
+        Modifier.padding(bottom = 5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         chartEntryModelProducer?.let { modelProducer ->
             axisValueFormatter?.let { valueFormatter ->
                 Chart(
@@ -90,6 +101,15 @@ fun LineChart(deviceMac: String, characteristic: Characteristic, expanded: Boole
                     isZoomEnabled = true,
                     marker = marker,
                 )
+                Divider()
+                Slider(
+                    value = sliderValue,
+                    onValueChange = { sliderValue = it },
+                    onValueChangeFinished = { scope.launch { updateData() } },
+                    steps = valuePeriodicityMapper.size,
+                    valueRange = 0f..valuePeriodicityMapper.size.toFloat() - 1,
+                )
+                Text(valueLabelMapper[sliderValue.roundToInt()])
             } ?: fallback
         } ?: fallback
     }
