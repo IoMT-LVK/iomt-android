@@ -43,8 +43,7 @@
         <activity
             android:name=".EntryPointActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true"
-            android:screenOrientation="fullSensor">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
