@@ -41,8 +41,8 @@ fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnown
             Text("Scan")
         }
     }
-    val bleForegroundService by rememberBoundService().collectAsState()
-    withLoading(bleForegroundService) { foregroundService ->
+    val bluetoothLeForegroundService by rememberBoundService().collectAsState()
+    withLoading(bluetoothLeForegroundService) { foregroundService ->
         val knownDevicesWithConfigs = remember { foregroundService.getConnectedDevicesWithConfigs().toMutableStateList() }
         Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             DeviceList("Known devices", knownDevicesWithConfigs) { onKnownDeviceClick(it) }

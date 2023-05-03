@@ -7,6 +7,7 @@ package com.iomt.android.http
 import android.util.Log
 import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.dto.Credentials
+import com.iomt.android.dto.TokenInfo
 import com.iomt.android.dto.UserData
 import com.iomt.android.dto.UserDataWithId
 import com.iomt.android.entities.*
@@ -49,10 +50,9 @@ suspend fun getUserData(): UserDataWithId = httpClient.get("$BASE_URL$API_V1/use
 
 /**
  * @param userData [UserData] that should update the [UserData] stored on backend
- *
  * @return [Unit]
  */
-suspend fun sendUserData(userData: UserData): Unit = httpClient.put("$BASE_URL$API_V1/user") {
+suspend fun sendUserData(userData: UserData): HttpStatusCode = httpClient.put("$BASE_URL$API_V1/user") {
     contentType(ContentType.Application.Json)
     setBody(userData)
 }.let {
@@ -60,17 +60,17 @@ suspend fun sendUserData(userData: UserData): Unit = httpClient.put("$BASE_URL$A
         val userId = RequestParams.userData?.id
         RequestParams.userData = userData.toUserDataWithId(userId!!)
     }
+    return it.status
 }
 
 /**
  * @param userData registration [UserData]
- *
  * @return true if Sign Up was successful, false otherwise
  */
-suspend fun sendSignUpRequest(userData: UserData): Boolean = httpClient.post("$BASE_URL$API_V1/user") {
+suspend fun sendSignUpRequest(userData: UserData): HttpStatusCode = httpClient.post("$BASE_URL$API_V1/user") {
     contentType(ContentType.Application.Json)
     setBody(userData)
-}.status.isSuccess()
+}.status
 
 /**
  * @param signUpInfo

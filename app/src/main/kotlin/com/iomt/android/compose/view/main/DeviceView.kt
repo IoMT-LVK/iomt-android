@@ -32,8 +32,8 @@ import com.iomt.android.utils.withLoading
 @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
-    val bleForegroundService by rememberBoundService().collectAsState()
-    withLoading(bleForegroundService) { foregroundService ->
+    val bluetoothLeForegroundService by rememberBoundService().collectAsState()
+    withLoading(bluetoothLeForegroundService) { foregroundService ->
         val device by remember { mutableStateOf(foregroundService.getConnectedDevice(macAddress)!!) }
         val characteristicStates by remember { mutableStateOf(foregroundService.subscribeOn(macAddress)) }
         val characteristics = characteristicStates.map { (name, stateFlow) ->
@@ -43,7 +43,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
         Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             DeviceHeaderCard(device, connectionStatus) {
                 when (connectionStatus) {
-                    ConnectionStatus.DISCONNECTED -> bleForegroundService?.connectDevice(device, deviceConfig)
+                    ConnectionStatus.DISCONNECTED -> bluetoothLeForegroundService?.connectDevice(device, deviceConfig)
                         .also { connectionStatus = ConnectionStatus.CONNECTED }
                     ConnectionStatus.CONNECTING -> {
                         Log.d("GattStatusChangeRequest", "None due to CONNECTING state")
@@ -51,7 +51,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
                     }
                     ConnectionStatus.CONNECTED -> {
                         Log.d("GattStatusChangeRequest", "Request to disconnect")
-                        bleForegroundService?.disconnectDevice(device).also { connectionStatus = ConnectionStatus.DISCONNECTED }
+                        bluetoothLeForegroundService?.disconnectDevice(device).also { connectionStatus = ConnectionStatus.DISCONNECTED }
                     }
                 }
             }

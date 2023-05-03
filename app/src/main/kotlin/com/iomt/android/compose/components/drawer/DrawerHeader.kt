@@ -22,7 +22,6 @@ import com.iomt.android.R
 import com.iomt.android.compose.theme.colorScheme
 import com.iomt.android.dto.UserDataWithId
 import com.iomt.android.http.RequestParams
-import kotlin.math.log
 
 /**
  * Drawer Header implementation
@@ -32,7 +31,7 @@ internal fun DrawerHeader() {
     Row(
         Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceAround
+        horizontalArrangement = Arrangement.SpaceAround,
     ) {
         Image(painterResource(R.drawable.logo), "logo", Modifier.size(150.dp))
         Column {

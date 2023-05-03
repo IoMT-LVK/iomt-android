@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializable
  * @property birthdate user birthdate as [Instant]
  * @property height user height
  * @property weight user weight
- * @property allowed
+ * @property allowed list of operator ids that have access to current user
  */
 @Serializable
 data class UserDataWithId(
@@ -23,16 +23,19 @@ data class UserDataWithId(
     val login: String,
     val name: String,
     val surname: String,
-    val patronymic: String?,
+    val patronymic: String? = null,
     val email: String,
-    @SerialName("born") val birthdate: Instant?,
-    val height: Double?,
-    val weight: Double?,
+    @SerialName("born") val birthdate: LocalDate? = null,
+    val height: Int? = null,
+    val weight: Int? = null,
     val allowed: List<Long>,
 ) {
+    /**
+     * @return [UserData] from [UserDataWithId]
+     */
     fun toUserData() = UserData(login, name, surname, patronymic, email, birthdate, height, weight, allowed)
 
     companion object {
-        val empty = UserDataWithId(-1, "", "", "", "", "", null, null, null, emptyList())
+        val empty = UserDataWithId(-1, "", "", "", "", "", LocalDate(2001, 6, 15), null, null, emptyList())
     }
 }

@@ -7,7 +7,6 @@ package com.iomt.android.http
 import android.util.Log
 import com.iomt.android.dto.Credentials
 import com.iomt.android.dto.TokenInfo
-import com.iomt.android.dto.UserData
 import com.iomt.android.dto.UserDataWithId
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -83,7 +82,7 @@ internal fun createHttpClient(
 ) = HttpClient(engine) {
     install(ContentNegotiation) { json() }
     install(Logging) {
-        level = LogLevel.HEADERS
+        level = LogLevel.ALL
         logger = object : Logger {
             override fun log(message: String) {
                 logMessage(message)
