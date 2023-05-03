@@ -9,23 +9,23 @@ import android.content.ServiceConnection
 import android.os.IBinder
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import com.iomt.android.bluetooth.BleForegroundService
+import com.iomt.android.bluetooth.BluetoothLeForegroundService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
- * [BleServiceConnection] that represents [ServiceConnection] to [BleForegroundService]
+ * [BleServiceConnection] that represents [ServiceConnection] to [BluetoothLeForegroundService]
  */
 class BleServiceConnection : ServiceConnection {
-    private val serviceInternal: MutableStateFlow<BleForegroundService?> = MutableStateFlow(null)
+    private val serviceInternal: MutableStateFlow<BluetoothLeForegroundService?> = MutableStateFlow(null)
 
     /**
-     * [BleForegroundService]
+     * [BluetoothLeForegroundService]
      */
-    val service: StateFlow<BleForegroundService?> = serviceInternal
+    val service: StateFlow<BluetoothLeForegroundService?> = serviceInternal
 
     override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-        if (binder is BleForegroundService.BleBinder) {
+        if (binder is BluetoothLeForegroundService.BleBinder) {
             serviceInternal.value = binder.getService()
         }
     }
@@ -36,17 +36,17 @@ class BleServiceConnection : ServiceConnection {
 }
 
 /**
- * @return [BleForegroundService]
+ * @return [BluetoothLeForegroundService]
  */
 @Composable
-fun rememberBoundService(): StateFlow<BleForegroundService?> {
+fun rememberBoundService(): StateFlow<BluetoothLeForegroundService?> {
     val context = LocalContext.current
     val serviceConnection = remember { BleServiceConnection() }
     var isBound by remember { mutableStateOf(false) }
 
     DisposableEffect(serviceConnection) {
         if (!isBound) {
-            val intent = Intent(context, BleForegroundService::class.java)
+            val intent = Intent(context, BluetoothLeForegroundService::class.java)
             isBound = context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
 

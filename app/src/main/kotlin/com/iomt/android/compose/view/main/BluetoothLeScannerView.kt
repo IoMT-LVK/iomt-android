@@ -30,7 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-import com.iomt.android.bluetooth.BleScanCallback
+import com.iomt.android.bluetooth.BluetoothLeScanCallback
 import com.iomt.android.compose.components.ConfigItem
 import com.iomt.android.compose.components.DeviceItem
 import com.iomt.android.compose.theme.colorScheme
@@ -60,7 +60,7 @@ private val scanningPeriod = 30.seconds
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
-fun BleScannerView(
+fun BluetoothLeScannerView(
     mutableFloatingButtonBuilder: MutableFloatingButtonBuilder,
     navigateBack: () -> Unit,
 ) {
@@ -87,7 +87,7 @@ fun BleScannerView(
     withLoading(bleForegroundService) { bleService ->
         val foundDevices = remember { bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).toMutableStateList() }
         val connectedDevices = remember { bleService.getConnectedDevices().toMutableStateList() }
-        val leScanCallback = BleScanCallback(connectedDevices, foundDevices)
+        val leScanCallback = BluetoothLeScanCallback(connectedDevices, foundDevices)
 
         var isScanning by remember { mutableStateOf(false) }
         mutableFloatingButtonBuilder.value = {
@@ -175,7 +175,7 @@ fun BleScannerView(
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Preview
 @Composable
-private fun BleScannerViewPreview() {
+private fun BluetoothLeScannerViewPreview() {
     val mutableFloatingButtonBuilder = remember { mutableStateOf<FloatingButtonBuilder>({}) }
-    MaterialTheme(colorScheme) { BleScannerView(mutableFloatingButtonBuilder) { } }
+    MaterialTheme(colorScheme) { BluetoothLeScannerView(mutableFloatingButtonBuilder) { } }
 }

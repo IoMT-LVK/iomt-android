@@ -44,7 +44,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
         object Account : NavRouter(R.drawable.ic_menu_account, "Account")
 
         /**
-         * Represents [BleScannerView] route
+         * Represents [BluetoothLeScannerView] route
          */
         object BleScanner : NavRouter(R.drawable.blt, "Ble Scanner")
 
@@ -155,7 +155,7 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
                 composable(Main.Home) { HomeView(mutableFloatingButtonBuilder, onHomeDeviceClick) }
                 composable(Main.Settings) { SettingsView(signOut) }
                 composable(Main.Account) { AccountView(onAccountDeviceClick) }
-                composable(Main.BleScanner) { BleScannerView(mutableFloatingButtonBuilder) { popBackStack() } }
+                composable(Main.BleScanner) { BluetoothLeScannerView(mutableFloatingButtonBuilder) { popBackStack() } }
                 composable(
                     "${Main.Device}/{macAddress}/{config}",
                     arguments = listOf(
