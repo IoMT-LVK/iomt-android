@@ -123,12 +123,13 @@ $dokka.location:com.iomt.android.compose.view.login////PointingToDeclaration/ap
 $dokka.location:com.iomt.android.compose.view.login//EmailConfView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.login/-email-conf-view.html
 $dokka.location:com.iomt.android.compose.view.login//LoginView/#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.login/-login-view.html
 $dokka.location:com.iomt.android.compose.view.login//RegistrationView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.login/-registration-view.html
+$dokka.location:com.iomt.android.compose.view.main.settings////PointingToDeclaration/app/com.iomt.android.compose.view.main.settings/index.html
+$dokka.location:com.iomt.android.compose.view.main.settings//SettingsView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.main.settings/-settings-view.html
 $dokka.location:com.iomt.android.compose.view.main////PointingToDeclaration/app/com.iomt.android.compose.view.main/index.html
 $dokka.location:com.iomt.android.compose.view.main//AccountView/#kotlin.Function1[com.iomt.android.bluetooth.BluetoothDeviceWithConfig,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.main/-account-view.html
 $dokka.location:com.iomt.android.compose.view.main//BluetoothLeScannerView/#androidx.compose.runtime.MutableState[kotlin.Function1[androidx.navigation.NavHostController,kotlin.Unit]]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.main/-bluetooth-le-scanner-view.html
 $dokka.location:com.iomt.android.compose.view.main//DeviceView/#kotlin.String#com.iomt.android.configs.DeviceConfig/PointingToDeclaration/app/com.iomt.android.compose.view.main/-device-view.html
 $dokka.location:com.iomt.android.compose.view.main//HomeView/#androidx.compose.runtime.MutableState[kotlin.Function1[androidx.navigation.NavHostController,kotlin.Unit]]#kotlin.Function1[com.iomt.android.bluetooth.BluetoothDeviceWithConfig,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.main/-home-view.html
-$dokka.location:com.iomt.android.compose.view.main//SettingsView/#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose.view.main/-settings-view.html
 $dokka.location:com.iomt.android.compose////PointingToDeclaration/app/com.iomt.android.compose/index.html
 $dokka.location:com.iomt.android.compose//EntryPoint/#/PointingToDeclaration/app/com.iomt.android.compose/-entry-point.html
 $dokka.location:com.iomt.android.compose//Scaffold/#androidx.navigation.NavHostController#kotlin.Function0[kotlin.Unit]#kotlin.Function0[kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.compose/-scaffold.html
@@ -357,6 +358,8 @@ $dokka.location:com.iomt.android.room.devicechar/DeviceCharacteristicLinkReposit
 $dokka.location:com.iomt.android.room.record////PointingToDeclaration/app/com.iomt.android.room.record/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/clean-synchronized-records-older-then.html
+$dokka.location:com.iomt.android.room.record/RecordDao/countAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/count-all.html
+$dokka.location:com.iomt.android.room.record/RecordDao/countSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/count-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordDao/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/delete.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getNotSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-not-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getPeriodicalRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-periodical-records-by-link-id-not-older-then.html
@@ -372,6 +375,8 @@ $dokka.location:com.iomt.android.room.record/RecordEntity/value/#/PointingToDecl
 $dokka.location:com.iomt.android.room.record/RecordRepository///PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/index.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/RecordRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/-record-repository.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/clean-synchronized-records-older-then.html
+$dokka.location:com.iomt.android.room.record/RecordRepository/countAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/count-all.html
+$dokka.location:com.iomt.android.room.record/RecordRepository/countSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/count-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/delete.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/getNotSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-not-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/getPeriodicalRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-periodical-records-by-link-id-not-older-then.html
@@ -433,6 +438,7 @@ com.iomt.android.compose.navigation
 com.iomt.android.compose.theme
 com.iomt.android.compose.view.login
 com.iomt.android.compose.view.main
+com.iomt.android.compose.view.main.settings
 com.iomt.android.configs
 com.iomt.android.credentialmanager
 com.iomt.android.dbcleaner
