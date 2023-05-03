@@ -65,4 +65,16 @@ interface RecordDao {
         localDateTime: LocalDateTime,
         secondsInterval: Long,
     ): List<RecordEntity>
+
+    /**
+     * @return number of all records present in database
+     */
+    @Query("SELECT count(*) FROM record")
+    suspend fun countAll(): Long
+
+    /**
+     * @return number of synchronized records present in database
+     */
+    @Query("SELECT count(*) FROM record WHERE is_sync = 1")
+    suspend fun countSynchronized(): Long
 }

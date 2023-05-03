@@ -59,4 +59,14 @@ class RecordRepository(context: Context) {
         localDateTime,
         periodDuration.toLong(DurationUnit.SECONDS),
     )
+
+    /**
+     * @return number of all records present in database
+     */
+    suspend fun countAll() = dao.countAll()
+
+    /**
+     * @return number of synchronized records present in database
+     */
+    suspend fun countSynchronized() = dao.countSynchronized()
 }
