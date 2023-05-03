@@ -19,6 +19,7 @@ import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
 import com.iomt.android.compose.view.*
 import com.iomt.android.compose.view.login.*
 import com.iomt.android.compose.view.main.*
+import com.iomt.android.compose.view.main.settings.SettingsView
 import com.iomt.android.utils.MutableFloatingButtonBuilder
 import com.iomt.android.utils.composable
 import com.iomt.android.utils.navigate

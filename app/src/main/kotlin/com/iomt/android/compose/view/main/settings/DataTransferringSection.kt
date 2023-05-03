@@ -1,8 +1,8 @@
 /**
- * Settings view
+ * File containing DataTransferringSection of SettingsView
  */
 
-package com.iomt.android.compose.view.main
+package com.iomt.android.compose.view.main.settings
 
 import android.content.Context
 import androidx.compose.foundation.layout.*
@@ -14,41 +14,20 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
 import com.iomt.android.R
-import com.iomt.android.compose.theme.colorScheme
 import com.iomt.android.utils.SharedPreferencesNames
-
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.DurationUnit
 
 /**
- * @param signOut callback to sign out
+ * Section corresponding to data transferring limitations
+ *
+ * @return [Unit]
  */
 @Composable
-fun SettingsView(signOut: () -> Unit) {
-    Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-        DataTransferringSection()
-        AccountSection(signOut)
-    }
-}
-
-private fun getMqttWorkPeriodRange(begin: Duration, end: Duration) = begin
-    .toLong(DurationUnit.MILLISECONDS)
-    .toFloat()..end
-    .toLong(DurationUnit.MILLISECONDS)
-    .toFloat()
-
-private fun getMqttWorkPeriodSteps(
-    begin: Duration,
-    end: Duration,
-    stepSize: Duration = begin,
-) = (end - begin).toLong(DurationUnit.MINUTES).div(stepSize.toLong(DurationUnit.MINUTES)).toInt() - 1
-
-@Composable
-private fun DataTransferringSection() = Section("Data transferring") {
+internal fun DataTransferringSection() = Section("Data transferring") {
     val context = LocalContext.current
     val sharedPreferences = context.getSharedPreferences(
         stringResource(R.string.ACC_DATA),
@@ -120,31 +99,20 @@ private fun DataTransferringSection() = Section("Data transferring") {
     }
 }
 
-@Composable
-private fun AccountSection(onAccountExit: () -> Unit) = Section("Account") {
-    TextButton(
-        onClick = onAccountExit,
-        colors = ButtonDefaults.textButtonColors(
-            contentColor = colorScheme.error,
-            containerColor = colorScheme.background,
-        ),
-    ) { Text("Exit account") }
-}
+private fun getMqttWorkPeriodRange(begin: Duration, end: Duration) = begin
+    .toLong(DurationUnit.MILLISECONDS)
+    .toFloat()..end
+    .toLong(DurationUnit.MILLISECONDS)
+    .toFloat()
 
-@Composable
-private fun Section(sectionName: String, content: @Composable () -> Unit) {
-    Column {
-        Row(Modifier.padding(5.dp)) { Text(sectionName) }
-        OutlinedCard(modifier = Modifier.fillMaxWidth().padding(15.dp)) {
-            Column(Modifier.align(Alignment.CenterHorizontally)) {
-                content()
-            }
-        }
-    }
-}
+private fun getMqttWorkPeriodSteps(
+    begin: Duration,
+    end: Duration,
+    stepSize: Duration = begin,
+) = (end - begin).toLong(DurationUnit.MINUTES).div(stepSize.toLong(DurationUnit.MINUTES)).toInt() - 1
 
 @Preview
 @Composable
-private fun SettingsViewPreview() {
-    MaterialTheme(colorScheme) { SettingsView { } }
+private fun DataTransferringSectionPreview() {
+    DataTransferringSection()
 }
