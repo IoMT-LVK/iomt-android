@@ -1,7 +1,7 @@
 package com.iomt.android.http
 
 import com.iomt.android.dto.Credentials
-import com.iomt.android.entities.TokenInfo
+import com.iomt.android.dto.TokenInfo
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*

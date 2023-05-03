@@ -33,7 +33,7 @@
         android:theme="@style/AppTheme" tools:targetApi="tiramisu">
 
         <service
-            android:name=".bluetooth.BleForegroundService"
+            android:name=".bluetooth.BluetoothLeForegroundService"
             android:exported="false"
             android:enabled="true"
             android:foregroundServiceType="connectedDevice"
@@ -43,8 +43,7 @@
         <activity
             android:name=".EntryPointActivity"
             android:theme="@style/AppTheme.NoActionBar"
-            android:exported="true"
-            android:screenOrientation="fullSensor">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

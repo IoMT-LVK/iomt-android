@@ -69,9 +69,9 @@ class MqttWorker(
 
         recordsToSend.map { (recordEntity, recordInfo) ->
             val (macAddress, characteristicName) = recordInfo
-            val topic = Topic(userId, macAddress, characteristicName)
+            val topic = Topic(userId, macAddress)
             try {
-                mqttClient.send(topic, recordEntity.toMqttRecordMessage())
+                mqttClient.send(topic, recordEntity.toMqttRecordMessage(characteristicName))
                 recordRepository.update(recordEntity.apply { isSynchronized = true })
             } catch (mqttException: RuntimeException) {
                 Log.e(loggerTag, "Could not send data with topic ${topic.toTopicName()}", mqttException)

@@ -1,7 +1,11 @@
 package com.iomt.android.room.record
 
 import android.content.Context
+
 import com.iomt.android.room.AppDatabase
+
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 import kotlinx.datetime.LocalDateTime
 
 /**
@@ -40,11 +44,19 @@ class RecordRepository(context: Context) {
     ): Unit = dao.cleanSynchronizedRecordsOlderThen(localDateTime)
 
     /**
-     * @param deviceCharacteristicLinkId
-     * @param localDateTime
+     * @param deviceCharacteristicLinkId [RecordEntity.deviceCharacteristicLinkId]
+     * @param localDateTime [LocalDateTime] that should be older than oll the fetched data
+     * @param periodDuration minimal period of data as [Duration]
+     * @return [List] of [RecordEntity] of requested DeviceCharacteristicLink that
+     *         is older than [localDateTime] and the period is [secondsInterval]
      */
-    suspend fun getRecordsByLinkIdNotOlderThen(
+    suspend fun getPeriodicalRecordsByLinkIdNotOlderThen(
         deviceCharacteristicLinkId: Long,
         localDateTime: LocalDateTime,
-    ) = dao.getRecordsByLinkIdNotOlderThen(deviceCharacteristicLinkId, localDateTime)
+        periodDuration: Duration,
+    ) = dao.getPeriodicalRecordsByLinkIdNotOlderThen(
+        deviceCharacteristicLinkId,
+        localDateTime,
+        periodDuration.toLong(DurationUnit.SECONDS),
+    )
 }

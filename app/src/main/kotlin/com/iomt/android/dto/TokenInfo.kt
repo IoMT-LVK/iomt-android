@@ -1,4 +1,4 @@
-package com.iomt.android.entities
+package com.iomt.android.dto
 
 import kotlinx.serialization.Serializable
 

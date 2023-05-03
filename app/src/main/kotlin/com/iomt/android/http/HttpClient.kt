@@ -6,7 +6,7 @@ package com.iomt.android.http
 
 import android.util.Log
 import com.iomt.android.dto.Credentials
-import com.iomt.android.entities.TokenInfo
+import com.iomt.android.dto.TokenInfo
 import com.iomt.android.dto.UserData
 import com.iomt.android.dto.UserDataWithId
 import io.ktor.client.*

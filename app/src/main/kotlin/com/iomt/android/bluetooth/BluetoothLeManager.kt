@@ -45,7 +45,7 @@ private typealias ConnectedDevicesMap = MutableMap<String, BluetoothGatt>
 /**
  * Class that encapsulates all the BleGatt interactions
  */
-class BleManager(private val context: Context) {
+class BluetoothLeManager(private val context: Context) {
     /**
      * @property config config of device
      * @property deviceCharacteristicLink device-related data from database
@@ -175,11 +175,11 @@ class BleManager(private val context: Context) {
         "No StateFlow created for $deviceMac"
     }
 
-    private fun getBleGattCallbackForDevice(macAddress: String, deviceStateFlow: MutableDeviceStateFlow): BleGattCallback {
+    private fun getBleGattCallbackForDevice(macAddress: String, deviceStateFlow: MutableDeviceStateFlow): BluetoothLeGattCallback {
         val deviceData = requireNotNull(additionalData[macAddress]) {
             "Could not find device with mac address $macAddress"
         }
-        return BleGattCallback(deviceData.config) { charName, newValue ->
+        return BluetoothLeGattCallback(deviceData.config) { charName, newValue ->
             scope.launch {
                 deviceData.deviceCharacteristicLink.let { link ->
                     val linkEntityId = link.getLinkIdByCharacteristicName(charName)
@@ -192,6 +192,6 @@ class BleManager(private val context: Context) {
     }
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = BleManager::class.java.simpleName
+        private val loggerTag = BluetoothLeManager::class.java.simpleName
     }
 }
