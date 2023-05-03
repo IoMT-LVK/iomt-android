@@ -7,28 +7,31 @@
 package com.iomt.android.compose.components
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
 import com.iomt.android.compose.components.textfield.Cell
-import com.iomt.android.compose.components.textfield.TextFieldWithIcon
 import com.iomt.android.compose.theme.colorScheme
 
 /**
  * @param title name of the section
  * @param fields [List] of [Cell]s that should be displayed in the section
+ * @param additionalContent additional content that is
  * @param onSave callback invoked on save button pressed
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
-    var isEdit by remember { mutableStateOf(false) }
+fun EditableSection(
+    title: String,
+    fields: List<Cell>,
+    additionalContent: @Composable () -> Unit = { },
+    onSave: () -> Unit,
+) {
     OutlinedCard {
         Column {
             Row(
@@ -37,16 +40,28 @@ fun EditableSection(title: String, fields: List<Cell>, onSave: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(title, Modifier.padding(10.dp))
-                TextButton(onClick = {
-                    if (isEdit) {
-                        onSave()
-                    }
-                    isEdit = !isEdit
-                }) {
-                    Text(if (isEdit) "Save" else "Edit")
+                TextButton(onClick = { onSave() }) { Text("Save") }
+            }
+            fields.map { cell ->
+                Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                    TextField(
+                        value = cell.value,
+                        onValueChange = cell.onValueChange,
+                        modifier = Modifier.weight(1f),
+                        leadingIcon = {
+                            cell.iconId?.let { id ->
+                                Icon(
+                                    painterResource(id),
+                                    cell.description,
+                                    Modifier.padding(10.dp).size(24.dp),
+                                    tint = colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        },
+                    )
                 }
             }
-            fields.map { TextFieldWithIcon(it) }
+            additionalContent()
         }
     }
 }

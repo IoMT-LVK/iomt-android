@@ -20,26 +20,53 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import com.iomt.android.R
 import com.iomt.android.compose.theme.colorScheme
+import com.iomt.android.dto.UserDataWithId
+import com.iomt.android.http.RequestParams
 
 /**
  * Drawer Header implementation
  */
 @Composable
 internal fun DrawerHeader() {
-    Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceAround) {
+    Row(
+        Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceAround,
+    ) {
         Image(painterResource(R.drawable.logo), "logo", Modifier.size(150.dp))
-        Text(
-            "IoMT Health",
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Center,
-            fontFamily = FontFamily.Monospace,
-            fontSize = TextUnit(5f, TextUnitType.Em),
-        )
+        Column {
+            Text(
+                "IoMT Health",
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily.Monospace,
+                fontSize = TextUnit(5f, TextUnitType.Em),
+            )
+            RequestParams.userData
+                ?.run { "$name ${patronymic?.take(1)} $surname" to login }
+                ?.let { (name, login) ->
+                    Spacer(Modifier.padding(10.dp))
+                    Text(
+                        name,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        fontSize = TextUnit(4f, TextUnitType.Em),
+                    )
+                    Spacer(Modifier.padding(3.dp))
+                    Text(
+                        login,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center,
+                        fontSize = TextUnit(3f, TextUnitType.Em),
+                    )
+                }
+        }
     }
 }
 
 @Preview
 @Composable
 private fun DrawerHeaderPreview() {
+    RequestParams.userData = UserDataWithId.empty.copy(login = "sanyavertolet", name = "Sanya", surname = "Vertolet")
     MaterialTheme(colorScheme) { DrawerHeader() }
 }

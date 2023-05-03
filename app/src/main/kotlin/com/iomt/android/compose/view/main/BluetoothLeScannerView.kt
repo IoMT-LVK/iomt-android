@@ -80,11 +80,11 @@ fun BluetoothLeScannerView(
     val deviceCharacteristicRepository = DeviceCharacteristicLinkRepository(LocalContext.current)
     val bluetoothLeScanner = bluetoothAdapter.bluetoothLeScanner
 
-    val bleForegroundService by rememberBoundService().collectAsState()
+    val bluetoothLeForegroundService by rememberBoundService().collectAsState()
 
     val scope = rememberCoroutineScope()
 
-    withLoading(bleForegroundService) { bleService ->
+    withLoading(bluetoothLeForegroundService) { bleService ->
         val foundDevices = remember { bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).toMutableStateList() }
         val connectedDevices = remember { bleService.getConnectedDevices().toMutableStateList() }
         val leScanCallback = BluetoothLeScanCallback(connectedDevices, foundDevices)

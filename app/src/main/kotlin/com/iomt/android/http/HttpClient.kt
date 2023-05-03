@@ -7,7 +7,7 @@ package com.iomt.android.http
 import android.util.Log
 import com.iomt.android.dto.Credentials
 import com.iomt.android.dto.TokenInfo
-import com.iomt.android.entities.UserData
+import com.iomt.android.dto.UserDataWithId
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.*
@@ -31,9 +31,9 @@ object RequestParams {
     var credentials: Credentials? = null
 
     /**
-     * [UserData] corresponding to currently logged-in user
+     * [UserDataWithId] corresponding to currently logged-in user
      */
-    var userData: UserData? = null
+    var userData: UserDataWithId? = null
 
     /**
      * Forget all the session connected info
@@ -82,7 +82,7 @@ internal fun createHttpClient(
 ) = HttpClient(engine) {
     install(ContentNegotiation) { json() }
     install(Logging) {
-        level = LogLevel.HEADERS
+        level = LogLevel.ALL
         logger = object : Logger {
             override fun log(message: String) {
                 logMessage(message)

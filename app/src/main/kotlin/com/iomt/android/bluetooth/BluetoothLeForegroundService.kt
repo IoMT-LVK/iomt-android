@@ -37,7 +37,7 @@ class BluetoothLeForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
         bluetoothLeManager = BluetoothLeManager(applicationContext)
-        Log.d(loggerTag, "BleForegroundService initialization has started")
+        Log.d(loggerTag, "BluetoothLeForegroundService initialization has started")
         createNotificationChannel()
         val notification = createNotification()
 
@@ -50,7 +50,7 @@ class BluetoothLeForegroundService : Service() {
         } else {
             startForeground(NOTIFICATION_ID, notification)
         }
-        Log.d(loggerTag, "BleForegroundService initialization has successfully finished")
+        Log.d(loggerTag, "BluetoothLeForegroundService initialization has successfully finished")
     }
 
     override fun onBind(intent: Intent): IBinder = binder
