@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 
-import com.iomt.android.bluetooth.BleForegroundService
+import com.iomt.android.bluetooth.BluetoothLeForegroundService
 import com.iomt.android.compose.components.NavViewSystemWithDrawer
 import com.iomt.android.compose.navigation.NavRouter.Companion.useLoginNavHost
 import com.iomt.android.compose.theme.colorScheme
@@ -45,8 +45,8 @@ fun EntryPoint() {
         val scope = rememberCoroutineScope()
 
         val onLoginSuccess: () -> Unit = {
-            val bleForegroundServiceIntent = Intent(context, BleForegroundService::class.java)
-            context.startForegroundService(bleForegroundServiceIntent)
+            val bluetoothLeForegroundServiceIntent = Intent(context, BluetoothLeForegroundService::class.java)
+            context.startForegroundService(bluetoothLeForegroundServiceIntent)
 
             val mqttWorkManager = MqttWorkManager.getInstance(context)
             val cleanerWorkManager = CleanerWorkManager.getInstance(context)

@@ -33,7 +33,7 @@
         android:theme="@style/AppTheme" tools:targetApi="tiramisu">
 
         <service
-            android:name=".bluetooth.BleForegroundService"
+            android:name=".bluetooth.BluetoothLeForegroundService"
             android:exported="false"
             android:enabled="true"
             android:foregroundServiceType="connectedDevice"

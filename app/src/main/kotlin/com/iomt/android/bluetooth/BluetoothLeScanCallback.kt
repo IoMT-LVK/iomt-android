@@ -17,7 +17,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
  * @property connectedDevices [SnapshotStateList] of connected devices
  * @property foundDevices [SnapshotStateList] of found devices
  */
-class BleScanCallback(
+class BluetoothLeScanCallback(
     private val connectedDevices: SnapshotStateList<BluetoothDevice>,
     private val foundDevices: SnapshotStateList<BluetoothDevice>,
 ) : ScanCallback() {

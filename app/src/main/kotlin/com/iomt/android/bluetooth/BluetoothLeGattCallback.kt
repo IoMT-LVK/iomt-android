@@ -20,7 +20,7 @@ import kotlin.experimental.and
  * @property deviceConfig [DeviceConfig] corresponding to device
  * @property onCharacteristicUpdate callback invoked on characteristic update, receives characteristic name and value
  */
-class BleGattCallback(
+class BluetoothLeGattCallback(
     private val deviceConfig: DeviceConfig,
     private val onCharacteristicUpdate: (String, String) -> Unit,
 ) : BluetoothGattCallback() {
@@ -150,6 +150,6 @@ class BleGattCallback(
     }
     companion object {
         private val clientCharacteristicConfigUuid = UUID.fromString("00002902-0000-1000-8000-00805f9b34fb")
-        private val loggerTag = BleGattCallback::class.java.simpleName
+        private val loggerTag = BluetoothLeGattCallback::class.java.simpleName
     }
 }

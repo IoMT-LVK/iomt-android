@@ -28,15 +28,15 @@ private typealias DeviceStateFlow = Map<String, StateFlow<String>>
 /**
  * Foreground service that stores all the bluetooth data
  */
-class BleForegroundService : Service() {
+class BluetoothLeForegroundService : Service() {
     private val binder = BleBinder()
-    private lateinit var bleManager: BleManager
+    private lateinit var bluetoothLeManager: BluetoothLeManager
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onCreate() {
         super.onCreate()
-        bleManager = BleManager(applicationContext)
+        bluetoothLeManager = BluetoothLeManager(applicationContext)
         Log.d(loggerTag, "BleForegroundService initialization has started")
         createNotificationChannel()
         val notification = createNotification()
@@ -62,7 +62,7 @@ class BleForegroundService : Service() {
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) = runBlocking {
-        bleManager.connectDevice(bluetoothDevice, deviceConfig).join()
+        bluetoothLeManager.connectDevice(bluetoothDevice, deviceConfig).join()
         updateNotification()
     }
 
@@ -71,7 +71,7 @@ class BleForegroundService : Service() {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bleManager.disconnectDevice(bluetoothDevice.address)
+    fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
         .also { updateNotification() }
 
     /**
@@ -80,23 +80,23 @@ class BleForegroundService : Service() {
      * @param deviceMac MAC address of Bluetooth LE device
      * @return [DeviceStateFlow] corresponding to Bluetooth LE device with [deviceMac]
      */
-    fun subscribeOn(deviceMac: String): DeviceStateFlow = bleManager.subscribeOn(deviceMac)
+    fun subscribeOn(deviceMac: String): DeviceStateFlow = bluetoothLeManager.subscribeOn(deviceMac)
 
     /**
      * @return connected [BluetoothDevice]s as [List]
      */
-    fun getConnectedDevices() = bleManager.getConnectedDevices().values.map { it.device }
+    fun getConnectedDevices() = bluetoothLeManager.getConnectedDevices().values.map { it.device }
 
     /**
      * @param macAddress MAC address of Bluetooth LE device
      * @return connected [BluetoothDevice] by its [macAddress]
      */
-    fun getConnectedDevice(macAddress: String) = bleManager.getConnectedDevices()[macAddress]?.device
+    fun getConnectedDevice(macAddress: String) = bluetoothLeManager.getConnectedDevices()[macAddress]?.device
 
     /**
      * @return [List] of pairs: connected [BluetoothDevice]s and their [DeviceConfig]s
      */
-    fun getConnectedDevicesWithConfigs() = bleManager.getConnectedDevicesWithConfigs().values.map { (gatt, config) ->
+    fun getConnectedDevicesWithConfigs() = bluetoothLeManager.getConnectedDevicesWithConfigs().values.map { (gatt, config) ->
         BluetoothDeviceWithConfig(gatt.device, config)
     }
 
@@ -154,25 +154,25 @@ class BleForegroundService : Service() {
 
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    private fun getNotificationText(): String = bleManager.getConnectedDevices()
+    private fun getNotificationText(): String = bluetoothLeManager.getConnectedDevices()
         .values
         .joinToString("\n") { it.device.name }
         .ifBlank { "No connected devices" }
 
     /**
-     * [Binder] implementation for [BleForegroundService]
+     * [Binder] implementation for [BluetoothLeForegroundService]
      */
     inner class BleBinder : Binder() {
         /**
-         * @return [BleForegroundService]
+         * @return [BluetoothLeForegroundService]
          */
-        fun getService(): BleForegroundService = this@BleForegroundService
+        fun getService(): BluetoothLeForegroundService = this@BluetoothLeForegroundService
     }
 
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "iomt_ble_service_channel"
         private const val NOTIFICATION_ID = 1001
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = BleForegroundService::class.java.simpleName
+        private val loggerTag = BluetoothLeForegroundService::class.java.simpleName
     }
 }
