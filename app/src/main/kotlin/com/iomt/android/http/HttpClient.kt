@@ -82,7 +82,7 @@ internal fun createHttpClient(
 ) = HttpClient(engine) {
     install(ContentNegotiation) { json() }
     install(Logging) {
-        level = LogLevel.ALL
+        level = LogLevel.INFO
         logger = object : Logger {
             override fun log(message: String) {
                 logMessage(message)
