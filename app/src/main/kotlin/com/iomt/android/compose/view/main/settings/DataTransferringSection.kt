@@ -90,6 +90,7 @@ internal fun DataTransferringSection() = Section("Data transferring") {
                         .apply { putLong(SharedPreferencesNames.MQTT_WORK_PERIOD, mqttWorkerPeriod.toLong()) }
                         .apply()
                 },
+                enabled = false,
                 valueRange = getMqttWorkPeriodRange(1.minutes, 30.minutes),
                 steps = getMqttWorkPeriodSteps(1.minutes, 30.minutes),
             )
@@ -109,7 +110,7 @@ private fun getMqttWorkPeriodSteps(
     begin: Duration,
     end: Duration,
     stepSize: Duration = begin,
-) = (end - begin).toLong(DurationUnit.MINUTES).div(stepSize.toLong(DurationUnit.MINUTES)).toInt() - 1
+) = ((end - begin).toLong(DurationUnit.MINUTES).div(stepSize.toLong(DurationUnit.MINUTES)) - 1).toInt()
 
 @Preview
 @Composable
