@@ -12,7 +12,7 @@ import kotlin.time.DurationUnit
  * Class that is responsible for [WorkManager] initialization for record data cleanup
  */
 class CleanerWorkManager(context: Context) {
-    private val worker = WorkManager.getInstance(context)
+    private val manager = WorkManager.getInstance(context)
 
     /**
      * @param ttl [Duration] that defines synchronized data time to live - if data is older, it should be cleaned up
@@ -22,7 +22,7 @@ class CleanerWorkManager(context: Context) {
     suspend fun start(
         ttl: Duration = 1.days,
         repeatIntervalDuration: Duration = 1.days,
-    ) = worker.enqueueUniquePeriodicWork(
+    ) = manager.enqueueUniquePeriodicWork(
         cleanerWorkManagerClassName,
         ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
         getWorkRequest(ttl, repeatIntervalDuration),
@@ -35,7 +35,7 @@ class CleanerWorkManager(context: Context) {
     /**
      * @return stopped [Operation]
      */
-    suspend fun stop() = worker.cancelUniqueWork(cleanerWorkManagerClassName).also {
+    suspend fun stop() = manager.cancelUniqueWork(cleanerWorkManagerClassName).also {
         Log.i(cleanerWorkManagerClassName, "Stopping...")
         it.await()
         Log.i(cleanerWorkManagerClassName, "Successfully stopped")

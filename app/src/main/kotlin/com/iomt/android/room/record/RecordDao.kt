@@ -69,12 +69,32 @@ interface RecordDao {
     /**
      * @return number of all records present in database
      */
-    @Query("SELECT count(*) FROM record")
+    @Query("SELECT COUNT(*) FROM record")
     suspend fun countAll(): Long
 
     /**
      * @return number of synchronized records present in database
      */
-    @Query("SELECT count(*) FROM record WHERE is_sync = 1")
+    @Query("SELECT COUNT(*) FROM record WHERE is_sync = 1")
     suspend fun countSynchronized(): Long
+
+    /**
+     * @return [Map] where key is [RecordEntity.deviceCharacteristicLinkId] and value is amount of records with this id
+     */
+    @Query("SELECT device_char_link_id, COUNT(*) FROM record GROUP BY device_char_link_id")
+    @MapInfo(
+        keyColumn = "device_char_link_id",
+        valueColumn = "COUNT(*)",
+    )
+    suspend fun countAllGroupedByLinkId(): Map<Long, Long>
+
+    /**
+     * @return [Map] where key is [RecordEntity.deviceCharacteristicLinkId] and value is amount of records with this id
+     */
+    @Query("SELECT device_char_link_id, COUNT(*) FROM record WHERE is_sync = 1 GROUP BY device_char_link_id")
+    @MapInfo(
+        keyColumn = "device_char_link_id",
+        valueColumn = "COUNT(*)",
+    )
+    suspend fun countSynchronizedGroupedByLinkId(): Map<Long, Long>
 }

@@ -3,6 +3,8 @@ package com.iomt.android.room.record
 import android.content.Context
 
 import com.iomt.android.room.AppDatabase
+import com.iomt.android.room.statistics.StatisticsEntity
+import com.iomt.android.utils.now
 
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
@@ -69,4 +71,14 @@ class RecordRepository(context: Context) {
      * @return number of synchronized records present in database
      */
     suspend fun countSynchronized() = dao.countSynchronized()
+
+    /**
+     * @return [List] of [StatisticsEntity]
+     */
+    suspend fun collectStatistics(): List<StatisticsEntity> {
+        val allStats = dao.countAllGroupedByLinkId()
+        val synchronizedStats = dao.countSynchronizedGroupedByLinkId()
+        val now = LocalDateTime.now()
+        return allStats.map { (key, value) -> StatisticsEntity(now, value, synchronizedStats.getValue(key), key) }
+    }
 }
