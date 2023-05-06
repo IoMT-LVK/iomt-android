@@ -5,7 +5,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("org.cqfn.diktat.diktat-gradle-plugin")
-    id("kotlin-kapt")
+    id("com.google.devtools.ksp")
     id("org.jetbrains.dokka")
 }
 
@@ -26,7 +26,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
+        kotlinCompilerExtensionVersion = "1.4.7"
     }
 
     buildTypes {
@@ -79,12 +79,12 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
     implementation("androidx.activity:activity-compose:1.7.1")
-    implementation("androidx.compose.ui:ui:1.4.2")
-    implementation("androidx.compose.runtime:runtime:1.4.2")
-    implementation("androidx.compose.compiler:compiler:1.4.6")
+    implementation("androidx.compose.ui:ui:1.4.3")
+    implementation("androidx.compose.runtime:runtime:1.4.3")
+    implementation("androidx.compose.compiler:compiler:1.4.7")
     implementation("androidx.compose.material3:material3:1.0.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.4.2")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.4.2")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
+    debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
 
     implementation("androidx.navigation:navigation-compose:2.5.3")
     implementation("androidx.navigation:navigation-ui:2.5.3")
@@ -92,7 +92,7 @@ dependencies {
     implementation("androidx.room:room-runtime:2.5.1")
     implementation("androidx.room:room-ktx:2.5.1")
     implementation("androidx.room:room-paging:2.5.1")
-    kapt("androidx.room:room-compiler:2.5.1")
+    ksp("androidx.room:room-compiler:2.5.1")
 
     implementation("androidx.core:core-ktx:1.10.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
@@ -100,7 +100,7 @@ dependencies {
     implementation("androidx.credentials:credentials:1.2.0-alpha03")
     implementation("androidx.credentials:credentials-play-services-auth:1.2.0-alpha03")
 
-    implementation("com.google.android.material:material:1.8.0")
+    implementation("com.google.android.material:material:1.9.0")
 
     implementation("com.hivemq:hivemq-mqtt-client:1.3.0")
 
@@ -134,8 +134,4 @@ diktat {
         include("src/**/*.kt", "*.kts", "src/**/*.kts")
         exclude("build/**", "src/test/**", "src/androidTest/**")
     }
-}
-
-kapt {
-    showProcessorStats = true
 }
