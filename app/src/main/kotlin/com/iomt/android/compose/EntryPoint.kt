@@ -26,6 +26,7 @@ import com.iomt.android.http.RequestParams
 import com.iomt.android.http.getUserData
 import com.iomt.android.mqtt.MqttWorkManager
 import com.iomt.android.room.AppDatabase
+import com.iomt.android.statsitics.StatisticsWorkManager
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,20 +51,24 @@ fun EntryPoint() {
 
             val mqttWorkManager = MqttWorkManager.getInstance(context)
             val cleanerWorkManager = CleanerWorkManager.getInstance(context)
+            val statisticsWorkManager = StatisticsWorkManager.getInstance(context)
 
             scope.launch {
                 val userData = getUserData()
                 mqttWorkManager.start(userData.id)
                 cleanerWorkManager.start()
+                statisticsWorkManager.start()
             }
         }
 
         val onLogOut = {
             val cleanerWorkManager = CleanerWorkManager.getInstance(context)
             val mqttWorkManager = MqttWorkManager.getInstance(context)
+            val statisticsWorkManager = StatisticsWorkManager.getInstance(context)
             scope.launch {
                 mqttWorkManager.stop()
                 cleanerWorkManager.stop()
+                statisticsWorkManager.stop()
             }
             scope.launch(Dispatchers.IO) { AppDatabase.getInstance(context).clearAllTables() }
         }

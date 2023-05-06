@@ -13,13 +13,21 @@ import com.iomt.android.room.devicechar.DeviceCharacteristicLinkDao
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity
 import com.iomt.android.room.record.RecordDao
 import com.iomt.android.room.record.RecordEntity
+import com.iomt.android.room.statistics.StatisticsDao
+import com.iomt.android.room.statistics.StatisticsEntity
 
 /**
  * Class that encapsulates database interactions
  */
 @Database(
-    entities = [CharacteristicEntity::class, DeviceEntity::class, DeviceCharacteristicLinkEntity::class, RecordEntity::class],
-    version = 3,
+    entities = [
+        CharacteristicEntity::class,
+        DeviceEntity::class,
+        DeviceCharacteristicLinkEntity::class,
+        RecordEntity::class,
+        StatisticsEntity::class,
+    ],
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)
@@ -43,6 +51,11 @@ abstract class AppDatabase : RoomDatabase() {
      * @return [RecordDao]
      */
     abstract fun recordDao(): RecordDao
+
+    /**
+     * @return [StatisticsDao]
+     */
+    abstract fun statisticsDao(): StatisticsDao
 
     companion object {
         @Volatile
