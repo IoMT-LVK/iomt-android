@@ -359,7 +359,9 @@ $dokka.location:com.iomt.android.room.record////PointingToDeclaration/app/com.i
 $dokka.location:com.iomt.android.room.record/RecordDao///PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/index.html
 $dokka.location:com.iomt.android.room.record/RecordDao/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/clean-synchronized-records-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordDao/countAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/count-all.html
+$dokka.location:com.iomt.android.room.record/RecordDao/countAllGroupedByLinkId/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/count-all-grouped-by-link-id.html
 $dokka.location:com.iomt.android.room.record/RecordDao/countSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/count-synchronized.html
+$dokka.location:com.iomt.android.room.record/RecordDao/countSynchronizedGroupedByLinkId/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/count-synchronized-grouped-by-link-id.html
 $dokka.location:com.iomt.android.room.record/RecordDao/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/delete.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getNotSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-not-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordDao/getPeriodicalRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.record/-record-dao/get-periodical-records-by-link-id-not-older-then.html
@@ -375,6 +377,7 @@ $dokka.location:com.iomt.android.room.record/RecordEntity/value/#/PointingToDecl
 $dokka.location:com.iomt.android.room.record/RecordRepository///PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/index.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/RecordRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/-record-repository.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/cleanSynchronizedRecordsOlderThen/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/clean-synchronized-records-older-then.html
+$dokka.location:com.iomt.android.room.record/RecordRepository/collectStatistics/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/collect-statistics.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/countAll/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/count-all.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/countSynchronized/#/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/count-synchronized.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/delete/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/delete.html
@@ -382,6 +385,18 @@ $dokka.location:com.iomt.android.room.record/RecordRepository/getNotSynchronized
 $dokka.location:com.iomt.android.room.record/RecordRepository/getPeriodicalRecordsByLinkIdNotOlderThen/#kotlin.Long#kotlinx.datetime.LocalDateTime#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/get-periodical-records-by-link-id-not-older-then.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/insert/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/insert.html
 $dokka.location:com.iomt.android.room.record/RecordRepository/update/#com.iomt.android.room.record.RecordEntity/PointingToDeclaration/app/com.iomt.android.room.record/-record-repository/update.html
+$dokka.location:com.iomt.android.room.statistics////PointingToDeclaration/app/com.iomt.android.room.statistics/index.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsDao///PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-dao/index.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsDao/getAll/#/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-dao/get-all.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsEntity///PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-entity/index.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsEntity/StatisticsEntity/#kotlinx.datetime.LocalDateTime#kotlin.Long#kotlin.Long#kotlin.Long/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-entity/-statistics-entity.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsEntity/allNumber/#/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-entity/all-number.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsEntity/deviceCharacteristicLinkId/#/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-entity/device-characteristic-link-id.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsEntity/synchronizedNumber/#/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-entity/synchronized-number.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsEntity/timestamp/#/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-entity/timestamp.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsRepository///PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-repository/index.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsRepository/StatisticsRepository/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-repository/-statistics-repository.html
+$dokka.location:com.iomt.android.room.statistics/StatisticsRepository/insertAll/#kotlin.collections.List[com.iomt.android.room.statistics.StatisticsEntity]/PointingToDeclaration/app/com.iomt.android.room.statistics/-statistics-repository/insert-all.html
 $dokka.location:com.iomt.android.room////PointingToDeclaration/app/com.iomt.android.room/index.html
 $dokka.location:com.iomt.android.room/AppDatabase.Companion///PointingToDeclaration/app/com.iomt.android.room/-app-database/-companion/index.html
 $dokka.location:com.iomt.android.room/AppDatabase.Companion/getInstance/#android.content.Context/PointingToDeclaration/app/com.iomt.android.room/-app-database/-companion/get-instance.html
@@ -391,12 +406,25 @@ $dokka.location:com.iomt.android.room/AppDatabase/characteristicDao/#/PointingTo
 $dokka.location:com.iomt.android.room/AppDatabase/deviceCharacteristicLinkDao/#/PointingToDeclaration/app/com.iomt.android.room/-app-database/device-characteristic-link-dao.html
 $dokka.location:com.iomt.android.room/AppDatabase/deviceDao/#/PointingToDeclaration/app/com.iomt.android.room/-app-database/device-dao.html
 $dokka.location:com.iomt.android.room/AppDatabase/recordDao/#/PointingToDeclaration/app/com.iomt.android.room/-app-database/record-dao.html
+$dokka.location:com.iomt.android.room/AppDatabase/statisticsDao/#/PointingToDeclaration/app/com.iomt.android.room/-app-database/statistics-dao.html
 $dokka.location:com.iomt.android.room/Converters///PointingToDeclaration/app/com.iomt.android.room/-converters/index.html
 $dokka.location:com.iomt.android.room/Converters/Converters/#/PointingToDeclaration/app/com.iomt.android.room/-converters/-converters.html
 $dokka.location:com.iomt.android.room/Converters/fromLocalDateTime/#kotlinx.datetime.LocalDateTime/PointingToDeclaration/app/com.iomt.android.room/-converters/from-local-date-time.html
 $dokka.location:com.iomt.android.room/Converters/fromUuid/#java.util.UUID/PointingToDeclaration/app/com.iomt.android.room/-converters/from-uuid.html
 $dokka.location:com.iomt.android.room/Converters/toLocalDateTime/#kotlin.String/PointingToDeclaration/app/com.iomt.android.room/-converters/to-local-date-time.html
 $dokka.location:com.iomt.android.room/Converters/toUuid/#kotlin.String/PointingToDeclaration/app/com.iomt.android.room/-converters/to-uuid.html
+$dokka.location:com.iomt.android.statsitics////PointingToDeclaration/app/com.iomt.android.statsitics/index.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorkManager.Companion///PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-work-manager/-companion/index.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorkManager.Companion/getInstance/#android.content.Context/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-work-manager/-companion/get-instance.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorkManager///PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-work-manager/index.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorkManager/StatisticsWorkManager/#android.content.Context/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-work-manager/-statistics-work-manager.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorkManager/start/#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-work-manager/start.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorkManager/stop/#/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-work-manager/stop.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorker.Companion///PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-worker/-companion/index.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorker///PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-worker/index.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorker/StatisticsWorker/#android.content.Context#androidx.work.WorkerParameters/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-worker/-statistics-worker.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorker/doWork/#/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-worker/do-work.html
+$dokka.location:com.iomt.android.statsitics/StatisticsWorker/getForegroundInfo/#/PointingToDeclaration/app/com.iomt.android.statsitics/-statistics-worker/get-foreground-info.html
 $dokka.location:com.iomt.android.utils////PointingToDeclaration/app/com.iomt.android.utils/index.html
 $dokka.location:com.iomt.android.utils//beforeNow/kotlinx.datetime.LocalDateTime.Companion#kotlin.time.Duration/PointingToDeclaration/app/com.iomt.android.utils/before-now.html
 $dokka.location:com.iomt.android.utils//composable/androidx.navigation.NavGraphBuilder#com.iomt.android.compose.navigation.NavRouter#kotlin.collections.List[androidx.navigation.NamedNavArgument]#kotlin.collections.List[androidx.navigation.NavDeepLink]#kotlin.Function1[androidx.navigation.NavBackStackEntry,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.utils/composable.html
@@ -452,5 +480,7 @@ com.iomt.android.room.characteristic
 com.iomt.android.room.device
 com.iomt.android.room.devicechar
 com.iomt.android.room.record
+com.iomt.android.room.statistics
+com.iomt.android.statsitics
 com.iomt.android.utils
 
