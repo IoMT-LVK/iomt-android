@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothManager
 import android.bluetooth.BluetoothProfile
+import android.bluetooth.le.ScanSettings
 import android.content.Intent
 import android.os.Build
 import android.util.Log
@@ -109,9 +110,14 @@ fun BluetoothLeScannerView(
                 shape = ShapeDefaults.Medium,
             ) { floatingActionButtonContent() }
         }
+        val scanSettings = ScanSettings.Builder()
+            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+            .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+            .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
+            .build()
         LaunchedEffect(isScanning) {
             if (isScanning) {
-                bluetoothLeScanner.startScan(leScanCallback).also {
+                bluetoothLeScanner.startScan(emptyList(), scanSettings, leScanCallback).also {
                     Log.d("BleScanner", "Scan started")
                 }
                 delay(scanningPeriod)

@@ -44,6 +44,7 @@ class EntryPointActivity : AppCompatActivity() {
             add(Manifest.permission.BLUETOOTH_CONNECT)
             add(Manifest.permission.BLUETOOTH_PRIVILEGED)
             add(Manifest.permission.FOREGROUND_SERVICE)
+            add(Manifest.permission.ACCESS_FINE_LOCATION)
             if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
                 add(Manifest.permission.POST_NOTIFICATIONS)
             }
