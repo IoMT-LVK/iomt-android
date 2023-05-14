@@ -2,6 +2,7 @@ package com.iomt.android.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.bluetooth.BluetoothDevice.TRANSPORT_LE
 import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.os.Build
@@ -144,7 +145,7 @@ class BluetoothLeManager(private val context: Context) {
             deviceConfig.characteristics.keys.map { deviceStateFlow[it] = MutableStateFlow("- -") }
             additionalData[macAddress] = DeviceAdditionalData(deviceConfig, deviceCharacteristicLink)
             val bleGattCallback = getBleGattCallbackForDevice(macAddress, deviceStateFlow)
-            val gatt = device.connectGatt(context, true, bleGattCallback)
+            val gatt = withContext(Dispatchers.Main) { device.connectGatt(context, false, bleGattCallback, TRANSPORT_LE) }
             connectedDevices[macAddress] = gatt
             stateFlows[macAddress] = deviceStateFlow
         } catch (exception: Throwable) {

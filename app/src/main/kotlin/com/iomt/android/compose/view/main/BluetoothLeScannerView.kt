@@ -46,10 +46,7 @@ import com.iomt.android.utils.*
 
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 private val scanningPeriod = 30.seconds
 
@@ -88,7 +85,9 @@ fun BluetoothLeScannerView(
     withLoading(bluetoothLeForegroundService) { bleService ->
         val foundDevices = remember { bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).toMutableStateList() }
         val connectedDevices = remember { bleService.getConnectedDevices().toMutableStateList() }
-        val leScanCallback = BluetoothLeScanCallback(connectedDevices, foundDevices)
+        val leScanCallback by remember {
+            mutableStateOf(BluetoothLeScanCallback(connectedDevices, foundDevices))
+        }
 
         var isScanning by remember { mutableStateOf(false) }
         mutableFloatingButtonBuilder.value = {
@@ -111,20 +110,28 @@ fun BluetoothLeScannerView(
             ) { floatingActionButtonContent() }
         }
         val scanSettings = ScanSettings.Builder()
-            .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
-            .setMatchMode(ScanSettings.MATCH_MODE_AGGRESSIVE)
+            .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
             .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
             .build()
         LaunchedEffect(isScanning) {
             if (isScanning) {
-                bluetoothLeScanner.startScan(emptyList(), scanSettings, leScanCallback).also {
-                    Log.d("BleScanner", "Scan started")
-                }
-                delay(scanningPeriod)
-                bluetoothLeScanner.stopScan(leScanCallback).also {
-                    Log.d("BleScanner", "Scan stopped after $scanningPeriod")
+                withContext(Dispatchers.Main) {
+                    bluetoothLeScanner.startScan(emptyList(), scanSettings, leScanCallback).also {
+                        Log.d("BleScanner", "Scan started")
+                    }
+                    delay(scanningPeriod)
+                    bluetoothLeScanner.flushPendingScanResults(leScanCallback)
+                    bluetoothLeScanner.stopScan(leScanCallback).also {
+                        Log.d("BleScanner", "Scan stopped after $scanningPeriod")
+                    }
                 }
                 isScanning = false
+            } else {
+                withContext(Dispatchers.Main) {
+                    bluetoothLeScanner.stopScan(leScanCallback).also {
+                        Log.d("BleScanner", "Scan stopped after $scanningPeriod")
+                    }
+                }
             }
         }
 
@@ -170,7 +177,10 @@ fun BluetoothLeScannerView(
                 }
             } ?: run {
                 foundDevices.forEach { device ->
-                    DeviceItem(device.name, device.address) { selectedDevice = device }
+                    DeviceItem(device.name, device.address) {
+                        bluetoothLeScanner.stopScan(leScanCallback)
+                        selectedDevice = device
+                    }
                 }
             }
         }
