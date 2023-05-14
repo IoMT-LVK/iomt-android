@@ -37,7 +37,9 @@ private val httpClient = createHttpClient(Android.create())
  */
 suspend fun getDeviceTypes(substring: String): List<DeviceConfig> = httpClient.get(
     URLBuilder("$BASE_URL$API_V1/device_types").apply {
-        parameters.append("name", substring)
+        if (substring.isNotBlank()) {
+            parameters.append("name", substring)
+        }
     }.build(),
 ).body()
 
