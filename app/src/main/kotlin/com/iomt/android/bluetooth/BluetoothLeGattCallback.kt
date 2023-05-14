@@ -44,9 +44,14 @@ class BluetoothLeGattCallback(
     override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
         super.onConnectionStateChange(gatt, status, newState)
         Log.d(loggerTag, "State changed to ${ConnectionStatus.fromConnectionState(newState)}")
-        if (newState == BluetoothProfile.STATE_CONNECTED) {
-            Log.d(loggerTag, "Discovering services...")
-            gatt.discoverServices()
+        when (newState) {
+            BluetoothProfile.STATE_CONNECTED -> run {
+                Log.d(loggerTag, "Discovering services...")
+                gatt.discoverServices()
+            }
+            BluetoothProfile.STATE_DISCONNECTED -> run {
+                Log.w(loggerTag, "Disconnected with status [$status]")
+            }
         }
     }
 

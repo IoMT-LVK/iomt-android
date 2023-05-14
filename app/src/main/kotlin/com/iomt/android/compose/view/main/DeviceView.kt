@@ -39,7 +39,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
         val characteristics = characteristicStates.map { (name, stateFlow) ->
             Characteristic(name, deviceConfig.characteristics[name]!!.prettyName, stateFlow)
         }
-        var connectionStatus by remember { mutableStateOf(ConnectionStatus.fromBondState(device.bondState)) }
+        var connectionStatus by remember { mutableStateOf(ConnectionStatus.CONNECTED) }
         Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             DeviceHeaderCard(device, connectionStatus) {
                 when (connectionStatus) {
