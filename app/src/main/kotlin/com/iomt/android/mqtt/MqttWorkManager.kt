@@ -12,7 +12,7 @@ import kotlin.time.DurationUnit
  * Class that is responsible for [WorkManager] initialization for data synchronization with [MqttClient]
  */
 class MqttWorkManager(context: Context) {
-    private val worker = WorkManager.getInstance(context)
+    private val manager = WorkManager.getInstance(context)
 
     /**
      * TODO: support changing [repeatIntervalDuration]
@@ -26,7 +26,7 @@ class MqttWorkManager(context: Context) {
         userId: Long,
         repeatIntervalDuration: Duration = 5.minutes,
         networkType: NetworkType = NetworkType.UNMETERED,
-    ) = worker.enqueueUniquePeriodicWork(
+    ) = manager.enqueueUniquePeriodicWork(
         mqttWorkManagerClassName,
         ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
         getWorkRequest(userId, repeatIntervalDuration, networkType),
@@ -39,7 +39,7 @@ class MqttWorkManager(context: Context) {
     /**
      * @return stopped [Operation]
      */
-    suspend fun stop() = worker.cancelUniqueWork(mqttWorkManagerClassName).also {
+    suspend fun stop() = manager.cancelUniqueWork(mqttWorkManagerClassName).also {
         Log.i(mqttWorkManagerClassName, "Stopping...")
         it.await()
         Log.i(mqttWorkManagerClassName, "Successfully stopped")

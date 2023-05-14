@@ -39,6 +39,7 @@ tasks.register("clean", Delete::class) {
 plugins {
     id("org.cqfn.diktat.diktat-gradle-plugin") version "1.2.5"
     id("com.google.devtools.ksp") version "1.8.21-1.0.11" apply false
+    kotlin("jupyter.api") version "0.11.0-365"
 }
 
 diktat {
