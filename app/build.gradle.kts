@@ -82,7 +82,7 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.4.3")
     implementation("androidx.compose.runtime:runtime:1.4.3")
     implementation("androidx.compose.compiler:compiler:1.4.7")
-    implementation("androidx.compose.material3:material3:1.0.1")
+    implementation("androidx.compose.material3:material3:1.1.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
     debugImplementation("androidx.compose.ui:ui-tooling:1.4.3")
 
@@ -94,7 +94,7 @@ dependencies {
     implementation("androidx.room:room-paging:2.5.1")
     ksp("androidx.room:room-compiler:2.5.1")
 
-    implementation("androidx.core:core-ktx:1.10.0")
+    implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.work:work-runtime-ktx:2.8.1")
     implementation("androidx.credentials:credentials:1.2.0-alpha03")
