@@ -15,9 +15,7 @@ import androidx.core.app.NotificationCompat
 import com.iomt.android.EntryPointActivity
 import com.iomt.android.R
 import com.iomt.android.configs.DeviceConfig
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
-import no.nordicsemi.android.ble.ktx.suspend
 
 /**
  * Key is characteristic name
@@ -62,8 +60,8 @@ class BluetoothLeForegroundService : Service() {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) = runBlocking {
-        bluetoothLeManager.connectDevice(bluetoothDevice, deviceConfig).join()
+    suspend fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) {
+        bluetoothLeManager.connectDevice(bluetoothDevice, deviceConfig)
         updateNotification()
     }
 
@@ -72,7 +70,7 @@ class BluetoothLeForegroundService : Service() {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
+    suspend fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
         .also { updateNotification() }
 
     /**
@@ -137,6 +135,7 @@ class BluetoothLeForegroundService : Service() {
             .setSmallIcon(R.drawable.logo)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
             .also { Log.d(loggerTag, "Notification created") }
     }
