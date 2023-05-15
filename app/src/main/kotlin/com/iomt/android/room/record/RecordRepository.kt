@@ -79,6 +79,6 @@ class RecordRepository(context: Context) {
         val allStats = dao.countAllGroupedByLinkId()
         val synchronizedStats = dao.countSynchronizedGroupedByLinkId()
         val now = LocalDateTime.now()
-        return allStats.map { (key, value) -> StatisticsEntity(now, value, synchronizedStats.getValue(key), key) }
+        return allStats.map { (key, value) -> StatisticsEntity(now, value, synchronizedStats[key] ?: 0, key) }
     }
 }

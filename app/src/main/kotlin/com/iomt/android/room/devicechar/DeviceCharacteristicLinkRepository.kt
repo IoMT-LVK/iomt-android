@@ -57,7 +57,7 @@ class DeviceCharacteristicLinkRepository(context: Context) {
      */
     suspend fun getDeviceMacAndCharacteristicNameByLinkId(linkEntityId: Long): Pair<String, String>? {
         val deviceCharacteristicLinkEntity = dao.getById(linkEntityId) ?: return null
-        val deviceEntity = deviceDao.getById(deviceCharacteristicLinkEntity.id!!) ?: return null
+        val deviceEntity = deviceDao.getById(deviceCharacteristicLinkEntity.deviceId) ?: return null
         val characteristicEntity = characteristicDao.getById(deviceCharacteristicLinkEntity.characteristicId) ?: return null
         return deviceEntity.mac to characteristicEntity.name
     }

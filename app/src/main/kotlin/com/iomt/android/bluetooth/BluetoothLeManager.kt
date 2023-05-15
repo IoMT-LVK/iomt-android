@@ -120,7 +120,9 @@ class BluetoothLeManager(private val context: Context) {
      */
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    internal suspend fun disconnectDevice(macAddress: String) = coroutineScope { bluetoothDeviceManagers.remove(macAddress)?.disconnect()?.await() }
+    internal suspend fun disconnectDevice(macAddress: String) = coroutineScope {
+        withContext(Dispatchers.Default) { bluetoothDeviceManagers.remove(macAddress)?.disconnect()?.await() }
+    }
 
     /**
      * @param deviceMac MAC address of Bluetooth LE device
