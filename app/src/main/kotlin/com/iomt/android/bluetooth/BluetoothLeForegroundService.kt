@@ -15,7 +15,6 @@ import androidx.core.app.NotificationCompat
 import com.iomt.android.EntryPointActivity
 import com.iomt.android.R
 import com.iomt.android.configs.DeviceConfig
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -61,8 +60,8 @@ class BluetoothLeForegroundService : Service() {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) = runBlocking {
-        bluetoothLeManager.connectDevice(bluetoothDevice, deviceConfig).join()
+    suspend fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) {
+        bluetoothLeManager.connectDevice(bluetoothDevice, deviceConfig)
         updateNotification()
     }
 
@@ -71,7 +70,7 @@ class BluetoothLeForegroundService : Service() {
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
+    suspend fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
         .also { updateNotification() }
 
     /**
@@ -85,20 +84,18 @@ class BluetoothLeForegroundService : Service() {
     /**
      * @return connected [BluetoothDevice]s as [List]
      */
-    fun getConnectedDevices() = bluetoothLeManager.getConnectedDevices().values.map { it.device }
+    fun getConnectedDevices() = bluetoothLeManager.getConnectedDevices().values
 
     /**
      * @param macAddress MAC address of Bluetooth LE device
      * @return connected [BluetoothDevice] by its [macAddress]
      */
-    fun getConnectedDevice(macAddress: String) = bluetoothLeManager.getConnectedDevices()[macAddress]?.device
+    fun getConnectedDevice(macAddress: String) = bluetoothLeManager.getConnectedDevices()[macAddress]
 
     /**
      * @return [List] of pairs: connected [BluetoothDevice]s and their [DeviceConfig]s
      */
-    fun getConnectedDevicesWithConfigs() = bluetoothLeManager.getConnectedDevicesWithConfigs().values.map { (gatt, config) ->
-        BluetoothDeviceWithConfig(gatt.device, config)
-    }
+    fun getConnectedDevicesWithConfigs() = bluetoothLeManager.getConnectedDevicesWithConfigs().values
 
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
@@ -138,6 +135,7 @@ class BluetoothLeForegroundService : Service() {
             .setSmallIcon(R.drawable.logo)
             .setContentIntent(pendingIntent)
             .setOngoing(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .build()
             .also { Log.d(loggerTag, "Notification created") }
     }
@@ -156,7 +154,7 @@ class BluetoothLeForegroundService : Service() {
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun getNotificationText(): String = bluetoothLeManager.getConnectedDevices()
         .values
-        .joinToString("\n") { it.device.name }
+        .joinToString("\n") { it.name }
         .ifBlank { "No connected devices" }
 
     /**

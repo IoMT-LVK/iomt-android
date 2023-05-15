@@ -44,6 +44,7 @@ import com.iomt.android.room.devicechar.DeviceCharacteristicLinkEntity
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
 import com.iomt.android.utils.*
 
+import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.*
@@ -54,7 +55,6 @@ private val scanningPeriod = 30.seconds
  * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
  * @param navigateBack callback to go to previous view (HomeView)
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
@@ -85,11 +85,11 @@ fun BluetoothLeScannerView(
     withLoading(bluetoothLeForegroundService) { bleService ->
         val foundDevices = remember { bluetoothManager.getConnectedDevices(BluetoothProfile.GATT).toMutableStateList() }
         val connectedDevices = remember { bleService.getConnectedDevices().toMutableStateList() }
-        val leScanCallback by remember {
-            mutableStateOf(BluetoothLeScanCallback(connectedDevices, foundDevices))
-        }
+        val leScanCallback by remember { mutableStateOf(BluetoothLeScanCallback(connectedDevices, foundDevices)) }
 
         var isScanning by remember { mutableStateOf(false) }
+        var isScanRequested by remember { mutableStateOf(false) }
+
         mutableFloatingButtonBuilder.value = {
             val floatingActionButtonContent: @Composable () -> Unit = {
                 when (isScanning) {
@@ -105,7 +105,7 @@ fun BluetoothLeScannerView(
                 }
             }
             ExtendedFloatingActionButton(
-                onClick = { isScanning = !isScanning },
+                onClick = { isScanRequested = !isScanRequested },
                 shape = ShapeDefaults.Medium,
             ) { floatingActionButtonContent() }
         }
@@ -113,25 +113,37 @@ fun BluetoothLeScannerView(
             .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
             .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
             .build()
-        LaunchedEffect(isScanning) {
-            if (isScanning) {
-                withContext(Dispatchers.Main) {
-                    bluetoothLeScanner.startScan(emptyList(), scanSettings, leScanCallback).also {
-                        Log.d("BleScanner", "Scan started")
-                    }
-                    delay(scanningPeriod)
-                    bluetoothLeScanner.flushPendingScanResults(leScanCallback)
-                    bluetoothLeScanner.stopScan(leScanCallback).also {
-                        Log.d("BleScanner", "Scan stopped after $scanningPeriod")
-                    }
+
+        val stopScan: suspend (CoroutineContext) -> Unit = { coroutineContext ->
+            withContext(coroutineContext) {
+                bluetoothLeScanner.stopScan(leScanCallback).also {
+                    Log.d("BleScanner", "Scan stopped after $scanningPeriod")
                 }
+            }
+        }
+
+        @Suppress("TOO_MANY_LINES_IN_LAMBDA")
+        val startScanWithTimeout: suspend (CoroutineContext) -> Unit = { coroutineContext ->
+            withContext(coroutineContext) {
+                bluetoothLeScanner.startScan(emptyList(), scanSettings, leScanCallback)
+                    .also { Log.d("BleScanner", "Scan started") }
+                isScanning = true
+                delay(scanningPeriod)
+                bluetoothLeScanner.flushPendingScanResults(leScanCallback)
+                bluetoothLeScanner.stopScan(leScanCallback).also {
+                    Log.d("BleScanner", "Scan stopped after $scanningPeriod")
+                }
+            }
+        }
+
+        LaunchedEffect(isScanRequested) {
+            if (isScanRequested && !isScanning) {
+                isScanRequested = false
+                startScanWithTimeout(Dispatchers.Main)
                 isScanning = false
-            } else {
-                withContext(Dispatchers.Main) {
-                    bluetoothLeScanner.stopScan(leScanCallback).also {
-                        Log.d("BleScanner", "Scan stopped after $scanningPeriod")
-                    }
-                }
+            } else if (isScanRequested) {
+                stopScan(Dispatchers.Main)
+                isScanning = false
             }
         }
 

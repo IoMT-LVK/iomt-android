@@ -2,7 +2,6 @@ package com.iomt.android.bluetooth
 
 import android.Manifest
 import android.bluetooth.BluetoothDevice
-import android.bluetooth.BluetoothDevice.TRANSPORT_LE
 import android.bluetooth.BluetoothGatt
 import android.content.Context
 import android.os.Build
@@ -10,73 +9,33 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.annotation.RequiresPermission
 import com.iomt.android.configs.DeviceConfig
-import com.iomt.android.room.devicechar.DeviceCharacteristicLink
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
-import com.iomt.android.room.record.RecordEntity
-import com.iomt.android.room.record.RecordRepository
-import com.iomt.android.utils.now
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.datetime.LocalDateTime
-
-typealias BluetoothGattWithConfig = Pair<BluetoothGatt, DeviceConfig>
-
-/**
- * Key is characteristic name
- *
- * Value is [MutableStateFlow] of the value
- */
-private typealias MutableDeviceStateFlow = MutableMap<String, MutableStateFlow<String>>
-
-/**
- * Key is device MAC address
- *
- * Value is [DeviceStateFlow]
- */
-private typealias DeviceStateFlowMap = MutableMap<String, MutableDeviceStateFlow>
-
-/**
- * Key is device MAC
- *
- * Value is [BluetoothGatt] - connected device with corresponding MAC address
- */
-private typealias ConnectedDevicesMap = MutableMap<String, BluetoothGatt>
 
 /**
  * Class that encapsulates all the BleGatt interactions
  */
 class BluetoothLeManager(private val context: Context) {
-    /**
-     * @property config config of device
-     * @property deviceCharacteristicLink device-related data from database
-     */
-    data class DeviceAdditionalData(
-        val config: DeviceConfig,
-        val deviceCharacteristicLink: DeviceCharacteristicLink,
-    )
-
-    // Key is MAC address of device
-    // Value is [BluetoothGatt] connected with it
-    private val connectedDevices: ConnectedDevicesMap = mutableMapOf()
-    private val additionalData: MutableMap<String, DeviceAdditionalData> = mutableMapOf()
-    private val stateFlows: DeviceStateFlowMap = mutableMapOf()
-
     private val deviceCharacteristicLinkRepository = DeviceCharacteristicLinkRepository(context)
-    private val recordRepository = RecordRepository(context)
 
-    private val scope = CoroutineScope(Dispatchers.Default)
+    /**
+     * Key is MAC address of device
+     * Value is [BluetoothDeviceManager] connected with it
+     */
+    private val bluetoothDeviceManagers: MutableMap<String, BluetoothDeviceManager> = mutableMapOf()
 
     /**
      * @return [Map] where keys are MAC addresses and values are [BluetoothGatt]s
      */
-    fun getConnectedDevices(): Map<String, BluetoothGatt> = connectedDevices
+    fun getConnectedDevices(): Map<String, BluetoothDevice> = bluetoothDeviceManagers.mapNotNull { (mac, bluetoothDevice) ->
+        bluetoothDevice.getDevice()?.let { mac to it }
+    }.toMap()
 
     /**
      * @return [Map] where keys are MAC addresses and values are pairs: [BluetoothGatt] and [DeviceConfig]
      */
-    fun getConnectedDevicesWithConfigs(): Map<String, BluetoothGattWithConfig> = connectedDevices.map { (macAddress, bluetoothGatt) ->
-        macAddress to (bluetoothGatt to additionalData.getValue(macAddress).config)
+    fun getConnectedDevicesWithConfigs(): Map<String, BluetoothDeviceWithConfig> = bluetoothDeviceManagers.mapNotNull { (mac, bluetoothDevice) ->
+        bluetoothDevice.getDeviceWithConfigs()?.let { mac to it }
     }.toMap()
 
     /**
@@ -124,15 +83,15 @@ class BluetoothLeManager(private val context: Context) {
      *         }
      *     }
      *
-     * @param device
-     * @param deviceConfig
-     * @return connection [Job]
+     * @param device [BluetoothDevice] to connect to
+     * @param deviceConfig [DeviceConfig] corresponding to [device]
+     * @return [Unit]
      */
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    internal fun connectDevice(device: BluetoothDevice, deviceConfig: DeviceConfig): Job = scope.launch {
+    internal suspend fun connectDevice(device: BluetoothDevice, deviceConfig: DeviceConfig) = coroutineScope {
         val macAddress = device.address
-        if (connectedDevices.containsKey(macAddress)) {
+        if (bluetoothDeviceManagers.containsKey(macAddress)) {
             cancel("Device is already connected")
         }
 
@@ -141,56 +100,36 @@ class BluetoothLeManager(private val context: Context) {
         }
 
         try {
-            val deviceStateFlow: MutableDeviceStateFlow = mutableMapOf()
-            deviceConfig.characteristics.keys.map { deviceStateFlow[it] = MutableStateFlow("- -") }
-            additionalData[macAddress] = DeviceAdditionalData(deviceConfig, deviceCharacteristicLink)
-            val bleGattCallback = getBleGattCallbackForDevice(macAddress, deviceStateFlow)
-            val gatt = withContext(Dispatchers.Main) { device.connectGatt(context, false, bleGattCallback, TRANSPORT_LE) }
-            connectedDevices[macAddress] = gatt
-            stateFlows[macAddress] = deviceStateFlow
+            bluetoothDeviceManagers[macAddress] = BluetoothDeviceManager(deviceConfig, deviceCharacteristicLink, context)
+                .also { bluetoothDeviceManager ->
+                    bluetoothDeviceManager
+                        .connect(device)
+                        .retry(3, 200)
+                        .useAutoConnect(false)
+                        .await()
+                }
         } catch (exception: Throwable) {
             Log.e(loggerTag, exception.message.toString())
-            try {
-                additionalData.remove(macAddress)
-            } finally {
-                stateFlows.remove(macAddress)
-            }
         }
+        Unit
     }
 
     /**
      * @param macAddress MAC address of Bluetooth LE device
+     * @return [Unit] if successfully disconnected, null otherwise
      */
     @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    internal fun disconnectDevice(macAddress: String) {
-        connectedDevices.remove(macAddress)?.close()
-        additionalData.remove(macAddress)
-    }
+    internal suspend fun disconnectDevice(macAddress: String) = coroutineScope { bluetoothDeviceManagers.remove(macAddress)?.disconnect()?.await() }
 
     /**
      * @param deviceMac MAC address of Bluetooth LE device
-     * @return [MutableDeviceStateFlow] corresponding to device with [deviceMac]
+     * @return [CharacteristicStateFlowMap] corresponding to device with [deviceMac]
      */
-    internal fun subscribeOn(deviceMac: String): MutableDeviceStateFlow = requireNotNull(stateFlows[deviceMac]) {
+    internal fun subscribeOn(deviceMac: String): CharacteristicStateFlowMap = requireNotNull(bluetoothDeviceManagers[deviceMac]) {
         "No StateFlow created for $deviceMac"
-    }
+    }.subscribeOn()
 
-    private fun getBleGattCallbackForDevice(macAddress: String, deviceStateFlow: MutableDeviceStateFlow): BluetoothLeGattCallback {
-        val deviceData = requireNotNull(additionalData[macAddress]) {
-            "Could not find device with mac address $macAddress"
-        }
-        return BluetoothLeGattCallback(deviceData.config) { charName, newValue ->
-            scope.launch {
-                deviceData.deviceCharacteristicLink.let { link ->
-                    val linkEntityId = link.getLinkIdByCharacteristicName(charName)
-                    val record = RecordEntity(linkEntityId, LocalDateTime.now(), newValue)
-                    recordRepository.insert(record)
-                }
-            }
-            deviceStateFlow[charName]?.let { stateFlow -> stateFlow.update { newValue } }
-        }
-    }
     companion object {
         @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val loggerTag = BluetoothLeManager::class.java.simpleName

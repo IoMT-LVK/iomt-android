@@ -23,6 +23,7 @@ import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.entities.Characteristic
 import com.iomt.android.utils.rememberBoundService
 import com.iomt.android.utils.withLoading
+import kotlinx.coroutines.launch
 
 /**
  * @param macAddress MAC address of [BluetoothDevice]
@@ -39,11 +40,12 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
         val characteristics = characteristicStates.map { (name, stateFlow) ->
             Characteristic(name, deviceConfig.characteristics[name]!!.prettyName, stateFlow)
         }
+        val scope = rememberCoroutineScope()
         var connectionStatus by remember { mutableStateOf(ConnectionStatus.CONNECTED) }
         Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             DeviceHeaderCard(device, connectionStatus) {
                 when (connectionStatus) {
-                    ConnectionStatus.DISCONNECTED -> bluetoothLeForegroundService?.connectDevice(device, deviceConfig)
+                    ConnectionStatus.DISCONNECTED -> scope.launch { bluetoothLeForegroundService?.connectDevice(device, deviceConfig) }
                         .also { connectionStatus = ConnectionStatus.CONNECTED }
                     ConnectionStatus.CONNECTING -> {
                         Log.d("GattStatusChangeRequest", "None due to CONNECTING state")
@@ -51,7 +53,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
                     }
                     ConnectionStatus.CONNECTED -> {
                         Log.d("GattStatusChangeRequest", "Request to disconnect")
-                        bluetoothLeForegroundService?.disconnectDevice(device).also { connectionStatus = ConnectionStatus.DISCONNECTED }
+                        scope.launch { bluetoothLeForegroundService?.disconnectDevice(device).also { connectionStatus = ConnectionStatus.DISCONNECTED } }
                     }
                 }
             }
