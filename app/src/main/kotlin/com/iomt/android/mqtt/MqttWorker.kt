@@ -46,7 +46,6 @@ class MqttWorker(
         setForeground(getForegroundInfo())
         val recordsToSend = try {
             recordRepository.getNotSynchronized().map { recordEntity ->
-                Log.d(loggerTag, Json.encodeToString(recordEntity))
                 deviceCharacteristicLinkRepository
                     .getDeviceMacAndCharacteristicNameByLinkId(recordEntity.deviceCharacteristicLinkId)
                     ?.let { macAndCharName -> recordEntity to macAndCharName }
@@ -69,10 +68,10 @@ class MqttWorker(
 
         recordsToSend.map { (recordEntity, recordInfo) ->
             val (macAddress, characteristicName) = recordInfo
-            val topic = Topic(userId, macAddress)
+            val topic = Topic(userId, macAddress, characteristicName)
             try {
-                mqttClient.send(topic, recordEntity.toMqttRecordMessage(characteristicName))
-                recordRepository.update(recordEntity.apply { isSynchronized = true })
+                mqttClient.send(topic, recordEntity.toMqttRecordMessage())
+                recordRepository.update(recordEntity.apply { isSynchronized = true }.also { Log.d(loggerTag, Json.encodeToString(it)) })
             } catch (mqttException: RuntimeException) {
                 Log.e(loggerTag, "Could not send data with topic ${topic.toTopicName()}", mqttException)
                 return Result.failure()
