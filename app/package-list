@@ -1,6 +1,11 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
 $dokka.location:com.iomt.android.bluetooth////PointingToDeclaration/app/com.iomt.android.bluetooth/index.html
+$dokka.location:com.iomt.android.bluetooth/BluetoothDeviceManager.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-manager/-companion/index.html
+$dokka.location:com.iomt.android.bluetooth/BluetoothDeviceManager///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-manager/index.html
+$dokka.location:com.iomt.android.bluetooth/BluetoothDeviceManager/BluetoothDeviceManager/#com.iomt.android.configs.DeviceConfig#com.iomt.android.room.devicechar.DeviceCharacteristicLink#android.content.Context/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-manager/-bluetooth-device-manager.html
+$dokka.location:com.iomt.android.bluetooth/BluetoothDeviceManager/getMinLogPriority/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-manager/get-min-log-priority.html
+$dokka.location:com.iomt.android.bluetooth/BluetoothDeviceManager/log/#kotlin.Int#kotlin.String/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-manager/log.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothDeviceWithConfig///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-with-config/index.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothDeviceWithConfig/BluetoothDeviceWithConfig/#android.bluetooth.BluetoothDevice#com.iomt.android.configs.DeviceConfig/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-with-config/-bluetooth-device-with-config.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothDeviceWithConfig/config/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-device-with-config/config.html
@@ -20,17 +25,7 @@ $dokka.location:com.iomt.android.bluetooth/BluetoothLeForegroundService/onBind/#
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeForegroundService/onCreate/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-foreground-service/on-create.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeForegroundService/onStartCommand/#android.content.Intent?#kotlin.Int#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-foreground-service/on-start-command.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeForegroundService/subscribeOn/#kotlin.String/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-foreground-service/subscribe-on.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeGattCallback.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-gatt-callback/-companion/index.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeGattCallback///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-gatt-callback/index.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeGattCallback/BluetoothLeGattCallback/#com.iomt.android.configs.DeviceConfig#kotlin.Function2[kotlin.String,kotlin.String,kotlin.Unit]/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-gatt-callback/-bluetooth-le-gatt-callback.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeGattCallback/onCharacteristicChanged/#android.bluetooth.BluetoothGatt#android.bluetooth.BluetoothGattCharacteristic/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-gatt-callback/on-characteristic-changed.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeGattCallback/onConnectionStateChange/#android.bluetooth.BluetoothGatt#kotlin.Int#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-gatt-callback/on-connection-state-change.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeGattCallback/onServicesDiscovered/#android.bluetooth.BluetoothGatt#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-gatt-callback/on-services-discovered.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeManager.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/-companion/index.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeManager.DeviceAdditionalData///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/-device-additional-data/index.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeManager.DeviceAdditionalData/DeviceAdditionalData/#com.iomt.android.configs.DeviceConfig#com.iomt.android.room.devicechar.DeviceCharacteristicLink/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/-device-additional-data/-device-additional-data.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeManager.DeviceAdditionalData/config/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/-device-additional-data/config.html
-$dokka.location:com.iomt.android.bluetooth/BluetoothLeManager.DeviceAdditionalData/deviceCharacteristicLink/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/-device-additional-data/device-characteristic-link.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeManager///PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/index.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeManager/BluetoothLeManager/#android.content.Context/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/-bluetooth-le-manager.html
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeManager/getConnectedDevices/#/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-manager/get-connected-devices.html
@@ -42,9 +37,6 @@ $dokka.location:com.iomt.android.bluetooth/BluetoothLeScanCallback/onScanFailed/
 $dokka.location:com.iomt.android.bluetooth/BluetoothLeScanCallback/onScanResult/#kotlin.Int#android.bluetooth.le.ScanResult/PointingToDeclaration/app/com.iomt.android.bluetooth/-bluetooth-le-scan-callback/on-scan-result.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus.CONNECTED///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}app/com.iomt.android.bluetooth/-connection-status/-c-o-n-n-e-c-t-e-d/index.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus.CONNECTING///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}app/com.iomt.android.bluetooth/-connection-status/-c-o-n-n-e-c-t-i-n-g/index.html
-$dokka.location:com.iomt.android.bluetooth/ConnectionStatus.Companion///PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/-companion/index.html
-$dokka.location:com.iomt.android.bluetooth/ConnectionStatus.Companion/fromBondState/#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/-companion/from-bond-state.html
-$dokka.location:com.iomt.android.bluetooth/ConnectionStatus.Companion/fromConnectionState/#kotlin.Int/PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/-companion/from-connection-state.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus.DISCONNECTED///PointingToDeclaration/{"org.jetbrains.dokka.links.EnumEntryDRIExtra":{"key":"org.jetbrains.dokka.links.EnumEntryDRIExtra"}}app/com.iomt.android.bluetooth/-connection-status/-d-i-s-c-o-n-n-e-c-t-e-d/index.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus///PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/index.html
 $dokka.location:com.iomt.android.bluetooth/ConnectionStatus/valueOf/#kotlin.String/PointingToDeclaration/app/com.iomt.android.bluetooth/-connection-status/value-of.html
