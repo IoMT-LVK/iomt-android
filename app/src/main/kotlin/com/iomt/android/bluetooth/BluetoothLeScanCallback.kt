@@ -1,7 +1,6 @@
 package com.iomt.android.bluetooth
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
@@ -21,18 +20,20 @@ class BluetoothLeScanCallback(
     private val connectedDevices: SnapshotStateList<BluetoothDevice>,
     private val foundDevices: SnapshotStateList<BluetoothDevice>,
 ) : ScanCallback() {
-    @SuppressLint("NotifyDataSetChanged")
     @RequiresApi(Build.VERSION_CODES.S)
-    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
+    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION])
     override fun onScanResult(callbackType: Int, result: ScanResult) {
         val device = result.device
-        Log.d(loggerTag, "${device.name} - ${device.address}")
-        if (device !in connectedDevices && device !in foundDevices) {
+        if (device !in connectedDevices && device !in foundDevices && device.name != null) {
+            Log.d(loggerTag, "${device.name} - ${device.address}")
             device.name?.let { foundDevices.add(device) }
         }
     }
+
+    override fun onScanFailed(errorCode: Int) {
+        Log.e(loggerTag, "Scan failed with [$errorCode] error code.")
+    }
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = object { }.javaClass.enclosingClass.simpleName
+        private val loggerTag = BluetoothLeScanCallback::class.java.simpleName
     }
 }
