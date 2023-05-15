@@ -35,8 +35,7 @@ data class RecordEntity(
     @ColumnInfo(name = "is_sync", defaultValue = "0") var isSynchronized: Boolean = false,
 ) : BasicEntity() {
     /**
-     * @param characteristicName
      * @return [MqttRecordMessage] from this [RecordEntity]
      */
-    fun toMqttRecordMessage(characteristicName: String) = MqttRecordMessage(characteristicName, value, timestamp)
+    fun toMqttRecordMessage() = MqttRecordMessage(value, timestamp)
 }

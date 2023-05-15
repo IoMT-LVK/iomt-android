@@ -72,7 +72,7 @@ fun LoginView(
         credentialManager?.get()?.also {
             login = it.login
             password = it.password
-            onLoginClicked()
+            // onLoginClicked()
         }
     }
 

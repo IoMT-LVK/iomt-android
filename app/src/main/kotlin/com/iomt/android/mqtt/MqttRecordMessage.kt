@@ -8,13 +8,11 @@ import kotlinx.serialization.json.Json
 /**
  * Data class that represents message that should be sent to server with MQTT
  *
- * @property characteristicName name of a gatt characteristic
  * @property value recorded value
  * @property timestamp [LocalDateTime] when [value] was received
  */
 @Serializable
 data class MqttRecordMessage(
-    val characteristicName: String,
     val value: String,
     val timestamp: LocalDateTime,
 ) {

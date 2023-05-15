@@ -53,7 +53,7 @@ fun EntryPoint() {
             val cleanerWorkManager = CleanerWorkManager.getInstance(context)
             val statisticsWorkManager = StatisticsWorkManager.getInstance(context)
 
-            scope.launch {
+            scope.launch(Dispatchers.Default) {
                 val userData = getUserData()
                 mqttWorkManager.start(userData.id)
                 cleanerWorkManager.start()
@@ -65,7 +65,7 @@ fun EntryPoint() {
             val cleanerWorkManager = CleanerWorkManager.getInstance(context)
             val mqttWorkManager = MqttWorkManager.getInstance(context)
             val statisticsWorkManager = StatisticsWorkManager.getInstance(context)
-            scope.launch {
+            scope.launch(Dispatchers.Default) {
                 mqttWorkManager.stop()
                 cleanerWorkManager.stop()
                 statisticsWorkManager.stop()
