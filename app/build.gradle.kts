@@ -116,6 +116,10 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:2.2.4")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.2.4")
 
+    implementation("no.nordicsemi.android:ble:2.6.1")
+    implementation("no.nordicsemi.android:ble-ktx:2.6.1")
+    implementation("no.nordicsemi.android:ble-common:2.6.1")
+
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
     testImplementation("io.ktor:ktor-client-mock:2.2.4")
     testImplementation(platform("org.junit:junit-bom:5.8.2"))
