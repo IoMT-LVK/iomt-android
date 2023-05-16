@@ -14,3 +14,7 @@
 .cxx
 /.idea/**/*
 /.idea/
+/statistics/.idea
+/statistics/Pipfile
+/statistics/Pipfile.lock
+identifier.sqlite
