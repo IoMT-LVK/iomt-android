@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.compose.setContent
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.iomt.android.compose.EntryPoint
@@ -14,7 +13,6 @@ import com.iomt.android.compose.EntryPoint
 /**
  * [AppCompatActivity] that is used for [EntryPoint] - compose integration into android
  */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 class EntryPointActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,15 +38,17 @@ class EntryPointActivity : AppCompatActivity() {
     companion object {
         private val permissions = buildList {
             add(Manifest.permission.BLUETOOTH)
-            add(Manifest.permission.BLUETOOTH_SCAN)
-            add(Manifest.permission.BLUETOOTH_CONNECT)
             add(Manifest.permission.BLUETOOTH_PRIVILEGED)
-            add(Manifest.permission.FOREGROUND_SERVICE)
             add(Manifest.permission.ACCESS_FINE_LOCATION)
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.TIRAMISU) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                add(Manifest.permission.BLUETOOTH_SCAN)
+                add(Manifest.permission.BLUETOOTH_CONNECT)
+                add(Manifest.permission.FOREGROUND_SERVICE)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 add(Manifest.permission.POST_NOTIFICATIONS)
             }
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 add(Manifest.permission.FOREGROUND_SERVICE_CONNECTED_DEVICE)
             }
         }

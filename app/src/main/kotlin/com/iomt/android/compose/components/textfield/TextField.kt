@@ -19,7 +19,6 @@ import com.iomt.android.compose.theme.colorScheme
  * @param cell [Cell] that should be displayed
  * @param verticalPadding vertical padding applied to [TextField]
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextField(cell: Cell, verticalPadding: Dp = 5.dp) {
     TextField(

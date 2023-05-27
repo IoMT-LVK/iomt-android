@@ -69,7 +69,6 @@ class AppCredentialManager(private val context: Context) {
     }
 
     companion object {
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
-        private val loggerTag = object { }.javaClass.enclosingClass.name
+        private val loggerTag = AppCredentialManager::class.java.simpleName
     }
 }

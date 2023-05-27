@@ -4,12 +4,9 @@
 
 package com.iomt.android.compose
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.toArgb
@@ -18,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
 
 import com.iomt.android.bluetooth.BluetoothLeForegroundService
+import com.iomt.android.bluetooth.BluetoothLeLegacyService
 import com.iomt.android.compose.components.NavViewSystemWithDrawer
 import com.iomt.android.compose.navigation.NavRouter.Companion.useLoginNavHost
 import com.iomt.android.compose.theme.colorScheme
@@ -34,8 +32,6 @@ import kotlinx.coroutines.launch
 /**
  * Entry point of application
  */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Composable
 fun EntryPoint() {
     MaterialTheme(colorScheme = colorScheme) {
@@ -46,8 +42,13 @@ fun EntryPoint() {
         val scope = rememberCoroutineScope()
 
         val onLoginSuccess: () -> Unit = {
-            val bluetoothLeForegroundServiceIntent = Intent(context, BluetoothLeForegroundService::class.java)
-            context.startForegroundService(bluetoothLeForegroundServiceIntent)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                val bluetoothLeForegroundServiceIntent = Intent(context, BluetoothLeForegroundService::class.java)
+                context.startForegroundService(bluetoothLeForegroundServiceIntent)
+            } else {
+                val bluetoothLeLegacyServiceIntent = Intent(context, BluetoothLeLegacyService::class.java)
+                context.startService(bluetoothLeLegacyServiceIntent)
+            }
 
             val mqttWorkManager = MqttWorkManager.getInstance(context)
             val cleanerWorkManager = CleanerWorkManager.getInstance(context)
@@ -83,8 +84,6 @@ fun EntryPoint() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Preview
 @Composable
 private fun EntryPointPreview() {

@@ -1,13 +1,10 @@
-/**
+ /**
  * Component for device list rendering
  */
 
 package com.iomt.android.compose.components
 
-import android.Manifest
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -28,9 +25,8 @@ import com.iomt.android.bluetooth.BluetoothDeviceWithConfig
  * @param deviceWithConfigList [List] of [BluetoothDeviceWithConfig]s
  * @param onItemClicked callback invoked on Device item click
  */
-@RequiresApi(Build.VERSION_CODES.S)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
+@SuppressLint("MissingPermission")
 fun DeviceList(
     title: String,
     deviceWithConfigList: List<BluetoothDeviceWithConfig>,

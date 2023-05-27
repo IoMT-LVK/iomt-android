@@ -1,13 +1,10 @@
 package com.iomt.android.bluetooth
 
-import android.Manifest
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
 /**
@@ -20,8 +17,7 @@ class BluetoothLeScanCallback(
     private val connectedDevices: SnapshotStateList<BluetoothDevice>,
     private val foundDevices: SnapshotStateList<BluetoothDevice>,
 ) : ScanCallback() {
-    @RequiresApi(Build.VERSION_CODES.S)
-    @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.ACCESS_FINE_LOCATION])
+    @SuppressLint("MissingPermission")
     override fun onScanResult(callbackType: Int, result: ScanResult) {
         val device = result.device
         if (device !in connectedDevices && device !in foundDevices && device.name != null) {

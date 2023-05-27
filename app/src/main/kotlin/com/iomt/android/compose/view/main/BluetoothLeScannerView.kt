@@ -5,6 +5,7 @@
 package com.iomt.android.compose.view.main
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
@@ -55,9 +56,8 @@ private val scanningPeriod = 30.seconds
  * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
  * @param navigateBack callback to go to previous view (HomeView)
  */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT])
 @Composable
+@SuppressLint("MissingPermission")
 fun BluetoothLeScannerView(
     mutableFloatingButtonBuilder: MutableFloatingButtonBuilder,
     navigateBack: () -> Unit,

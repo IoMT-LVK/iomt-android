@@ -22,16 +22,16 @@ import kotlinx.coroutines.flow.StateFlow
  *
  * Value is [StateFlow] of the value
  */
-private typealias DeviceStateFlow = Map<String, StateFlow<String>>
+typealias DeviceStateFlow = Map<String, StateFlow<String>>
 
 /**
  * Foreground service that stores all the bluetooth data
  */
-class BluetoothLeForegroundService : Service() {
-    private val binder = BleBinder()
+@RequiresApi(Build.VERSION_CODES.S)
+class BluetoothLeForegroundService : Service(), BluetoothLeService {
+    private val binder = BluetoothLeBinder()
     private lateinit var bluetoothLeManager: BluetoothLeManager
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onCreate() {
         super.onCreate()
@@ -58,9 +58,8 @@ class BluetoothLeForegroundService : Service() {
      * @param bluetoothDevice [BluetoothDevice] to connect
      * @param deviceConfig [DeviceConfig] of [BluetoothDevice]
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    suspend fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) {
+    override suspend fun connectDevice(bluetoothDevice: BluetoothDevice, deviceConfig: DeviceConfig) {
         bluetoothLeManager.connectDevice(bluetoothDevice, deviceConfig)
         updateNotification()
     }
@@ -68,10 +67,9 @@ class BluetoothLeForegroundService : Service() {
     /**
      * @param bluetoothDevice [BluetoothDevice] to disconnect
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
-    suspend fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
-        .also { updateNotification() }
+    override suspend fun disconnectDevice(bluetoothDevice: BluetoothDevice) = bluetoothLeManager.disconnectDevice(bluetoothDevice.address)
+        .also { updateNotification() } ?: Unit
 
     /**
      * Method to subscribe on Device's characteristics updates
@@ -79,25 +77,24 @@ class BluetoothLeForegroundService : Service() {
      * @param deviceMac MAC address of Bluetooth LE device
      * @return [DeviceStateFlow] corresponding to Bluetooth LE device with [deviceMac]
      */
-    fun subscribeOn(deviceMac: String): DeviceStateFlow = bluetoothLeManager.subscribeOn(deviceMac)
+    override fun subscribeOn(deviceMac: String): DeviceStateFlow = bluetoothLeManager.subscribeOn(deviceMac)
 
     /**
      * @return connected [BluetoothDevice]s as [List]
      */
-    fun getConnectedDevices() = bluetoothLeManager.getConnectedDevices().values
+    override fun getConnectedDevices() = bluetoothLeManager.getConnectedDevices().values
 
     /**
      * @param macAddress MAC address of Bluetooth LE device
      * @return connected [BluetoothDevice] by its [macAddress]
      */
-    fun getConnectedDevice(macAddress: String) = bluetoothLeManager.getConnectedDevices()[macAddress]
+    override fun getConnectedDevice(macAddress: String) = bluetoothLeManager.getConnectedDevices()[macAddress]
 
     /**
      * @return [List] of pairs: connected [BluetoothDevice]s and their [DeviceConfig]s
      */
-    fun getConnectedDevicesWithConfigs() = bluetoothLeManager.getConnectedDevicesWithConfigs().values
+    override fun getConnectedDevicesWithConfigs() = bluetoothLeManager.getConnectedDevicesWithConfigs().values
 
-    @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
@@ -105,7 +102,6 @@ class BluetoothLeForegroundService : Service() {
         return START_STICKY
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     private fun createNotificationChannel() {
         val channelName = "IoMT BLE Service"
         val importance = NotificationManager.IMPORTANCE_LOW
@@ -114,7 +110,6 @@ class BluetoothLeForegroundService : Service() {
         notificationManager.createNotificationChannel(channel)
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun createNotification(): Notification {
         Log.d(loggerTag, "Creating notification...")
@@ -143,14 +138,12 @@ class BluetoothLeForegroundService : Service() {
     /**
      * Callback to update notification text
      */
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun updateNotification() {
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.notify(NOTIFICATION_ID, createNotification())
     }
 
-    @RequiresApi(Build.VERSION_CODES.S)
     @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     private fun getNotificationText(): String = bluetoothLeManager.getConnectedDevices()
         .values
@@ -160,7 +153,7 @@ class BluetoothLeForegroundService : Service() {
     /**
      * [Binder] implementation for [BluetoothLeForegroundService]
      */
-    inner class BleBinder : Binder() {
+    inner class BluetoothLeBinder : Binder() {
         /**
          * @return [BluetoothLeForegroundService]
          */
@@ -170,7 +163,6 @@ class BluetoothLeForegroundService : Service() {
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "iomt_ble_service_channel"
         private const val NOTIFICATION_ID = 1001
-        @Suppress("EMPTY_BLOCK_STRUCTURE_ERROR")
         private val loggerTag = BluetoothLeForegroundService::class.java.simpleName
     }
 }

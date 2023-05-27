@@ -4,12 +4,8 @@
 
 package com.iomt.android.compose.view.main
 
-import android.Manifest
 import android.bluetooth.*
-import android.os.Build
 import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -29,12 +25,10 @@ import kotlinx.coroutines.launch
  * @param macAddress MAC address of [BluetoothDevice]
  * @param deviceConfig [DeviceConfig] of [BluetoothDevice]
  */
-@RequiresApi(Build.VERSION_CODES.TIRAMISU)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
-    val bluetoothLeForegroundService by rememberBoundService().collectAsState()
-    withLoading(bluetoothLeForegroundService) { foregroundService ->
+    val bluetoothLeService by rememberBoundService().collectAsState()
+    withLoading(bluetoothLeService) { foregroundService ->
         val device by remember { mutableStateOf(foregroundService.getConnectedDevice(macAddress)!!) }
         val characteristicStates by remember { mutableStateOf(foregroundService.subscribeOn(macAddress)) }
         val characteristics = characteristicStates.map { (name, stateFlow) ->
@@ -45,7 +39,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
         Column(Modifier.fillMaxSize().padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             DeviceHeaderCard(device, connectionStatus) {
                 when (connectionStatus) {
-                    ConnectionStatus.DISCONNECTED -> scope.launch { bluetoothLeForegroundService?.connectDevice(device, deviceConfig) }
+                    ConnectionStatus.DISCONNECTED -> scope.launch { bluetoothLeService?.connectDevice(device, deviceConfig) }
                         .also { connectionStatus = ConnectionStatus.CONNECTED }
                     ConnectionStatus.CONNECTING -> {
                         Log.d("GattStatusChangeRequest", "None due to CONNECTING state")
@@ -53,7 +47,7 @@ fun DeviceView(macAddress: String, deviceConfig: DeviceConfig) {
                     }
                     ConnectionStatus.CONNECTED -> {
                         Log.d("GattStatusChangeRequest", "Request to disconnect")
-                        scope.launch { bluetoothLeForegroundService?.disconnectDevice(device).also { connectionStatus = ConnectionStatus.DISCONNECTED } }
+                        scope.launch { bluetoothLeService?.disconnectDevice(device).also { connectionStatus = ConnectionStatus.DISCONNECTED } }
                     }
                 }
             }

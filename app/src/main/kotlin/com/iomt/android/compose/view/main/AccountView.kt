@@ -2,13 +2,9 @@
 
 package com.iomt.android.compose.view.main
 
-import android.Manifest
-import android.os.Build
 import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
-import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -59,8 +55,6 @@ private enum class AccountViewTabs(val prettyName: String) {
  *
  * @param onDeviceItemClick callback invoked on device item click
  */
-@RequiresApi(Build.VERSION_CODES.S)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 fun AccountView(onDeviceItemClick: (BluetoothDeviceWithConfig) -> Unit) {
     Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -172,8 +166,6 @@ private fun RenderUserInfo() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 private fun RenderConnectedDevices(onItemClick: (BluetoothDeviceWithConfig) -> Unit) {
     val bluetoothLeForegroundService by rememberBoundService().collectAsState()
@@ -185,8 +177,6 @@ private fun RenderConnectedDevices(onItemClick: (BluetoothDeviceWithConfig) -> U
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Preview
 @Composable
 private fun AccountViewPreview() {

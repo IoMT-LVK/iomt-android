@@ -4,10 +4,6 @@
 
 package com.iomt.android.compose.view.main
 
-import android.Manifest
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -28,8 +24,6 @@ import com.iomt.android.utils.*
  * @param onKnownDeviceClick callback invoked on known device click
  * @param mutableFloatingButtonBuilder MutableState of FAB builder - used for setting the FAB
  */
-@RequiresApi(Build.VERSION_CODES.S)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
 fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnownDeviceClick: (BluetoothDeviceWithConfig) -> Unit) {
     mutableFloatingButtonBuilder.value = { navController ->
@@ -50,8 +44,6 @@ fun HomeView(mutableFloatingButtonBuilder: MutableFloatingButtonBuilder, onKnown
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.S)
-@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Preview
 @Composable
 private fun HomeViewPreview() {
