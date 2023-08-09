@@ -2,6 +2,8 @@
 
 [![Run diKTat](https://github.com/IoMT-LVK/iomt-android/actions/workflows/diktat.yml/badge.svg)](https://github.com/IoMT-LVK/iomt-android/actions/workflows/diktat.yml)
 ![Lines of code](https://img.shields.io/tokei/lines/github/IoMT-LVK/iomt-android)
+[![Hits-of-Code](https://hitsofcode.com/github/IoMT-LVK/iomt-android?branch=main)](https://hitsofcode.com/github/IoMT-LVK/iomt-android/view?branch=main)
+
 
 ### Abstract
 
