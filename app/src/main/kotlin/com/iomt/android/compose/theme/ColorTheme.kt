@@ -20,11 +20,12 @@ val colorScheme: ColorScheme
  */
 @Composable
 fun getPreferredColorScheme(): ColorScheme {
+    val isDynamicColor = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
     val isDarkTheme = isSystemInDarkTheme()
 
     return when {
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && isDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
-        Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !isDarkTheme -> dynamicLightColorScheme(LocalContext.current)
+        isDynamicColor && isDarkTheme -> dynamicDarkColorScheme(LocalContext.current)
+        isDynamicColor && !isDarkTheme -> dynamicLightColorScheme(LocalContext.current)
         isDarkTheme -> darkColorScheme()
         else -> lightColorScheme()
     }

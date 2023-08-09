@@ -4,6 +4,10 @@
 
 package com.iomt.android.compose.components
 
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
@@ -15,6 +19,8 @@ import com.iomt.android.compose.theme.colorScheme
 /**
  * @param signOut callback to sign out
  */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Composable
 fun NavViewSystemWithDrawer(signOut: () -> Unit) {
     val navController = rememberNavController()
@@ -23,6 +29,8 @@ fun NavViewSystemWithDrawer(signOut: () -> Unit) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Preview
 @Composable
 private fun NavViewSystemWithDrawerPreview() {

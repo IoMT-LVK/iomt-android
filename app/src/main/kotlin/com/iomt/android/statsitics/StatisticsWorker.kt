@@ -28,13 +28,13 @@ class StatisticsWorker(
     private val recordRepository = RecordRepository(context)
     private val statisticsRepository = StatisticsRepository(context)
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override suspend fun getForegroundInfo(): ForegroundInfo {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            createNotificationChannel()
-        }
+        createNotificationChannel()
         return ForegroundInfo(NOTIFICATION_ID, createNotification())
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override suspend fun doWork(): Result {
         setForeground(getForegroundInfo())
 
@@ -54,6 +54,7 @@ class StatisticsWorker(
         notificationManager.createNotificationChannel(channel)
     }
 
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun createNotification(): Notification {
         Log.d(loggerTag, "Creating notification...")
         val notificationIntent = Intent(context, EntryPointActivity::class.java)
@@ -64,11 +65,7 @@ class StatisticsWorker(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
 
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-            NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
-        } else {
-            @Suppress("DEPRECATION") NotificationCompat.Builder(context)
-        }
+        return NotificationCompat.Builder(context, NOTIFICATION_CHANNEL_ID)
             .setContentTitle("IoMT statistics")
             .setContentText("Statistics recording is in progress...")
             .setSmallIcon(R.drawable.logo)

@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
  * @param navigateToRegistration callback to navigate to RegistrationView
  * @param onLoginSuccess callback to navigate to after-login part of the app
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 fun LoginView(

@@ -78,7 +78,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
 
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-compose:1.7.1")
     implementation("androidx.compose.ui:ui:1.4.3")
     implementation("androidx.compose.runtime:runtime:1.4.3")
     implementation("androidx.compose.compiler:compiler:1.4.7")

@@ -1,7 +1,11 @@
 package com.iomt.android.compose.navigation
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -107,6 +111,8 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
          * @param onLoginSuccess callback invoked on successful sign in
          * @param navViewSystemWithDrawer lambda that creates NavViewSystemWithDrawer for later app usage
          */
+        @RequiresApi(Build.VERSION_CODES.S)
+        @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
         @Composable
         @SuppressLint("ComposableNaming")
         fun NavHostController.useLoginNavHost(
@@ -134,6 +140,8 @@ sealed class NavRouter(open val iconId: Int, open val path: String) {
          * @param onHomeDeviceClick callback invoked when [BluetoothDevice] was selected on [HomeView]
          * @param onAccountDeviceClick callback invoked when [BluetoothDevice] was selected on [AccountView]
          */
+        @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+        @RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
         @Composable
         @SuppressLint("ComposableNaming")
         @Suppress("TOO_MANY_PARAMETERS")

@@ -24,6 +24,7 @@ import com.iomt.android.compose.theme.colorScheme
  * @param additionalContent additional content that is
  * @param onSave callback invoked on save button pressed
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditableSection(
     title: String,

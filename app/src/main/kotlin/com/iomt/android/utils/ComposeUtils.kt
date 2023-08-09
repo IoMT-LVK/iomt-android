@@ -4,7 +4,6 @@
 
 package com.iomt.android.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,7 +66,6 @@ fun NavHostController.navigate(
  * @param content content that should be displayed if [value] is not null
  */
 @Composable
-@SuppressLint("ComposableNaming")
 fun <T : Any> withLoading(value: T?, content: @Composable (T) -> Unit) {
     value?.let { content(value) } ?: run {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

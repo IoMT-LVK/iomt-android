@@ -4,8 +4,11 @@
 
 package com.iomt.android.compose.components.device
 
-import android.annotation.SuppressLint
+import android.Manifest
 import android.bluetooth.BluetoothDevice
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
@@ -26,8 +29,9 @@ import com.iomt.android.bluetooth.ConnectionStatus
  * @param connectionStatus current [ConnectionStatus]
  * @param changeConnectionStatus callback to change current [connectionStatus] depending on its value
  */
+@RequiresApi(Build.VERSION_CODES.S)
+@RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
 @Composable
-@SuppressLint("MissingPermission")
 fun DeviceHeaderCard(
     bluetoothDevice: BluetoothDevice,
     connectionStatus: ConnectionStatus,

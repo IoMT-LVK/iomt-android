@@ -22,6 +22,7 @@ import java.util.*
  * @param date [MutableState] of current birthdate as [String]
  * @param isDateValid flag that defines if [date] is considered to be valid or not
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerTextField(date: MutableState<String>, isDateValid: Boolean) {
     val context = LocalContext.current

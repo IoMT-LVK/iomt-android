@@ -1,9 +1,13 @@
 package com.iomt.android.bluetooth
 
+import android.Manifest
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.content.Context
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import com.iomt.android.configs.DeviceConfig
 import com.iomt.android.room.devicechar.DeviceCharacteristicLinkRepository
 import kotlinx.coroutines.*
@@ -83,6 +87,8 @@ class BluetoothLeManager(private val context: Context) {
      * @param deviceConfig [DeviceConfig] corresponding to [device]
      * @return [Unit]
      */
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     internal suspend fun connectDevice(device: BluetoothDevice, deviceConfig: DeviceConfig) = coroutineScope {
         val macAddress = device.address
         if (bluetoothDeviceManagers.containsKey(macAddress)) {
@@ -112,6 +118,8 @@ class BluetoothLeManager(private val context: Context) {
      * @param macAddress MAC address of Bluetooth LE device
      * @return [Unit] if successfully disconnected, null otherwise
      */
+    @RequiresApi(Build.VERSION_CODES.S)
+    @RequiresPermission(Manifest.permission.BLUETOOTH_CONNECT)
     internal suspend fun disconnectDevice(macAddress: String) = coroutineScope {
         withContext(Dispatchers.Default) { bluetoothDeviceManagers.remove(macAddress)?.disconnect()?.await() }
     }

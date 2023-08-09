@@ -4,6 +4,10 @@
 
 package com.iomt.android.compose.components.drawer
 
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,6 +21,9 @@ import kotlinx.coroutines.launch
  * @param navController main [NavHostController]
  * @param content content of a drawer
  */
+@OptIn(ExperimentalMaterial3Api::class)
+@RequiresApi(Build.VERSION_CODES.S)
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Composable
 fun Drawer(navController: NavHostController, content: @Composable (() -> Unit) -> Unit) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
@@ -33,6 +40,8 @@ fun Drawer(navController: NavHostController, content: @Composable (() -> Unit) -
     ) { content { scope.launch { drawerState.open() } } }
 }
 
+@RequiresApi(Build.VERSION_CODES.S)
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
 @Preview
 @Composable
 private fun DrawerPreview() {

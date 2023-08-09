@@ -4,6 +4,10 @@
 
 package com.iomt.android.compose
 
+import android.Manifest
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.annotation.RequiresPermission
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
@@ -23,6 +27,9 @@ import kotlinx.serialization.json.Json
  * @param signOut callback invoked on sign out
  * @param onMenuButtonPressed callback invoked on menu button pressed - this should open drawer
  */
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+@RequiresPermission(allOf = [Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_SCAN])
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Suppress("LOCAL_VARIABLE_EARLY_DECLARATION")
 fun Scaffold(
